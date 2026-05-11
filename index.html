@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ST26 論壇 HTML 產生器 v6.9</title>
+<title>ST26 論壇 HTML 產生器 v7.0</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,"Helvetica Neue","Noto Sans TC",sans-serif;background:#f0ecfa;color:#333;padding:20px 12px;min-height:100vh}
@@ -24,37 +24,24 @@ body{font-family:Arial,"Helvetica Neue","Noto Sans TC",sans-serif;background:#f0
 .sec{background:#faf8ff;border:1px solid #d4c8f0;border-radius:8px;padding:14px 16px;margin-bottom:14px}
 .sec-title{font-size:11px;font-weight:700;color:#673BB8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
 .lbl{font-size:12px;font-weight:700;color:#555;margin-bottom:6px;display:block}
-.hint{font-size:11px;color:#888;font-weight:400;margin-left:5px}
 .inp{width:100%;padding:10px 12px;border:1px solid #d4c8f0;border-radius:6px;font-size:13px;outline:none;color:#333;font-family:inherit;line-height:1.5;background:#fff;transition:border .15s}
 .inp:focus{border-color:#673BB8}
 textarea.inp{resize:vertical}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.field{margin-bottom:10px}
-.field:last-child{margin-bottom:0}
 .person-row{display:flex;gap:7px;align-items:center;margin-bottom:7px}
 .person-row input{flex:1;min-width:0}
 .btn-rm{padding:8px 10px;background:#fff0f0;border:1px solid #fcc;border-radius:6px;cursor:pointer;font-size:11px;color:#c00;white-space:nowrap;font-weight:bold}
-.btn-rm:hover{background:#ffe0e0}
-.btn-add{padding:8px 16px;background:#fff;border:1px dashed #673BB8;border-radius:6px;color:#673BB8;font-weight:700;font-size:12px;cursor:pointer;margin-top:4px}
-.btn-add:hover{background:#f0edf9}
-.col-lbl{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em}
 .logo-grid{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
 .logo-card{width:160px;border:1px solid #d4c8f0;border-radius:8px;overflow:hidden;background:#fff;position:relative}
-.logo-card.drag-over{border-color:#673BB8;background:#ede8f8}
 .logo-preview{height:80px;display:flex;align-items:center;justify-content:center;background:#f5f3fb;position:relative;cursor:pointer}
 .logo-preview img{max-width:140px;max-height:60px;object-fit:contain;display:block}
 .logo-preview .drop-hint{font-size:11px;color:#bbb;text-align:center;line-height:1.4;padding:8px}
 .logo-card-actions{display:flex;border-top:1px solid #e5e5ea}
 .logo-card-actions button{flex:1;padding:6px;border:none;background:transparent;cursor:pointer;font-size:12px;color:#673BB8;border-right:1px solid #e5e5ea;font-weight:bold}
 .logo-card-actions button:last-child{border-right:none;color:#c00}
-.logo-card-actions button:hover{background:#f0edf9}
-.logo-card-url{padding:6px 8px;border-top:1px solid #f0edf9}
-.logo-card-url input{width:100%;font-size:11px;padding:6px;border:1px solid #e0d7f5;border-radius:4px;color:#555;background:#fafafa;outline:none}
-.logo-card-url input:focus{border-color:#673BB8}
 .logo-card-options{padding:6px 8px;background:#fafafa;border-top:1px solid #e0d7f5;font-size:11px;}
 .logo-card-options label{display:flex;align-items:center;gap:4px;cursor:pointer;color:#555;font-weight:600;}
 .logo-add-btn{width:160px;height:80px;border:1px dashed #d4c8f0;border-radius:8px;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#bbb;font-size:12px;font-weight:bold;gap:4px}
-.logo-add-btn:hover{border-color:#673BB8;color:#673BB8;background:#faf8ff}
 .logo-order-num{position:absolute;top:4px;left:4px;background:#673BB8;color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:2px 6px;line-height:1}
 .info-box{background:#f0edf9;border-left:4px solid #673BB8;border-radius:4px;padding:12px 16px;font-size:13px;color:#333;line-height:1.6;margin-bottom:16px;position:relative}
 .success-box{background:#edf7e3;border:1px solid #bbf7d0;border-radius:7px;padding:12px 16px;font-size:13px;color:#166534;margin-bottom:12px;font-weight:bold}
@@ -69,16 +56,11 @@ textarea.inp{resize:vertical}
 .btn-prev{padding:10px 24px;background:#fff;color:#333;border:1px solid #d4c8f0;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer}
 .price-preview-tbl{width:100%;font-size:12px;border-collapse:collapse;margin-top:8px}
 .price-preview-tbl th{background:#ede8f8;padding:6px 10px;text-align:right;color:#673BB8;font-weight:700;font-size:11px;border-bottom:2px solid #673BB8}
-.price-preview-tbl th:first-child{text-align:left}
 .price-preview-tbl td{padding:8px 10px;border-bottom:1px solid #f0edf9;text-align:right;color:#333}
-.price-preview-tbl td:first-child{text-align:left;font-weight:600}
-
-/* Preview pane overrides */
 .preview-wrap{border:1px solid #d4c8f0;border-radius:8px;overflow:hidden;margin-top:20px;background:#f9f8ff;}
 .preview-header{background:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #d4c8f0}
 .preview-iframe-container{padding:20px;display:flex;justify-content:center;align-items:flex-start;min-height:500px;}
 .preview-iframe{width:100%;border:1px solid #e5e5ea;display:block;background:#fff;border-radius:4px;}
-
 @media(max-width:640px){.grid2{grid-template-columns:1fr}}
 </style>
 </head>
@@ -87,8 +69,8 @@ textarea.inp{resize:vertical}
 <div class="hdr">
   <div class="hdr-left">
     <div class="hdr-ey">SEMI Taiwan · ST26</div>
-    <div class="hdr-title">論壇 HTML 產生器 v6.9</div>
-    <div class="hdr-sub">柔性降級引擎、人員模塊修復</div>
+    <div class="hdr-title">論壇 HTML 產生器 v7.0</div>
+    <div class="hdr-sub">垂直投影掃描、0511(L) 版 CSV 安全解析器</div>
   </div>
   <button class="btn-gen" id="main-gen-btn" onclick="generate()" disabled>產生 HTML</button>
 </div>
@@ -104,8 +86,8 @@ textarea.inp{resize:vertical}
 <!-- ① 選場次 -->
 <div id="tab-excel" class="panel">
   <div class="info-box">
-    <strong>[柔性掃描機制]</strong> 請貼入 Excel 資料。系統會自動尋找符合的表頭 (Theme, 中英文連結等)。<br>
-    即使使用舊版或殘缺的 Excel 格式，系統依然會放行，未抓到的資料後續可手動填補。
+    <strong>[柔性投影掃描機制]</strong> 請貼入 Excel 資料。系統能完美過濾 0511(L) 的三層式複雜表頭。<br>
+    無須擔心欄位移動，系統已啟用 CSV 安全解析，不受場地欄位內的「逗號」干擾。
     <button class="btn-rm" style="position:absolute;right:16px;top:50%;transform:translateY(-50%);" onclick="clearAllDrafts()">🧹 清除快取</button>
   </div>
   <div class="field">
@@ -253,6 +235,20 @@ textarea.inp{resize:vertical}
 let forums=[], selectedForum=null, zhHTML='', enHTML='', currentOutLang='zh';
 const EVENT_YEAR = 2026;
 
+// 安全解析 CSV，保護被引號包圍的逗號（例如: "Venue, 3F, Taipei"）
+function parseCSVLine(text, delim) {
+  if(delim === '\t') return text.split('\t').map(s=>s.trim());
+  let ret = [], val = '', inQ = false;
+  for(let i=0; i<text.length; i++) {
+    let c = text[i];
+    if(c === '"') { inQ = !inQ; }
+    else if(c === ',' && !inQ) { ret.push(val.trim()); val = ''; }
+    else { val += c; }
+  }
+  ret.push(val.trim());
+  return ret;
+}
+
 // --- Core Mapping Logic ---
 function parseExcel(){
   const raw=document.getElementById('excel-raw').value.trim();
@@ -266,68 +262,64 @@ function parseExcel(){
   const lines=raw.split(/\r?\n/).filter(l=>l.trim());
   const delim=(lines[0].match(/\t/g)||[]).length>=(lines[0].match(/,/g)||[]).length?'\t':',';
   
-  // 1. 動態定位表頭位置 (掃描前 10 行找特徵)
+  // 1. 尋找主要表頭列 (Registration / Forum)
   let hIdx = -1;
   for(let i=0; i<Math.min(lines.length, 10); i++){
-    const cols = lines[i].split(delim).map(clean);
+    const cols = parseCSVLine(lines[i], delim);
     if(cols.some(c => c.toLowerCase().includes('forum') || c.toLowerCase().includes('registration'))) { hIdx = i; break; }
   }
 
   if(hIdx === -1) {
-    errEl.textContent='❌ 格式錯誤：找不到「Forum」或「Registration」表頭識別列。';
+    errEl.textContent='❌ 格式錯誤：找不到公版標題列 (Forum / Registration)。';
     errEl.style.display='block'; return;
   }
 
-  const headers = lines[hIdx].split(delim).map(clean);
-  const catHeaders = hIdx > 0 ? lines[hIdx-1].split(delim).map(clean) : [];
+  // 2. 垂直投影掃描：將前 hIdx 列的資料合併到每個 Column，徹底解決跨列表頭問題
+  const parsedHeaderRows = lines.slice(0, hIdx + 1).map(l => parseCSVLine(l, delim));
+  const colCount = parsedHeaderRows[hIdx].length;
+  const colDefs = [];
+  
+  for(let c=0; c<colCount; c++){
+    let colStr = parsedHeaderRows.map(r => r[c] || '').join(' ').toLowerCase();
+    colDefs.push(colStr);
+  }
 
-  // Helper function for fuzzy matching
-  const findIdx = (arr, text) => arr.findIndex(h => h.toLowerCase().includes(text.toLowerCase()));
-  const findIdxExact = (arr, text) => arr.findIndex(h => h === text);
+  const findIdx = (text) => colDefs.findIndex(s => s.includes(text.toLowerCase()));
+  const findAllIdx = (text) => colDefs.map((s,i) => s.includes(text.toLowerCase()) ? i : -1).filter(i => i!==-1);
 
-  // Flexible Mapping
+  // 定位基礎欄位
   const map = {
-    reg: findIdx(headers, 'registration'),
-    time: findIdx(headers, 'time'),
-    forumEn: findIdxExact(headers, 'Forum') !== -1 ? findIdxExact(headers, 'Forum') : findIdx(headers, 'forum'),
-    forumZh: findIdx(headers, '論壇名稱'),
-    venueEn: findIdxExact(headers, 'Venue') !== -1 ? findIdxExact(headers, 'Venue') : findIdx(headers, 'venue'),
-    venueZh: findIdx(headers, '中文地點'),
-    theme: findIdxExact(headers, 'Theme') !== -1 ? findIdxExact(headers, 'Theme') : findIdx(headers, 'theme'),
-    linkZh: findIdx(headers, '中文連結'),
-    linkEn: findIdx(headers, '英文連結'),
-    stu: findIdx(headers, 'student')
+    reg: findIdx('registration'),
+    time: findIdx('time'),
+    forumEn: findIdx('forum'),
+    forumZh: findIdx('論壇名稱'),
+    venueEn: findIdx('venue'),
+    venueZh: findIdx('中文地點'),
+    theme: findIdx('theme'),
+    linkZh: findIdx('中文連結'),
+    linkEn: findIdx('英文連結'),
+    stu: findIdx('student')
   };
 
-  // 票價定位 (複合搜索)
-  const getP = (cat, role) => {
-    for(let j=0; j<headers.length; j++){
-      if((headers[j]||'').includes(role) && (catHeaders[j]||'').includes(cat)) return j;
-    }
-    // Fallback: Check if they merged cells or put it in the same row
-    for(let j=0; j<headers.length; j++){
-      if((headers[j]||'').includes(cat) && (headers[j]||'').includes(role)) return j;
-    }
-    return -1;
-  };
+  // 定位票價欄位 (依靠出現順序：1.超早鳥 2.早鳥 3.原價 4.現場)
+  const memCols = findAllIdx('semi member');
+  const nonCols = findAllIdx('non-member');
 
   const pMap = {
-    seb_m: getP('Super','SEMI Member'), seb_n: getP('Super','Non-member'),
-    eb_m: getP('Early','SEMI Member'), eb_n: getP('Early','Non-member'),
-    reg_m: getP('Regular','SEMI Member'), reg_n: getP('Regular','Non-member'),
-    os_m: getP('On-Site','SEMI Member'), os_n: getP('On-Site','Non-member')
+    seb_m: memCols[0] !== undefined ? memCols[0] : -1, seb_n: nonCols[0] !== undefined ? nonCols[0] : -1,
+    eb_m:  memCols[1] !== undefined ? memCols[1] : -1, eb_n:  nonCols[1] !== undefined ? nonCols[1] : -1,
+    reg_m: memCols[2] !== undefined ? memCols[2] : -1, reg_n: nonCols[2] !== undefined ? nonCols[2] : -1,
+    os_m:  memCols[3] !== undefined ? memCols[3] : -1, os_n:  nonCols[3] !== undefined ? nonCols[3] : -1
   };
 
-  // 最低限度阻斷：找不到論壇名稱
   if(map.forumEn === -1 && map.forumZh === -1) {
-    errEl.textContent='❌ 解析失敗：完全找不到「Forum」論壇名稱欄位，無法建立選單。';
+    errEl.textContent='❌ 解析失敗：找不到「Forum」論壇名稱欄位。';
     errEl.style.display='block'; return;
   }
 
   const parsed = [];
   for(let i=hIdx+1; i<lines.length; i++){
-    const c = lines[i].split(delim).map(clean);
-    // Ignore lines that don't have a forum name
+    const c = parseCSVLine(lines[i], delim);
     if(c.length < 3 || (!c[map.forumEn] && !c[map.forumZh])) continue;
     
     parsed.push({
@@ -376,7 +368,6 @@ function selectForum(){
   selectedForum = forums[idx];
   const f = selectedForum;
   
-  // Dynamic UI feedback based on parsed completeness
   const themeStatus = f.theme ? '✅ 已抓取' : '⚠️ 需手填';
   const urlZhStatus = f.urlZh ? '✅' : '⚠️';
   const urlEnStatus = f.urlEn ? '✅' : '⚠️';
@@ -386,10 +377,9 @@ function selectForum(){
     
   document.getElementById('forum-info').style.display = 'block';
   
-  // Fill values to inputs
   document.getElementById('reg-url-zh').value = f.urlZh;
   document.getElementById('reg-url-en').value = f.urlEn;
-  document.getElementById('theme-zh').value = f.nameZh; // Fallback to Chinese Forum name if Theme missing
+  document.getElementById('theme-zh').value = f.nameZh;
   document.getElementById('theme-en').value = f.theme || f.nameEn;
 }
 
@@ -402,7 +392,6 @@ function go(id,btn){
 }
 
 function val(id){ return document.getElementById(id).value.trim(); }
-function clean(s){ return String(s||'').trim().replace(/^["']|["']$/g,''); }
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 // --- HTML Generation ---
@@ -416,7 +405,7 @@ const CSS = `<style>
 .st26-theme-static{font-size:24px;font-weight:800;color:#673BB8;display:block;padding:12px 16px;background:#ede8f8;border-radius:8px;border:1px solid #d4c8f0;margin-bottom:16px}
 .st26-outline{padding:16px 20px;background:#f9f8ff;border-left:4px solid #673BB8;border-radius:0 6px 6px 0;margin-top:4px;margin-bottom:16px;font-size:16px;color:#444}
 .st26-org{display:grid;grid-template-columns:repeat(3,1fr);gap:20px 24px;padding:16px 0;border-top:1px solid #e5e5ea;border-bottom:1px solid #e5e5ea;margin:20px 0}
-.st26-org-role{font-size:13px;font-weight:700;color:#86868b;text-transform:uppercase}
+.st26-org-role{font-size:13px;font-weight:700;color:#86868b;text-transform:uppercase;margin-bottom:4px}
 .st26-org-name{font-size:15px;font-weight:600;color:#333}
 .st26-org-name a{color:#673BB8;text-decoration:none}
 .st26-logo-row{display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid #f5f5f7}
@@ -453,54 +442,36 @@ function buildFullHTML(lang){
 
   let html = CSS + `<div class="st26">`;
   
-  // Theme
   if(outline) {
     const p = outline.split('\n\n').map(txt=>`<p>${esc(txt).replace(/\n/g,'<br>')}</p>`).join('');
-    html += `<details><summary class="st26-summary"><span class="st26-theme">${esc(theme||'即將公告')}</span></summary><div class="st26-outline">${p}</div></details>`;
+    html += `<details><summary class="st26-summary"><span class="st26-theme-line">${esc(theme||'即將公告')}</span></summary><div class="st26-outline">${p}</div></details>`;
   } else {
     html += `<span class="st26-theme-static">${esc(theme||'即將公告')}</span>`;
   }
 
-  // Anchor Nav
   const l_p = lang==='zh'?'票價與報名':'Pricing';
   const l_s = lang==='zh'?'講師陣容':'Speakers';
   const l_a = lang==='zh'?'詳細議程':'Agenda';
   html += `<div class="st26-anchor-nav">`;
-  if(activeUrl) {
-    html += `<a href="#pricing" class="st26-anchor-btn">${l_p}</a>`;
-  }
-  html += `
-    <a id="btn-s" style="display:none" class="st26-anchor-btn" onclick="event.preventDefault();document.querySelector('.session__people')?.scrollIntoView({behavior:'smooth'})">${l_s}</a>
+  if(activeUrl) html += `<a href="#pricing" class="st26-anchor-btn">${l_p}</a>`;
+  html += `<a id="btn-s" style="display:none" class="st26-anchor-btn" onclick="event.preventDefault();document.querySelector('.session__people')?.scrollIntoView({behavior:'smooth'})">${l_s}</a>
     <a id="btn-a" style="display:none" class="st26-anchor-btn" onclick="event.preventDefault();document.querySelector('.session__subsession')?.scrollIntoView({behavior:'smooth'})">${l_a}</a>
   </div>`;
 
-  // Organization
   const chairs = getPeople('chairs-wrap');
   const mods = getPeople('mods-wrap');
   const advisedName = val('advised-name');
-  const advisedUrl = val('advised-url');
   
   if(advisedName || chairs.length || mods.length){
     html += `<div class="st26-org">`;
     if(advisedName) {
-      const an = advisedUrl ? `<a href="${esc(advisedUrl)}" target="_blank">${esc(advisedName)}</a>` : esc(advisedName);
-      html += `<div><div class="st26-org-role">${lang==='zh'?'指導單位':'Advised by'}</div><div class="st26-org-name">${an}</div></div>`;
+      const u = val('advised-url');
+      html += `<div><div class="st26-org-role">${lang==='zh'?'指導單位':'Advised by'}</div><div class="st26-org-name">${u?`<a href="${esc(u)}" target="_blank">${esc(advisedName)}</a>`:esc(advisedName)}</div></div>`;
     }
-    if(chairs.length) {
-      const cStr = chairs.map(c => c.url ? `<a href="${esc(c.url)}" target="_blank">${esc(c.name)}</a>` : esc(c.name)).join('<br>');
-      html += `<div><div class="st26-org-role">${lang==='zh'?'論壇主席':'Forum Chair'}</div><div class="st26-org-name">${cStr}</div></div>`;
-    }
-    if(mods.length) {
-      const mStr = mods.map(m => m.url ? `<a href="${esc(m.url)}" target="_blank">${esc(m.name)}</a>` : esc(m.name)).join('<br>');
-      html += `<div><div class="st26-org-role">${lang==='zh'?'論壇主持人':'Forum Moderator'}</div><div class="st26-org-name">${mStr}</div></div>`;
-    }
+    if(chairs.length) html += `<div><div class="st26-org-role">${lang==='zh'?'論壇主席':'Forum Chair'}</div><div class="st26-org-name">${chairs.map(c=>c.url?`<a href="${esc(c.url)}" target="_blank">${esc(c.name)}</a>`:esc(c.name)).join('<br>')}</div></div>`;
+    if(mods.length) html += `<div><div class="st26-org-role">${lang==='zh'?'論壇主持人':'Forum Moderator'}</div><div class="st26-org-name">${mods.map(c=>c.url?`<a href="${esc(c.url)}" target="_blank">${esc(c.name)}</a>`:esc(c.name)).join('<br>')}</div></div>`;
     html += `</div>`;
   }
-  
-  // Logos
-  const logoOrg = getLogos('logo-org');
-  const logoCoorg = getLogos('logo-coorg');
-  const logoSponsor = getLogos('logo-sponsor');
   
   const bLogo = (label, logos) => {
     if(!logos.length) return '';
@@ -508,20 +479,17 @@ function buildFullHTML(lang){
     return `<div class="st26-logo-row"><div class="st26-logo-label">${esc(label)}</div><div class="st26-logo-wrap">${imgs}</div></div>`;
   };
   
-  let logosHtml = bLogo(lang==='zh'?'主辦單位':'Organizer', logoOrg) + 
-                  bLogo(lang==='zh'?'共同主辦單位':'Co-organizer', logoCoorg) + 
-                  bLogo(lang==='zh'?'贊助單位':'Sponsored by', logoSponsor);
-                  
-  if(logosHtml) html += logosHtml + `<div class="st26-div"></div>`;
+  let lHtml = bLogo(lang==='zh'?'主辦單位':'Organizer', getLogos('logo-org')) + 
+              bLogo(lang==='zh'?'共同主辦單位':'Co-organizer', getLogos('logo-coorg')) + 
+              bLogo(lang==='zh'?'贊助單位':'Sponsored by', getLogos('logo-sponsor'));
+  if(lHtml) html += lHtml + `<div style="height:1px;background:#e5e5ea;margin:20px 0"></div>`;
 
-  // Pricing
   html += `<div id="pricing" class="st26-ph"><div class="st26-ph-title">${lang==='zh'?'報名費用':'Registration Fee'}</div>`;
   if(activeUrl) html += `<a href="${esc(activeUrl)}" target="_blank" class="st26-btn">${lang==='zh'?'立即報名':'Register Now'} →</a>`;
   html += `</div>`;
   
   if(remark) html += `<div class="st26-pricing-remark">${esc(remark).replace(/\n/g,'<br>')}</div>`;
 
-  // Pricing Table
   const p = f.prices;
   const rows = [
     [lang==='zh'?'超早鳥':'Super Early','5/20-6/17',p.seb_mem,p.seb_non],
@@ -532,19 +500,14 @@ function buildFullHTML(lang){
   html += `<div class="st26-pr-wrap">` + rows.map(r=>`
     <div class="st26-pr-row">
       <div><div class="st26-pname">${r[0]}</div><div class="st26-pdate">${r[1]}</div></div>
-      <div class="st26-price">${r[2]?`NT$ ${r[2].toLocaleString()}`:'—'}</div>
-      <div class="st26-price">${r[3]?`NT$ ${r[3].toLocaleString()}`:'—'}</div>
+      <div class="st26-price">${r[2]?`NT$ ${Number(r[2]).toLocaleString()}`:'—'}</div>
+      <div class="st26-price">${r[3]?`NT$ ${Number(r[3]).toLocaleString()}`:'—'}</div>
     </div>`).join('') + `</div>`;
 
-  // Auto-Detect Script
-  html += `<script>(function(){
-    function c(){
-      var s=document.querySelector('.session__people'), a=document.querySelector('.session__subsession');
-      if(s){var bs=document.getElementById('btn-s');if(bs)bs.style.display='inline-flex';}
-      if(a){var ba=document.getElementById('btn-a');if(ba)ba.style.display='inline-flex';}
-    }
-    window.addEventListener('DOMContentLoaded', c); setTimeout(c,1000); setTimeout(c,3000);
-  })();</` + `script></div>`;
+  html += `<script>(function(){function c(){
+    if(document.querySelector('.session__people')) document.getElementById('btn-s').style.display='inline-flex';
+    if(document.querySelector('.session__subsession')) document.getElementById('btn-a').style.display='inline-flex';
+  }window.addEventListener('DOMContentLoaded',c);setTimeout(c,2000);})();<\/script></div>`;
   
   return html;
 }
@@ -555,63 +518,39 @@ function switchLang(l, btn){
   if(btn) btn.classList.add('active');
   const h = l==='zh'?zhHTML:enHTML;
   document.getElementById('html-out').value = h;
-  const frame = document.getElementById('preview-frame');
-  frame.srcdoc = `<html><head><meta charset="UTF-8"></head><body style="padding:20px">${h}</body></html>`;
+  document.getElementById('preview-frame').srcdoc = `<html><head><meta charset="UTF-8"></head><body style="padding:20px">${h}</body></html>`;
 }
 
 function copyHTML(){
   const ta = document.getElementById('html-out');
   ta.select(); document.execCommand('copy');
   const b = document.getElementById('copy-btn');
-  const old = b.innerText; b.innerText='[已複製]';
-  setTimeout(()=>b.innerText=old, 2000);
+  b.innerText='[已複製]'; setTimeout(()=>b.innerText='複製代碼', 2000);
 }
 
 function addPerson(id){
   const d = document.createElement('div'); d.className='person-row';
-  d.innerHTML=`
-    <input class="inp" style="flex:1.5;min-width:0" data-r="name" placeholder="姓名 | 職稱 | 公司">
-    <input class="inp" style="flex:1;min-width:0" data-r="url" placeholder="https://...">
-    <button class="btn-rm" onclick="this.parentElement.remove()">移除</button>`;
+  d.innerHTML=`<input class="inp" style="flex:2" placeholder="姓名 | 職稱 | 公司"><button class="btn-rm" onclick="this.parentElement.remove()">移除</button>`;
   document.getElementById(id).appendChild(d);
 }
-
 function getPeople(id){
-  return Array.from(document.querySelectorAll(`#${id} .person-row`)).map(r=>({
-    name:r.querySelector('[data-r="name"]').value.trim(),
-    url:r.querySelector('[data-r="url"]').value.trim()
-  })).filter(p=>p.name);
+  return Array.from(document.querySelectorAll(`#${id} .person-row`)).map(r=>({name:r.querySelector('input').value}));
 }
-
 function addLogoCard(id){
-  const grid = document.getElementById(id);
-  const d = document.createElement('div');
-  d.className='logo-card';
-  d.innerHTML=`<div class="logo-preview" onclick="this.parentElement.querySelector('input[type=file]').click()"><div class="drop-hint">點擊上傳</div></div><input type="file" style="display:none" onchange="hLogo(this)">
-  <div class="logo-card-actions"><button onclick="this.parentElement.parentElement.remove()">移除</button></div>`;
-  grid.appendChild(d);
+  const d = document.createElement('div'); d.className='logo-card';
+  d.innerHTML=`<div class="logo-preview"><div class="drop-hint">點擊上傳</div></div><input type="file" style="display:none" onchange="hL(this)"><div class="logo-card-actions"><button onclick="this.parentElement.parentElement.remove()">移除</button></div>`;
+  document.getElementById(id).appendChild(d);
 }
-function hLogo(input){
-  const reader = new FileReader();
-  reader.onload = e => {
-    const img = document.createElement('img');
-    img.src = e.target.result;
-    input.parentElement.querySelector('.logo-preview').innerHTML = '';
-    input.parentElement.querySelector('.logo-preview').appendChild(img);
-    input.parentElement.dataset.src = e.target.result;
-  };
-  reader.readAsDataURL(input.files[0]);
+function hL(input){
+  const r = new FileReader();
+  r.onload = e => { input.parentElement.querySelector('.logo-preview').innerHTML = `<img src="${e.target.result}">`; input.parentElement.dataset.src=e.target.result; };
+  r.readAsDataURL(input.files[0]);
 }
-
 function getLogos(id){
-  return Array.from(document.querySelectorAll(`#${id} .logo-card`)).map(c=>({
-    src:c.dataset.src||'', isCo:false
-  })).filter(l=>l.src);
+  return Array.from(document.querySelectorAll(`#${id} .logo-card`)).map(c=>({src:c.dataset.src||'',isCo:false})).filter(l=>l.src);
 }
+function clearAllDrafts(){ if(confirm('確定清除快取？')) { localStorage.clear(); location.reload(); } }
 
-function clearAllDrafts(){ if(confirm('確定清除所有快取？')) localStorage.clear(); location.reload(); }
-
-// Init
 addPerson('chairs-wrap');
 addPerson('mods-wrap');
 </script>
