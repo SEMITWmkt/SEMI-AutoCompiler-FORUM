@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ST26 論壇 HTML 產生器 v5.8</title>
+<title>ST26 論壇 HTML 產生器 v5.9</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,"Helvetica Neue","Noto Sans TC",sans-serif;background:#f0ecfa;color:#333;padding:20px 12px;min-height:100vh}
@@ -16,7 +16,7 @@ body{font-family:Arial,"Helvetica Neue","Noto Sans TC",sans-serif;background:#f0
 .btn-gen{padding:10px 22px;background:#673BB8;color:#fff;border:none;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .btn-gen:hover{background:#5a2ea8}
 .tabs{display:flex;background:#ede8f8;padding:5px;gap:4px;overflow-x:auto}
-.tab{flex:1;min-width:100px;padding:10px 6px;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;background:transparent;color:#673BB8;white-space:nowrap;transition:all .2s}
+.tab{flex:1;min-width:110px;padding:10px 6px;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;background:transparent;color:#673BB8;white-space:nowrap;transition:all .2s}
 .tab.active{background:#673BB8;color:#fff;font-weight:700}
 .tab:hover:not(.active){background:#d4c8f0}
 .panel{padding:20px 24px}
@@ -28,15 +28,12 @@ body{font-family:Arial,"Helvetica Neue","Noto Sans TC",sans-serif;background:#f0
 .inp:focus{border-color:#673BB8}
 textarea.inp{resize:vertical}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.field{margin-bottom:10px}
-.field:last-child{margin-bottom:0}
 .person-row{display:flex;gap:7px;align-items:center;margin-bottom:7px}
 .person-row input{flex:1;min-width:0}
 .btn-rm{padding:8px 10px;background:#fff0f0;border:1px solid #fcc;border-radius:6px;cursor:pointer;font-size:11px;color:#c00;white-space:nowrap;font-weight:bold}
 .btn-rm:hover{background:#ffe0e0}
 .btn-add{padding:8px 16px;background:#fff;border:1px dashed #673BB8;border-radius:6px;color:#673BB8;font-weight:700;font-size:12px;cursor:pointer;margin-top:4px}
 .btn-add:hover{background:#f0edf9}
-.col-lbl{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em}
 .logo-grid{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
 .logo-card{width:160px;border:1px solid #d4c8f0;border-radius:8px;overflow:hidden;background:#fff;position:relative}
 .logo-card.drag-over{border-color:#673BB8;background:#ede8f8}
@@ -46,10 +43,6 @@ textarea.inp{resize:vertical}
 .logo-card-actions{display:flex;border-top:1px solid #e5e5ea}
 .logo-card-actions button{flex:1;padding:6px;border:none;background:transparent;cursor:pointer;font-size:12px;color:#673BB8;border-right:1px solid #e5e5ea;font-weight:bold}
 .logo-card-actions button:last-child{border-right:none;color:#c00}
-.logo-card-actions button:hover{background:#f0edf9}
-.logo-card-url{padding:6px 8px;border-top:1px solid #f0edf9}
-.logo-card-url input{width:100%;font-size:11px;padding:6px;border:1px solid #e0d7f5;border-radius:4px;color:#555;background:#fafafa;outline:none}
-.logo-card-url input:focus{border-color:#673BB8}
 .logo-card-options{padding:6px 8px;background:#fafafa;border-top:1px solid #e0d7f5;font-size:11px;}
 .logo-card-options label{display:flex;align-items:center;gap:4px;cursor:pointer;color:#555;font-weight:600;}
 .logo-add-btn{width:160px;height:80px;border:1px dashed #d4c8f0;border-radius:8px;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#bbb;font-size:12px;font-weight:bold;gap:4px}
@@ -99,8 +92,8 @@ textarea.inp{resize:vertical}
 <div class="hdr">
   <div class="hdr-left">
     <div class="hdr-ey">SEMI Taiwan · ST26</div>
-    <div class="hdr-title">論壇 HTML 產生器 v5.8</div>
-    <div class="hdr-sub">CMS 視覺適配重構、主題按鈕化、錨點淨化</div>
+    <div class="hdr-title">論壇 HTML 產生器 v5.9</div>
+    <div class="hdr-sub">加回場地資訊、新增共同主辦、弱化票價視覺強度</div>
   </div>
   <button class="btn-gen" onclick="generate()">產生 HTML</button>
 </div>
@@ -113,6 +106,7 @@ textarea.inp{resize:vertical}
   <button class="tab" onclick="go('output',this)">⑥ 輸出與預覽</button>
 </div>
 
+<!-- ① 選場次 -->
 <div id="tab-excel" class="panel">
   <div class="info-box">
     [操作提示] 開啟 <code>2026_Program-at-a-glance.xlsx</code> → <strong>ST26 工作表</strong> → 全選（Ctrl+A）→ 複製 → 貼入下方。<br>
@@ -135,7 +129,14 @@ textarea.inp{resize:vertical}
     </div>
 
     <div id="forum-info" style="display:none;background:#faf8ff;border:1px solid #d4c8f0;border-radius:8px;padding:16px;margin-top:16px">
-      <div>
+      <div class="grid2">
+        <div>
+          <div class="lbl" style="color:#673BB8">場地擷取 (Venue)</div>
+          <div id="prev-venue" style="font-size:14px;font-weight:700"></div>
+          <div id="prev-venue-zh" style="font-size:12px;color:#666;margin-top:2px"></div>
+        </div>
+      </div>
+      <div style="margin-top:16px;border-top:1px solid #e5e5ea;padding-top:12px">
         <div class="lbl" style="color:#673BB8">票價結構預覽</div>
         <div id="prev-price"></div>
       </div>
@@ -145,6 +146,7 @@ textarea.inp{resize:vertical}
   <div class="nav"><span></span><button class="btn-next" onclick="go('content')">下一步：主題 / 大綱 →</button></div>
 </div>
 
+<!-- ② 主題/大綱 -->
 <div id="tab-content" class="panel" style="display:none">
   <div class="info-box">
     <strong>[重要提示] 中文版與英文版內容各自獨立。</strong><br>
@@ -175,6 +177,7 @@ Line breaks will create new paragraphs"></textarea></div>
   </div>
 </div>
 
+<!-- ③ 人員 -->
 <div id="tab-people" class="panel" style="display:none">
   <div class="info-box">
     <strong>[排版對齊機制]</strong> 前台將以「橫向三欄」固定排列。若名單留空，前台將保留標題區塊，內容區顯示為空白以維持版面結構。輸出成中文版 HTML 時，職稱標題會自動切換為正式中文用語。
@@ -182,7 +185,7 @@ Line breaks will create new paragraphs"></textarea></div>
   <div class="sec">
     <div class="sec-title">指導單位 / Advised by</div>
     <div class="grid2">
-      <div class="field"><label class="lbl">委員會名稱</label><input class="inp" id="advised-name" placeholder="例如：SEMI Smart Manufacturing Committee"></div>
+      <div class="field"><label class="lbl">單位名稱</label><input class="inp" id="advised-name" placeholder="例如：SEMI IC Committee"></div>
       <div class="field"><label class="lbl">連結 URL <span class="hint">(選填)</span></label><input class="inp" id="advised-url" placeholder="https://..."></div>
     </div>
   </div>
@@ -213,18 +216,24 @@ Line breaks will create new paragraphs"></textarea></div>
   </div>
 </div>
 
+<!-- ④ Logo -->
 <div id="tab-logos" class="panel" style="display:none">
   <div class="info-box">
     <strong>[聯名鎖定]</strong> 若為雙品牌聯名圖，請勾選該卡片的<strong>「設定為聯名 Logo」</strong>，寬度上限將放寬為雙倍(320px)。<br>
-    <strong>[排版對齊機制]</strong> 若分類下無任何圖片，前台將僅顯示標題，維持區塊結構留白對齊。
+    <strong>[隱藏機制]</strong> 若某個分類（如贊助、共同主辦）完全沒有上傳圖片，最終 HTML 會徹底移除該標題與區塊。
   </div>
   <div class="sec">
     <div class="sec-title">主辦單位 / Organizer</div>
     <div class="logo-grid" id="logo-org"></div>
     <button class="logo-add-btn" onclick="addLogoCard('logo-org')">＋<br>新增 Logo</button>
   </div>
+  <div class="sec">
+    <div class="sec-title">共同主辦單位 / Co-organizer (選填)</div>
+    <div class="logo-grid" id="logo-coorg"></div>
+    <button class="logo-add-btn" onclick="addLogoCard('logo-coorg')">＋<br>新增 Logo</button>
+  </div>
   <div class="sec" style="margin-bottom:0">
-    <div class="sec-title">贊助單位 / Sponsored by</div>
+    <div class="sec-title">贊助單位 / Sponsored by (選填)</div>
     <div class="logo-grid" id="logo-sponsor"></div>
     <button class="logo-add-btn" onclick="addLogoCard('logo-sponsor')">＋<br>新增 Logo</button>
   </div>
@@ -235,10 +244,18 @@ Line breaks will create new paragraphs"></textarea></div>
   </div>
 </div>
 
+<!-- ⑤ 報名 -->
 <div id="tab-reg" class="panel" style="display:none">
+  <div class="info-box">
+    <strong>[報名按鈕邏輯]</strong> 只有當下方 URL 有值時，前台才會出現「立即報名」按鈕。若留空，則僅顯示票價資訊，不顯示報名按鈕與導覽按鈕。
+  </div>
   <div class="sec">
     <div class="sec-title">Register Now 報名按鈕</div>
-    <div class="field"><label class="lbl">報名系統 URL</label><input class="inp" id="reg-url" placeholder="https://registration.semicontaiwan.org/..."></div>
+    <div class="field"><label class="lbl">報名系統 URL (若無連結則按鈕不會出現)</label><input class="inp" id="reg-url" placeholder="https://registration.semicontaiwan.org/..."></div>
+  </div>
+  <div class="sec">
+    <div class="sec-title">地點導航連結 (選填)</div>
+    <div class="field"><label class="lbl">地圖 URL <span class="hint">若填寫，前台的地點標籤點擊後會連至此網址</span></label><input class="inp" id="map-url" placeholder="https://maps.google.com/..."></div>
   </div>
   <div class="nav">
     <button class="btn-prev" onclick="go('logos')">← 上一步</button>
@@ -247,6 +264,7 @@ Line breaks will create new paragraphs"></textarea></div>
   </div>
 </div>
 
+<!-- ⑥ 輸出 / 預覽 -->
 <div id="tab-output" class="panel" style="display:none">
   <div id="out-success" class="success-box" style="display:none">代碼已產生！請於下方預覽確認無誤後，切換語言分頁進行複製。</div>
   <div id="out-placeholder" style="text-align:center;padding:60px 0;color:#888">
@@ -382,6 +400,8 @@ function selectForum(){
   if(idx===''){info.style.display='none';return;}
   selectedForum=forums[parseInt(idx)];
   const f=selectedForum;
+  document.getElementById('prev-venue').textContent=f.venueEn;
+  document.getElementById('prev-venue-zh').textContent=f.venueZh;
   
   if(!document.getElementById('theme-en').value&&f.theme) document.getElementById('theme-en').value=f.theme;
   
@@ -424,8 +444,10 @@ function saveDraft() {
     outlineZh: val('outline-zh'), outlineEn: val('outline-en'),
     advisedName: val('advised-name'), advisedUrl: val('advised-url'),
     chairs: getPeople('chairs-wrap'), mods: getPeople('mods-wrap'),
-    logoOrg: getLogos('logo-org'), logoSponsor: getLogos('logo-sponsor'),
-    regUrl: val('reg-url')
+    logoOrg: getLogos('logo-org'), 
+    logoCoorg: getLogos('logo-coorg'),
+    logoSponsor: getLogos('logo-sponsor'),
+    regUrl: val('reg-url'), mapUrl: val('map-url')
   };
   try {
     localStorage.setItem(key, JSON.stringify(draftData));
@@ -448,6 +470,7 @@ function loadDraft() {
     document.getElementById('advised-name').value = data.advisedName || '';
     document.getElementById('advised-url').value = data.advisedUrl || '';
     document.getElementById('reg-url').value = data.regUrl || '';
+    document.getElementById('map-url').value = data.mapUrl || '';
     
     document.getElementById('chairs-wrap').innerHTML = '';
     data.chairs.forEach(c => renderPerson('chairs-wrap', c.name, c.url));
@@ -456,12 +479,14 @@ function loadDraft() {
     
     document.getElementById('logo-org').innerHTML = '';
     data.logoOrg.forEach(l => renderLogo('logo-org', l.src, l.isCo));
+    document.getElementById('logo-coorg').innerHTML = '';
+    if(data.logoCoorg) data.logoCoorg.forEach(l => renderLogo('logo-coorg', l.src, l.isCo));
     document.getElementById('logo-sponsor').innerHTML = '';
     data.logoSponsor.forEach(l => renderLogo('logo-sponsor', l.src, l.isCo));
     
     document.getElementById('draft-alert').style.display='none';
   } catch(e) {
-    alert('載入失敗：存檔資料損毀。');
+    alert('載入失敗。');
   }
 }
 
@@ -609,11 +634,15 @@ function getLogos(sectionId){
 }
 
 // ─────────────────────────────────────────────────────────────
-// HTML Generation Logic
+// HTML Generation Logic (CSS Rewrite for v5.9)
 // ─────────────────────────────────────────────────────────────
 const OUT_CSS=`<style>
 .st26*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
 .st26{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Noto Sans TC",Arial,sans-serif;color:#1d1d1f;padding:0 0 32px;line-height:1.6}
+.st26-badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.st26-badge{display:inline-flex;align-items:center;padding:8px 16px;border-radius:6px;font-size:16px;font-weight:700}
+.st26-venue{background:#ede8f8;color:#673BB8;text-decoration:none}
+.st26-venue:hover{background:#d4c8f0}
 .st26-anchor-nav{display:flex;gap:12px;margin:16px 0 24px;flex-wrap:wrap}
 .st26-anchor-btn{font-size:14px;font-weight:700;color:#673BB8;text-decoration:none;padding:8px 16px;border:1px solid #d4c8f0;border-radius:100px;background:#f9f8ff;transition:all .2s;display:inline-flex;align-items:center}
 .st26-anchor-btn:hover{background:#673BB8;color:#fff;border-color:#673BB8}
@@ -621,17 +650,17 @@ const OUT_CSS=`<style>
 .st26-summary{list-style:none;cursor:pointer;padding:12px 16px;background:#ede8f8;border-radius:8px;outline:none;display:block;margin-bottom:12px;transition:background-color .2s;border:1px solid #d4c8f0}
 .st26-summary:hover{background-color:#e2d9f3}
 .st26-summary::-webkit-details-marker{display:none}
-.st26-theme-line{font-size:20px;font-weight:800;color:#673BB8;display:inline}
+.st26-theme-line{font-size:24px;font-weight:800;color:#673BB8;display:inline}
 .st26-theme-line::after{content:'\\25BC';font-size:14px;color:#673BB8;margin-left:12px;display:inline-block;transition:transform .2s;vertical-align:middle;font-family:Arial,sans-serif}
 details[open] .st26-theme-line::after{transform:rotate(180deg)}
-.st26-theme-static{font-size:20px;font-weight:800;color:#673BB8;display:block;padding:12px 16px;background:#ede8f8;border-radius:8px;border:1px solid #d4c8f0;margin-bottom:16px}
+.st26-theme-static{font-size:24px;font-weight:800;color:#673BB8;display:block;padding:12px 16px;background:#ede8f8;border-radius:8px;border:1px solid #d4c8f0;margin-bottom:16px}
 .st26-outline{padding:16px 20px;background:#f9f8ff;border-left:4px solid #673BB8;border-radius:0 6px 6px 0;margin-top:12px;font-size:16px;color:#444;line-height:1.8}
 .st26-outline p{margin-bottom:10px}
 .st26-outline p:last-child{margin-bottom:0}
 .st26-org{display:grid;grid-template-columns:repeat(3,1fr);align-items:start;gap:20px 24px;padding:16px 0;border-top:1px solid #e5e5ea;border-bottom:1px solid #e5e5ea;margin:20px 0}
 .st26-org-item{display:flex;flex-direction:column;gap:4px;min-width:200px;flex:1}
 .st26-org-role{font-size:13px;font-weight:700;color:#86868b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
-.st26-org-name{font-size:16px;font-weight:600;color:#333;line-height:1.5}
+.st26-org-name{font-size:15px;font-weight:600;color:#333;line-height:1.5}
 .st26-org-name a{color:#673BB8;text-decoration:none;font-weight:600}
 .st26-org-name a:hover{text-decoration:underline}
 .st26-logo-row{display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid #f5f5f7}
@@ -641,22 +670,22 @@ details[open] .st26-theme-line::after{transform:rotate(180deg)}
 .st26-logo-wrap img.st26-img-co{max-width:320px}
 .st26-div{height:1px;background:#e5e5ea;margin:20px 0}
 .st26-ph{display:flex;justify-content:space-between;align-items:center;margin:16px 0 12px;flex-wrap:wrap;gap:12px}
-.st26-ph-title{font-size:20px;font-weight:800}
-.st26-btn{display:inline-flex;align-items:center;gap:10px;background:#673BB8;color:#fff;padding:10px 14px 10px 20px;border-radius:100px;font-size:16px;font-weight:700;text-decoration:none;transition:background .2s}
+.st26-ph-title{font-size:18px;font-weight:800}
+.st26-btn{display:inline-flex;align-items:center;gap:10px;background:#673BB8;color:#fff;padding:8px 12px 8px 16px;border-radius:100px;font-size:15px;font-weight:700;text-decoration:none;transition:background .2s}
 .st26-btn:hover{background:#5a2ea8}
-.st26-btn-arr{width:24px;height:24px;background:#fff;color:#673BB8;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900}
+.st26-btn-arr{width:22px;height:22px;background:#fff;color:#673BB8;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900}
 .st26-pr-wrap{display:flex;flex-direction:column;width:100%;margin-bottom:16px}
 .st26-pr-head{display:grid;grid-template-columns:1.2fr 1fr 1fr;border-bottom:2px solid #1d1d1f;padding-bottom:10px;font-size:13px;font-weight:700;color:#86868b;text-transform:uppercase;letter-spacing:.05em}
 .st26-pr-head > div:not(:first-child){text-align:right}
-.st26-pr-row{display:grid;grid-template-columns:1.2fr 1fr 1fr;padding:14px 0;border-bottom:1px solid #eeeeee;align-items:center;transition:background-color .3s}
+.st26-pr-row{display:grid;grid-template-columns:1.2fr 1fr 1fr;padding:10px 0;border-bottom:1px solid #eeeeee;align-items:center;transition:background-color .3s}
 .st26-pr-row:last-child{border-bottom:none}
 .st26-pr-col1{display:flex;flex-direction:column;justify-content:center}
 .st26-pr-col2, .st26-pr-col3{text-align:right}
 .st26-pr-label{display:none}
-.st26-pname{font-size:18px;font-weight:800}
-.st26-pdate{font-size:14px;font-weight:700;color:#673BB8;margin-top:4px}
-.st26-price{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
-.st26-tbc{font-size:16px;font-weight:700;color:#86868b}
+.st26-pname{font-size:15px;font-weight:700;color:#333}
+.st26-pdate{font-size:12px;font-weight:700;color:#673BB8;margin-top:2px}
+.st26-price{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums}
+.st26-tbc{font-size:14px;font-weight:700;color:#86868b}
 .st26-dp{display:flex;align-items:center;gap:16px;padding:12px 16px;border:1px solid #e5e5ea;border-radius:8px;background:#fafafa;margin-top:12px;flex-wrap:wrap}
 .st26-dp-lbl{min-width:100px}
 .st26-dp-t{font-size:14px;font-weight:700;color:#555}
@@ -665,8 +694,8 @@ details[open] .st26-theme-line::after{transform:rotate(180deg)}
 .st26-dp-item{display:flex;flex-direction:column;align-items:flex-end}
 .st26-dp-role{font-size:11px;font-weight:700;color:#888;margin-bottom:2px}
 .st26-dp-val{font-size:14px;font-weight:700;color:#555;font-variant-numeric:tabular-nums}
-.st26-discount{margin-top:16px;padding:14px 18px;background:#edf7e3;border-left:4px solid #55A51C;border-radius:0 6px 6px 0;font-size:15px;font-weight:600;color:#2d5a0e;line-height:1.6}
-.st26-note{margin-top:10px;font-size:14px;color:#888;line-height:1.5}
+.st26-discount{margin-top:16px;padding:14px 18px;background:#edf7e3;border-left:4px solid #55A51C;border-radius:0 6px 6px 0;font-size:14px;font-weight:600;color:#2d5a0e;line-height:1.6}
+.st26-note{margin-top:10px;font-size:13px;color:#888;line-height:1.5}
 @media(max-width:768px){
   .st26-org{grid-template-columns:1fr;gap:16px}
   .st26-org-item{min-width:100%}
@@ -694,9 +723,10 @@ function buildThemeBlock(theme,outline,lang){
   return `\n<span class="st26-theme-static">${esc(txt)}</span>`;
 }
 
-function buildAnchorNav(lang) {
+function buildAnchorNav(lang, hasRegUrl) {
+  if(!hasRegUrl) return '';
   const l_price = lang === 'zh' ? '票價與報名' : 'Pricing & Registration';
-  return `\n<div class="st26-anchor-nav">\n  <a href="#st26-pricing" class="st26-anchor-btn">${l_price}</a>\n  \n</div>`;
+  return `\n<div class="st26-anchor-nav">\n  <a href="#st26-pricing" class="st26-anchor-btn">${l_price}</a>\n</div>`;
 }
 
 function buildOrgBlock(advisedName,advisedUrl,chairs,mods,lang){
@@ -722,11 +752,11 @@ function buildOrgBlock(advisedName,advisedUrl,chairs,mods,lang){
   return html+'</div>';
 }
 
-function buildLogoSection(label,logos,lang){
-  if(!logos.length) return `<div class="st26-logo-row">\n  <div class="st26-logo-label">${esc(label)}</div>\n  <div class="st26-logo-wrap"></div>\n</div>`;
+function buildLogoSection(label,logos){
+  if(!logos.length) return ''; // 沒圖徹底消失
   const imgs=logos.map(l=>{
     const cls=l.isCo?' class="st26-img-co"':'';
-    return `    <img${cls} src="${l.src.startsWith('data:')?l.src:esc(l.src)}" alt="${esc(label)} Logo">`;
+    return `    <img${cls} src="${l.src.startsWith('data:')?l.src:esc(l.src)}" alt="Logo">`;
   }).join('\n');
   return `<div class="st26-logo-row">\n  <div class="st26-logo-label">${esc(label)}</div>\n  <div class="st26-logo-wrap">\n${imgs}\n  </div>\n</div>`;
 }
@@ -777,10 +807,10 @@ function buildPricingBlock(f,regUrl,lang){
     ).join('\n');
     const stuCell=p.student?`<span class="st26-price">NT$ ${Number(p.student).toLocaleString()}</span>`:'<span class="st26-tbc">—</span>';
     
-    return `<div class="st26-pr-wrap">\n  <div class="st26-pr-head">\n    <div>${colPeriod}</div>\n    <div>${colMem}</div>\n    <div>${colNon}</div>\n  </div>\n${tblRows}\n  <div class="st26-pr-row">\n    <div class="st26-pr-col1"><div class="st26-pname">${stuRowName}</div><div class="st26-pdate" style="color:#1d1d1f">${stuRowDate}</div></div>\n    <div class="st26-pr-col2" style="width:100%;grid-column:2/4;justify-content:flex-end;gap:12px;border:none">\n      <div style="font-size:13px;font-weight:700;color:#86868b">${stuNote}</div>\n      <div>${stuCell}</div>\n    </div>\n  </div>\n</div>`;
+    return `<div class="st26-pr-wrap">\n  <div class="st26-pr-head">\n    <div>${colPeriod}</div>\n    <div>${colMem}</div>\n    <div>${colNon}</div>\n  </div>\n${tblRows}\n  <div class="st26-pr-row">\n    <div class="st26-pr-col1"><div class="st26-pname">${stuRowName}</div><div class="st26-pdate" style="color:#1d1d1f">${stuRowDate}</div></div>\n    <div class="st26-pr-col2" style="width:100%;grid-column:2/4;justify-content:flex-end;gap:12px;border:none">\n      <div style="font-size:12px;font-weight:700;color:#86868b">${stuNote}</div>\n      <div>${stuCell}</div>\n    </div>\n  </div>\n</div>`;
   })();
 
-  const scriptTag = (!f||!f.hasPrices)?'':'\n\n<scr'+'ipt>(function(){try{var r=document.querySelectorAll(\'.st26-pr-row\'),n=new Date(),y='+EVENT_YEAR+';r.forEach(function(e){var d=e.querySelector(\'.st26-pdate\');if(!d)return;var m=d.innerText.match(/(\\d+)\\s*\\/\\s*(\\d+)[^\\d]+(\\d+)\\s*\\/\\s*(\\d+)/);if(m){var s=new Date(y,parseInt(m[1])-1,parseInt(m[2])),t=new Date(y,parseInt(m[3])-1,parseInt(m[4]),23,59,59);if(n>=s&&n<=t){e.style.backgroundColor=\'#f9f8ff\';e.style.borderLeft=\'4px solid #673BB8\';var p=e.querySelector(\'.st26-pname\');if(p&&!p.querySelector(\'.st26-now\'))p.innerHTML+=\' <span class="st26-now" style="background:#673BB8;color:#fff;font-size:12px;padding:2px 6px;border-radius:4px;vertical-align:middle;margin-left:8px">NOW</span>\'}}})}catch(e){}})();</scr'+'ipt>';
+  const scriptTag = (!f||!f.hasPrices)?'':'\n\n<scr'+'ipt>(function(){try{var r=document.querySelectorAll(\'.st26-pr-row\'),n=new Date(),y='+EVENT_YEAR+';r.forEach(function(e){var d=e.querySelector(\'.st26-pdate\');if(!d)return;var m=d.innerText.match(/(\\d+)\\s*\\/\\s*(\\d+)[^\\d]+(\\d+)\\s*\\/\\s*(\\d+)/);if(m){var s=new Date(y,parseInt(m[1])-1,parseInt(m[2])),t=new Date(y,parseInt(m[3])-1,parseInt(m[4]),23,59,59);if(n>=s&&n<=t){e.style.backgroundColor=\'#f9f8ff\';e.style.borderLeft=\'4px solid #673BB8\';var p=e.querySelector(\'.st26-pname\');if(p&&!p.querySelector(\'.st26-now\'))p.innerHTML+=\' <span class="st26-now" style="background:#673BB8;color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;vertical-align:middle;margin-left:8px">NOW</span>\'}}})}catch(e){}})();</scr'+'ipt>';
 
   return `\n<div class="st26-ph" id="st26-pricing">  <div class="st26-ph-title">${phTitle}</div>  ${btnHTML}</div>\n${priceTableHTML}\n<div class="st26-dp">  <div class="st26-dp-lbl"><div class="st26-dp-t">${dayPassTitle}</div><div class="st26-dp-s">${taxNote}</div></div>  <div class="st26-dp-grid">    <div class="st26-dp-item"><span class="st26-dp-role">${dpRole(1)}</span><span class="st26-dp-val">NT$ 13,755</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">${dpRole(2)}</span><span class="st26-dp-val">NT$ 26,040</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">${dpRole(3)}</span><span class="st26-dp-val">NT$ 36,960</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">${dpRole(4)}</span><span class="st26-dp-val">NT$ 46,515</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">${dpRole(5)}</span><span class="st26-dp-val">NT$ 54,915</span></div>  </div></div><div class="st26-discount">${discount}</div><div class="st26-note">${note}</div>${scriptTag}`;
 }
@@ -792,27 +822,35 @@ function buildFullHTML(lang){
   const advisedName=document.getElementById('advised-name').value.trim();
   const advisedUrl=document.getElementById('advised-url').value.trim();
   const regUrl=document.getElementById('reg-url').value.trim();
+  const mapUrl=document.getElementById('map-url').value.trim();
   const chairs=getPeople('chairs-wrap');
   const mods=getPeople('mods-wrap');
   const orgLogos=getLogos('logo-org');
+  const coorgLogos=getLogos('logo-coorg');
   const sponsorLogos=getLogos('logo-sponsor');
   
+  const venueDisplay=f?(lang==='zh'&&f.venueZh?f.venueZh:f.venueEn):'';
+  const locLabel=lang==='zh'?'地點':'Venue';
   const orgLabel=lang==='zh'?'主辦單位':'Organizer';
-  const sponLabel=lang==='zh'?'贊助':'Sponsored by';
+  const coorgLabel=lang==='zh'?'共同主辦單位':'Co-organizer';
+  const sponLabel=lang==='zh'?'贊助單位':'Sponsored by';
+  
+  const badges=(venueDisplay)?`\n<div class="st26-badges">${mapUrl?`  <a class="st26-badge st26-venue" href="${esc(mapUrl)}" target="_blank">${locLabel}：${esc(venueDisplay)}</a>`:`  <span class="st26-badge st26-venue">${locLabel}：${esc(venueDisplay)}</span>`}</div>`:'';
   
   const themeBlock=buildThemeBlock(theme,outline,lang);
-  const anchorNav=buildAnchorNav(lang);
+  const anchorNav=buildAnchorNav(lang, !!regUrl);
   const orgBlock=buildOrgBlock(advisedName,advisedUrl,chairs,mods,lang);
   
-  const logoOrg=buildLogoSection(orgLabel,orgLogos,lang);
-  const logoSponsor=buildLogoSection(sponLabel,sponsorLogos,lang);
+  const logoOrg=buildLogoSection(orgLabel,orgLogos);
+  const logoCoorg=buildLogoSection(coorgLabel,coorgLogos);
+  const logoSponsor=buildLogoSection(sponLabel,sponsorLogos);
   
   const pricingBlock=buildPricingBlock(f,regUrl,lang);
   
-  const logosHtml = [logoOrg, logoSponsor].filter(Boolean).join('\n');
+  const logosHtml = [logoOrg, logoCoorg, logoSponsor].filter(Boolean).join('\n');
   const hasLogos = logosHtml.trim().length > 0;
   
-  return `${OUT_CSS}\n<div class="st26">\n${themeBlock}\n${anchorNav}\n${orgBlock}\n${hasLogos?'\n'+logosHtml+'\n<div class="st26-div" style="margin-top:20px;"></div>\n':''}${pricingBlock}\n</div>`;
+  return `${OUT_CSS}\n<div class="st26">\n${badges}\n${themeBlock}\n${anchorNav}\n${orgBlock}\n${hasLogos?'\n'+logosHtml+'\n<div class="st26-div" style="margin-top:20px;"></div>\n':''}${pricingBlock}\n</div>`;
 }
 
 function generate(){
@@ -838,8 +876,8 @@ function switchLang(lang, btn) {
   
   document.getElementById('html-out').value=lang==='zh'?zhHTML:enHTML;
   document.getElementById('out-lang-note').textContent=lang==='zh'
-    ?'↓ 當前顯示：中文版代碼 (包含區塊導航註解，請複製貼入 Drupal)'
-    :'↓ 當前顯示：英文版代碼 (包含區塊導航註解，請複製貼入 Drupal)';
+    ?'↓ 當前顯示：中文版代碼 (包含區塊導覽註解，請複製貼入 Drupal)'
+    :'↓ 當前顯示：英文版代碼 (包含區塊導覽註解，請複製貼入 Drupal)';
   document.getElementById('copy-btn').textContent=lang==='zh'?'複製代碼 (ZH)':'複製代碼 (EN)';
   document.getElementById('copy-btn').classList.remove('done');
   
@@ -895,6 +933,15 @@ function copyHTML(){
   },2500);
 }
 
+// ─────────────────────────────────────────────────────────────
+// Init
+// ─────────────────────────────────────────────────────────────
+addPerson('chairs-wrap');
+addPerson('mods-wrap');
+addPerson('mods-wrap');
+addLogoCard('logo-org');
+addLogoCard('logo-coorg');
+addLogoCard('logo-sponsor');
 </script>
 </body>
 </html>
