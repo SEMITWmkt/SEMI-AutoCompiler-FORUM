@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ST26 論壇 HTML 產生器 v5.9</title>
+<title>ST26 論壇 HTML 產生器 v6.1</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,"Helvetica Neue","Noto Sans TC",sans-serif;background:#f0ecfa;color:#333;padding:20px 12px;min-height:100vh}
@@ -16,7 +16,7 @@ body{font-family:Arial,"Helvetica Neue","Noto Sans TC",sans-serif;background:#f0
 .btn-gen{padding:10px 22px;background:#673BB8;color:#fff;border:none;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .btn-gen:hover{background:#5a2ea8}
 .tabs{display:flex;background:#ede8f8;padding:5px;gap:4px;overflow-x:auto}
-.tab{flex:1;min-width:110px;padding:10px 6px;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;background:transparent;color:#673BB8;white-space:nowrap;transition:all .2s}
+.tab{flex:1;min-width:100px;padding:10px 6px;border:none;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;background:transparent;color:#673BB8;white-space:nowrap;transition:all .2s}
 .tab.active{background:#673BB8;color:#fff;font-weight:700}
 .tab:hover:not(.active){background:#d4c8f0}
 .panel{padding:20px 24px}
@@ -28,12 +28,15 @@ body{font-family:Arial,"Helvetica Neue","Noto Sans TC",sans-serif;background:#f0
 .inp:focus{border-color:#673BB8}
 textarea.inp{resize:vertical}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.field{margin-bottom:10px}
+.field:last-child{margin-bottom:0}
 .person-row{display:flex;gap:7px;align-items:center;margin-bottom:7px}
 .person-row input{flex:1;min-width:0}
 .btn-rm{padding:8px 10px;background:#fff0f0;border:1px solid #fcc;border-radius:6px;cursor:pointer;font-size:11px;color:#c00;white-space:nowrap;font-weight:bold}
 .btn-rm:hover{background:#ffe0e0}
 .btn-add{padding:8px 16px;background:#fff;border:1px dashed #673BB8;border-radius:6px;color:#673BB8;font-weight:700;font-size:12px;cursor:pointer;margin-top:4px}
 .btn-add:hover{background:#f0edf9}
+.col-lbl{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em}
 .logo-grid{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
 .logo-card{width:160px;border:1px solid #d4c8f0;border-radius:8px;overflow:hidden;background:#fff;position:relative}
 .logo-card.drag-over{border-color:#673BB8;background:#ede8f8}
@@ -43,6 +46,10 @@ textarea.inp{resize:vertical}
 .logo-card-actions{display:flex;border-top:1px solid #e5e5ea}
 .logo-card-actions button{flex:1;padding:6px;border:none;background:transparent;cursor:pointer;font-size:12px;color:#673BB8;border-right:1px solid #e5e5ea;font-weight:bold}
 .logo-card-actions button:last-child{border-right:none;color:#c00}
+.logo-card-actions button:hover{background:#f0edf9}
+.logo-card-url{padding:6px 8px;border-top:1px solid #f0edf9}
+.logo-card-url input{width:100%;font-size:11px;padding:6px;border:1px solid #e0d7f5;border-radius:4px;color:#555;background:#fafafa;outline:none}
+.logo-card-url input:focus{border-color:#673BB8}
 .logo-card-options{padding:6px 8px;background:#fafafa;border-top:1px solid #e0d7f5;font-size:11px;}
 .logo-card-options label{display:flex;align-items:center;gap:4px;cursor:pointer;color:#555;font-weight:600;}
 .logo-add-btn{width:160px;height:80px;border:1px dashed #d4c8f0;border-radius:8px;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#bbb;font-size:12px;font-weight:bold;gap:4px}
@@ -92,8 +99,8 @@ textarea.inp{resize:vertical}
 <div class="hdr">
   <div class="hdr-left">
     <div class="hdr-ey">SEMI Taiwan · ST26</div>
-    <div class="hdr-title">論壇 HTML 產生器 v5.9</div>
-    <div class="hdr-sub">加回場地資訊、新增共同主辦、弱化票價視覺強度</div>
+    <div class="hdr-title">論壇 HTML 產生器 v6.1</div>
+    <div class="hdr-sub">精準對齊 ST26_官網連結、解鎖全導覽錨點</div>
   </div>
   <button class="btn-gen" onclick="generate()">產生 HTML</button>
 </div>
@@ -109,8 +116,8 @@ textarea.inp{resize:vertical}
 <!-- ① 選場次 -->
 <div id="tab-excel" class="panel">
   <div class="info-box">
-    [操作提示] 開啟 <code>2026_Program-at-a-glance.xlsx</code> → <strong>ST26 工作表</strong> → 全選（Ctrl+A）→ 複製 → 貼入下方。<br>
-    <span style="color:#c00;font-size:11px">※ 防呆提醒：系統依靠欄位數量擷取票價，請勿隨意刪減 Excel 欄位。若系統卡頓，可清除快取釋放空間。</span>
+    [操作提示] 請開啟並複製最新版的 <code>ST26_官網連結</code> 工作表，然後貼入下方。<br>
+    <span style="color:#c00;font-size:11px">※ 防呆提醒：系統會自動抓取票價與中英報名連結。若系統卡頓，可清除快取釋放空間。</span>
     <button class="btn-clear" onclick="clearAllDrafts()">🧹 清除所有暫存快取</button>
   </div>
   <div class="field">
@@ -247,11 +254,14 @@ Line breaks will create new paragraphs"></textarea></div>
 <!-- ⑤ 報名 -->
 <div id="tab-reg" class="panel" style="display:none">
   <div class="info-box">
-    <strong>[報名按鈕邏輯]</strong> 只有當下方 URL 有值時，前台才會出現「立即報名」按鈕。若留空，則僅顯示票價資訊，不顯示報名按鈕與導覽按鈕。
+    <strong>[動態分流機制]</strong> 選擇場次後，系統會自動抓取 Excel 中的中英文報名連結填入。輸出 HTML 時，中文版只會套用中文連結，英文版只會套用英文連結。若其中一個為空，則自動使用另一個做為備案。
   </div>
   <div class="sec">
-    <div class="sec-title">Register Now 報名按鈕</div>
-    <div class="field"><label class="lbl">報名系統 URL (若無連結則按鈕不會出現)</label><input class="inp" id="reg-url" placeholder="https://registration.semicontaiwan.org/..."></div>
+    <div class="sec-title">Register Now 報名連結自動掛載</div>
+    <div class="grid2">
+      <div class="field"><label class="lbl">報名連結 (中文版)</label><input class="inp" id="reg-url-zh" placeholder="由 Excel 自動帶入，或手動貼上"></div>
+      <div class="field"><label class="lbl">報名連結 (英文版)</label><input class="inp" id="reg-url-en" placeholder="由 Excel 自動帶入，或手動貼上"></div>
+    </div>
   </div>
   <div class="sec">
     <div class="sec-title">地點導航連結 (選填)</div>
@@ -350,19 +360,28 @@ function parseExcel(){
     const c=delim===','
       ?line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(clean)
       :line.split('\t').map(clean);
-    if(c.length<6) continue;
+    
+    // Safety check for basic columns
+    if(c.length<10) continue;
+    
+    // Auto-detect offset based on first cell
     const offset=(!c[0]&&(c[1]||c[3]))?1:0;
+    
     const regTime=c[0+offset], frmTime=c[1+offset];
     const nameEn=c[2+offset], nameZh=c[3+offset];
     const venueEn=c[4+offset]||'', venueZh=c[5+offset]||'';
     const theme=c[6+offset]||'';
+    
     if(!nameEn||!frmTime) continue;
+    
     const lw=nameEn.toLowerCase().trim();
     if(skipWords.has(lw)||skipWords.has(lw.split(' ')[0])) continue;
     if(/monday|tuesday|wednesday|thursday|friday/i.test(nameEn)) continue;
     if(/semicon taiwan \d{4}/i.test(nameEn)) continue;
     
-    const p0=7+offset;
+    // Pricing data mapping based on 'ST26_官網連結' sheet
+    // Prices start at index 8 (SEMI Member, Super Early-Bird)
+    const p0=8+offset;
     const prices={
       seb_mem:parsePrice(c[p0]),   seb_non:parsePrice(c[p0+1]),
       eb_mem: parsePrice(c[p0+2]), eb_non: parsePrice(c[p0+3]),
@@ -370,11 +389,17 @@ function parseExcel(){
       os_mem: parsePrice(c[p0+6]), os_non: parsePrice(c[p0+7]),
       student:parsePrice(c[p0+8]),
     };
+    
+    // Links mapping based on 'ST26_官網連結' sheet
+    // '中文連結' is at index 18, '英文連結' is at index 19
+    const urlZh = c[18+offset] ? c[18+offset].trim() : '';
+    const urlEn = c[19+offset] ? c[19+offset].trim() : '';
+    
     const hasPrices=Object.values(prices).some(v=>v!==null);
-    parsed.push({regTime,frmTime,nameEn,nameZh,venueEn,venueZh,theme,prices,hasPrices});
+    parsed.push({regTime,frmTime,nameEn,nameZh,venueEn,venueZh,theme,prices,hasPrices,urlZh,urlEn});
   }
   if(!parsed.length){
-    errEl.textContent='[解析失敗] 無法辨識有效場次，請確認複製範圍是否包含 ST26 工作表資料。';
+    errEl.textContent='[解析失敗] 無法辨識有效場次，請確認複製範圍是否為最新的「ST26_官網連結」資料表。';
     errEl.style.display='block'; return;
   }
   forums=parsed;
@@ -404,6 +429,10 @@ function selectForum(){
   document.getElementById('prev-venue-zh').textContent=f.venueZh;
   
   if(!document.getElementById('theme-en').value&&f.theme) document.getElementById('theme-en').value=f.theme;
+  
+  // Auto-fill dynamic URLs
+  document.getElementById('reg-url-zh').value = f.urlZh || '';
+  document.getElementById('reg-url-en').value = f.urlEn || '';
   
   const pd=document.getElementById('prev-price');
   if(!f.hasPrices){
@@ -447,7 +476,7 @@ function saveDraft() {
     logoOrg: getLogos('logo-org'), 
     logoCoorg: getLogos('logo-coorg'),
     logoSponsor: getLogos('logo-sponsor'),
-    regUrl: val('reg-url'), mapUrl: val('map-url')
+    regUrlZh: val('reg-url-zh'), regUrlEn: val('reg-url-en'), mapUrl: val('map-url')
   };
   try {
     localStorage.setItem(key, JSON.stringify(draftData));
@@ -469,7 +498,8 @@ function loadDraft() {
     document.getElementById('outline-en').value = data.outlineEn || '';
     document.getElementById('advised-name').value = data.advisedName || '';
     document.getElementById('advised-url').value = data.advisedUrl || '';
-    document.getElementById('reg-url').value = data.regUrl || '';
+    document.getElementById('reg-url-zh').value = data.regUrlZh || '';
+    document.getElementById('reg-url-en').value = data.regUrlEn || '';
     document.getElementById('map-url').value = data.mapUrl || '';
     
     document.getElementById('chairs-wrap').innerHTML = '';
@@ -486,7 +516,7 @@ function loadDraft() {
     
     document.getElementById('draft-alert').style.display='none';
   } catch(e) {
-    alert('載入失敗。');
+    alert('載入失敗：存檔資料損毀。');
   }
 }
 
@@ -634,7 +664,7 @@ function getLogos(sectionId){
 }
 
 // ─────────────────────────────────────────────────────────────
-// HTML Generation Logic (CSS Rewrite for v5.9)
+// HTML Generation Logic
 // ─────────────────────────────────────────────────────────────
 const OUT_CSS=`<style>
 .st26*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
@@ -718,15 +748,23 @@ function buildThemeBlock(theme,outline,lang){
   const txt=theme||(lang==='zh'?'即將公告':'To be announced');
   if(outline){
     const paras=outline.split(/\n\n+/).map(p=>p.trim()).filter(Boolean).map(p=>`    <p>${esc(p).replace(/\n/g,'<br>')}</p>`).join('\n');
-    return `\n<details class="st26-details">\n  <summary class="st26-summary"><span class="st26-theme-line">${esc(txt)}</span></summary>\n  <div class="st26-outline">\n${paras}\n  </div>\n</details>`;
+    return `<!-- 區塊開始: 主題與大綱 -->\n<details class="st26-details">\n  <summary class="st26-summary"><span class="st26-theme-line">${esc(txt)}</span></summary>\n  <div class="st26-outline">\n${paras}\n  </div>\n</details>`;
   }
-  return `\n<span class="st26-theme-static">${esc(txt)}</span>`;
+  return `<!-- 區塊開始: 主題與大綱 -->\n<div style="padding:4px 0;"><span class="st26-theme-static">${esc(txt)}</span></div>`;
 }
 
 function buildAnchorNav(lang, hasRegUrl) {
-  if(!hasRegUrl) return '';
   const l_price = lang === 'zh' ? '票價與報名' : 'Pricing & Registration';
-  return `\n<div class="st26-anchor-nav">\n  <a href="#st26-pricing" class="st26-anchor-btn">${l_price}</a>\n</div>`;
+  const l_speaker = lang === 'zh' ? '講師陣容' : 'Speakers';
+  const l_agenda = lang === 'zh' ? '詳細議程' : 'Agenda';
+  
+  let html = `<!-- 區塊開始: 快速導覽錨點 -->\n<div class="st26-anchor-nav">\n`;
+  if(hasRegUrl) {
+      html += `  <a href="#st26-pricing" class="st26-anchor-btn">${l_price}</a>\n`;
+  }
+  html += `  <a href="#st26-speakers" class="st26-anchor-btn">${l_speaker}</a>\n  <a href="#st26-agenda" class="st26-anchor-btn">${l_agenda}</a>\n</div>`;
+  
+  return html;
 }
 
 function buildOrgBlock(advisedName,advisedUrl,chairs,mods,lang){
@@ -736,7 +774,7 @@ function buildOrgBlock(advisedName,advisedUrl,chairs,mods,lang){
   const chairLabel = lang === 'zh' ? '論壇主席' : (chairs.length>1?'Forum Chairs':'Forum Chair');
   const modLabel = lang === 'zh' ? '論壇主持人' : (mods.length>1?'Forum Moderators':'Forum Moderator');
 
-  let html='\n<div class="st26-org">\n';
+  let html='<!-- 區塊開始: 人員名單 -->\n<div class="st26-org">\n';
   if(advisedName) {
     const alink=(advisedUrl)?`<a href="${esc(advisedUrl)}" target="_blank">${esc(advisedName)}</a>`:esc(advisedName);
     html+=`  <div class="st26-org-item"><span class="st26-org-role">${advisedLabel}</span><span class="st26-org-name">${alink}</span></div>\n`;
@@ -753,7 +791,7 @@ function buildOrgBlock(advisedName,advisedUrl,chairs,mods,lang){
 }
 
 function buildLogoSection(label,logos){
-  if(!logos.length) return ''; // 沒圖徹底消失
+  if(!logos.length) return ''; 
   const imgs=logos.map(l=>{
     const cls=l.isCo?' class="st26-img-co"':'';
     return `    <img${cls} src="${l.src.startsWith('data:')?l.src:esc(l.src)}" alt="Logo">`;
@@ -767,7 +805,15 @@ function pCell(v, lang){
   return `<span class="st26-price">NT$ ${Number(v).toLocaleString()}</span>`;
 }
 
-function buildPricingBlock(f,regUrl,lang){
+function buildPricingBlock(f,regUrlZh,regUrlEn,lang){
+  // Dynamic URL routing logic
+  let activeUrl = '';
+  if (lang === 'zh') {
+      activeUrl = regUrlZh || regUrlEn || '';
+  } else {
+      activeUrl = regUrlEn || regUrlZh || '';
+  }
+
   const btnLabel    = lang==='zh'?'立即報名':'Register Now';
   const colPeriod   = lang==='zh'?'時段':'Period';
   const colMem      = lang==='zh'?'SEMI 會員':'SEMI Member';
@@ -786,7 +832,7 @@ function buildPricingBlock(f,regUrl,lang){
   const note        = lang==='zh'
     ?'＊主辦單位保留調整或更改活動議程之權利，最終議程以現場安排為準。'
     :'* The organizer reserves the right to adjust or change the agenda. The final agenda is subject to the on-site arrangement.';
-  const btnHTML=regUrl?`<a class="st26-btn" href="${esc(regUrl)}" target="_blank">${btnLabel} <span class="st26-btn-arr">→</span></a>`:'';
+  const btnHTML=activeUrl?`<a class="st26-btn" href="${esc(activeUrl)}" target="_blank">${btnLabel} <span class="st26-btn-arr">→</span></a>`:'';
   
   const priceTableHTML=(!f||!f.hasPrices)?'':(() => {
     const p=f.prices;
@@ -821,7 +867,8 @@ function buildFullHTML(lang){
   const outline=document.getElementById(`outline-${lang}`).value.trim();
   const advisedName=document.getElementById('advised-name').value.trim();
   const advisedUrl=document.getElementById('advised-url').value.trim();
-  const regUrl=document.getElementById('reg-url').value.trim();
+  const regUrlZh=document.getElementById('reg-url-zh').value.trim();
+  const regUrlEn=document.getElementById('reg-url-en').value.trim();
   const mapUrl=document.getElementById('map-url').value.trim();
   const chairs=getPeople('chairs-wrap');
   const mods=getPeople('mods-wrap');
@@ -838,19 +885,23 @@ function buildFullHTML(lang){
   const badges=(venueDisplay)?`\n<div class="st26-badges">${mapUrl?`  <a class="st26-badge st26-venue" href="${esc(mapUrl)}" target="_blank">${locLabel}：${esc(venueDisplay)}</a>`:`  <span class="st26-badge st26-venue">${locLabel}：${esc(venueDisplay)}</span>`}</div>`:'';
   
   const themeBlock=buildThemeBlock(theme,outline,lang);
-  const anchorNav=buildAnchorNav(lang, !!regUrl);
+  
+  // Anchor Nav now checks if AT LEAST ONE valid registration URL exists to render the pricing link
+  const hasRegUrl = !!(regUrlZh || regUrlEn);
+  const anchorNav=buildAnchorNav(lang, hasRegUrl);
+  
   const orgBlock=buildOrgBlock(advisedName,advisedUrl,chairs,mods,lang);
   
   const logoOrg=buildLogoSection(orgLabel,orgLogos);
   const logoCoorg=buildLogoSection(coorgLabel,coorgLogos);
   const logoSponsor=buildLogoSection(sponLabel,sponsorLogos);
   
-  const pricingBlock=buildPricingBlock(f,regUrl,lang);
+  const pricingBlock=buildPricingBlock(f,regUrlZh,regUrlEn,lang);
   
   const logosHtml = [logoOrg, logoCoorg, logoSponsor].filter(Boolean).join('\n');
   const hasLogos = logosHtml.trim().length > 0;
   
-  return `${OUT_CSS}\n<div class="st26">\n${badges}\n${themeBlock}\n${anchorNav}\n${orgBlock}\n${hasLogos?'\n'+logosHtml+'\n<div class="st26-div" style="margin-top:20px;"></div>\n':''}${pricingBlock}\n</div>`;
+  return `${OUT_CSS}\n<div class="st26">\n${badges}\n${themeBlock}\n${anchorNav}\n${orgBlock}\n${hasLogos?'<!-- 區塊開始: Logo 合作單位 -->\n'+logosHtml+'\n<div class="st26-div" style="margin-top:20px;"></div>\n':''}${pricingBlock}\n</div>`;
 }
 
 function generate(){
@@ -933,15 +984,6 @@ function copyHTML(){
   },2500);
 }
 
-// ─────────────────────────────────────────────────────────────
-// Init
-// ─────────────────────────────────────────────────────────────
-addPerson('chairs-wrap');
-addPerson('mods-wrap');
-addPerson('mods-wrap');
-addLogoCard('logo-org');
-addLogoCard('logo-coorg');
-addLogoCard('logo-sponsor');
 </script>
 </body>
 </html>
