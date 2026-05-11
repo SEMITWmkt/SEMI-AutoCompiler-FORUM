@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ST26 論壇 HTML 產生器 v6.1</title>
+<title>ST26 論壇 HTML 產生器 v6.5</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,"Helvetica Neue","Noto Sans TC",sans-serif;background:#f0ecfa;color:#333;padding:20px 12px;min-height:100vh}
@@ -99,8 +99,8 @@ textarea.inp{resize:vertical}
 <div class="hdr">
   <div class="hdr-left">
     <div class="hdr-ey">SEMI Taiwan · ST26</div>
-    <div class="hdr-title">論壇 HTML 產生器 v6.1</div>
-    <div class="hdr-sub">精準對齊 ST26_官網連結、解鎖全導覽錨點</div>
+    <div class="hdr-title">論壇 HTML 產生器 v6.5</div>
+    <div class="hdr-sub">原生 DOM 攔截技術</div>
   </div>
   <button class="btn-gen" onclick="generate()">產生 HTML</button>
 </div>
@@ -113,11 +113,10 @@ textarea.inp{resize:vertical}
   <button class="tab" onclick="go('output',this)">⑥ 輸出與預覽</button>
 </div>
 
-<!-- ① 選場次 -->
 <div id="tab-excel" class="panel">
   <div class="info-box">
     [操作提示] 請開啟並複製最新版的 <code>ST26_官網連結</code> 工作表，然後貼入下方。<br>
-    <span style="color:#c00;font-size:11px">※ 防呆提醒：系統會自動抓取票價與中英報名連結。若系統卡頓，可清除快取釋放空間。</span>
+    <span style="color:#c00;font-size:11px">※ 防呆提醒：系統已嚴格鎖定此表格的欄位。若系統卡頓，可點擊右側按鈕清除快取釋放空間。</span>
     <button class="btn-clear" onclick="clearAllDrafts()">🧹 清除所有暫存快取</button>
   </div>
   <div class="field">
@@ -153,11 +152,11 @@ textarea.inp{resize:vertical}
   <div class="nav"><span></span><button class="btn-next" onclick="go('content')">下一步：主題 / 大綱 →</button></div>
 </div>
 
-<!-- ② 主題/大綱 -->
 <div id="tab-content" class="panel" style="display:none">
   <div class="info-box">
     <strong>[重要提示] 中文版與英文版內容各自獨立。</strong><br>
-    若有填寫「大綱」，系統會自動將主題設定為可點擊的摺疊選單；若大綱留空，則直接顯示純文字標題。
+    若有填寫「大綱」，系統會自動將主題設定為可點擊的摺疊選單；若大綱留空，則直接顯示純文字標題。<br><br>
+    <strong>[全自動錨點]</strong> 此版已搭載原生 DOM 攔截技術。只要 Drupal 後台建置了講者或議程區塊，前台對應的按鈕就會「自動亮起並連動」，無須任何人工設定。
   </div>
   <div class="sec">
     <div class="sec-title">論壇主題 (Theme)</div>
@@ -177,6 +176,7 @@ textarea.inp{resize:vertical}
 Line breaks will create new paragraphs"></textarea></div>
     </div>
   </div>
+
   <div class="nav">
     <button class="btn-prev" onclick="go('excel')">← 上一步</button>
     <button class="btn-save" onclick="saveDraft()">儲存當前進度</button>
@@ -184,7 +184,6 @@ Line breaks will create new paragraphs"></textarea></div>
   </div>
 </div>
 
-<!-- ③ 人員 -->
 <div id="tab-people" class="panel" style="display:none">
   <div class="info-box">
     <strong>[排版對齊機制]</strong> 前台將以「橫向三欄」固定排列。若名單留空，前台將保留標題區塊，內容區顯示為空白以維持版面結構。輸出成中文版 HTML 時，職稱標題會自動切換為正式中文用語。
@@ -223,7 +222,6 @@ Line breaks will create new paragraphs"></textarea></div>
   </div>
 </div>
 
-<!-- ④ Logo -->
 <div id="tab-logos" class="panel" style="display:none">
   <div class="info-box">
     <strong>[聯名鎖定]</strong> 若為雙品牌聯名圖，請勾選該卡片的<strong>「設定為聯名 Logo」</strong>，寬度上限將放寬為雙倍(320px)。<br>
@@ -251,10 +249,9 @@ Line breaks will create new paragraphs"></textarea></div>
   </div>
 </div>
 
-<!-- ⑤ 報名 -->
 <div id="tab-reg" class="panel" style="display:none">
   <div class="info-box">
-    <strong>[動態分流機制]</strong> 選擇場次後，系統會自動抓取 Excel 中的中英文報名連結填入。輸出 HTML 時，中文版只會套用中文連結，英文版只會套用英文連結。若其中一個為空，則自動使用另一個做為備案。
+    <strong>[動態分流機制]</strong> 選擇場次後，系統已自動抓取 Excel 中的中英文報名連結填入。輸出 HTML 時，中文版只會套用中文連結，英文版只會套用英文連結。若其中一個為空，系統會自動使用另一個做為備案。
   </div>
   <div class="sec">
     <div class="sec-title">Register Now 報名連結自動掛載</div>
@@ -274,7 +271,6 @@ Line breaks will create new paragraphs"></textarea></div>
   </div>
 </div>
 
-<!-- ⑥ 輸出 / 預覽 -->
 <div id="tab-output" class="panel" style="display:none">
   <div id="out-success" class="success-box" style="display:none">代碼已產生！請於下方預覽確認無誤後，切換語言分頁進行複製。</div>
   <div id="out-placeholder" style="text-align:center;padding:60px 0;color:#888">
@@ -302,7 +298,7 @@ Line breaks will create new paragraphs"></textarea></div>
     </div>
 
     <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px">
-      <div id="out-lang-note" style="font-size:12px;font-weight:bold;color:#673BB8">↓ 當前顯示：中文版代碼 (包含區塊導航註解，請複製貼入 Drupal)</div>
+      <div id="out-lang-note" style="font-size:12px;font-weight:bold;color:#673BB8">↓ 當前顯示：中文版代碼 (包含區塊導覽註解，請複製貼入 Drupal)</div>
       <button class="btn-copy" id="copy-btn" onclick="copyHTML()">複製代碼</button>
     </div>
     <textarea class="output-ta" id="html-out" rows="12" readonly></textarea>
@@ -361,10 +357,7 @@ function parseExcel(){
       ?line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(clean)
       :line.split('\t').map(clean);
     
-    // Safety check for basic columns
     if(c.length<10) continue;
-    
-    // Auto-detect offset based on first cell
     const offset=(!c[0]&&(c[1]||c[3]))?1:0;
     
     const regTime=c[0+offset], frmTime=c[1+offset];
@@ -379,8 +372,6 @@ function parseExcel(){
     if(/monday|tuesday|wednesday|thursday|friday/i.test(nameEn)) continue;
     if(/semicon taiwan \d{4}/i.test(nameEn)) continue;
     
-    // Pricing data mapping based on 'ST26_官網連結' sheet
-    // Prices start at index 8 (SEMI Member, Super Early-Bird)
     const p0=8+offset;
     const prices={
       seb_mem:parsePrice(c[p0]),   seb_non:parsePrice(c[p0+1]),
@@ -391,7 +382,7 @@ function parseExcel(){
     };
     
     // Links mapping based on 'ST26_官網連結' sheet
-    // '中文連結' is at index 18, '英文連結' is at index 19
+    // '中文連結' is at index 18, '英文連結' is at index 19 (offset applied)
     const urlZh = c[18+offset] ? c[18+offset].trim() : '';
     const urlEn = c[19+offset] ? c[19+offset].trim() : '';
     
@@ -430,7 +421,6 @@ function selectForum(){
   
   if(!document.getElementById('theme-en').value&&f.theme) document.getElementById('theme-en').value=f.theme;
   
-  // Auto-fill dynamic URLs
   document.getElementById('reg-url-zh').value = f.urlZh || '';
   document.getElementById('reg-url-en').value = f.urlEn || '';
   
@@ -674,7 +664,7 @@ const OUT_CSS=`<style>
 .st26-venue{background:#ede8f8;color:#673BB8;text-decoration:none}
 .st26-venue:hover{background:#d4c8f0}
 .st26-anchor-nav{display:flex;gap:12px;margin:16px 0 24px;flex-wrap:wrap}
-.st26-anchor-btn{font-size:14px;font-weight:700;color:#673BB8;text-decoration:none;padding:8px 16px;border:1px solid #d4c8f0;border-radius:100px;background:#f9f8ff;transition:all .2s;display:inline-flex;align-items:center}
+.st26-anchor-btn{font-size:14px;font-weight:700;color:#673BB8;text-decoration:none;padding:8px 16px;border:1px solid #d4c8f0;border-radius:100px;background:#f9f8ff;transition:all .2s;display:inline-flex;align-items:center;cursor:pointer;}
 .st26-anchor-btn:hover{background:#673BB8;color:#fff;border-color:#673BB8}
 .st26-details{margin-bottom:12px}
 .st26-summary{list-style:none;cursor:pointer;padding:12px 16px;background:#ede8f8;border-radius:8px;outline:none;display:block;margin-bottom:12px;transition:background-color .2s;border:1px solid #d4c8f0}
@@ -748,9 +738,9 @@ function buildThemeBlock(theme,outline,lang){
   const txt=theme||(lang==='zh'?'即將公告':'To be announced');
   if(outline){
     const paras=outline.split(/\n\n+/).map(p=>p.trim()).filter(Boolean).map(p=>`    <p>${esc(p).replace(/\n/g,'<br>')}</p>`).join('\n');
-    return `<!-- 區塊開始: 主題與大綱 -->\n<details class="st26-details">\n  <summary class="st26-summary"><span class="st26-theme-line">${esc(txt)}</span></summary>\n  <div class="st26-outline">\n${paras}\n  </div>\n</details>`;
+    return `\n<details class="st26-details">\n  <summary class="st26-summary"><span class="st26-theme-line">${esc(txt)}</span></summary>\n  <div class="st26-outline">\n${paras}\n  </div>\n</details>`;
   }
-  return `<!-- 區塊開始: 主題與大綱 -->\n<div style="padding:4px 0;"><span class="st26-theme-static">${esc(txt)}</span></div>`;
+  return `\n<div style="padding:4px 0;"><span class="st26-theme-static">${esc(txt)}</span></div>`;
 }
 
 function buildAnchorNav(lang, hasRegUrl) {
@@ -758,11 +748,12 @@ function buildAnchorNav(lang, hasRegUrl) {
   const l_speaker = lang === 'zh' ? '講師陣容' : 'Speakers';
   const l_agenda = lang === 'zh' ? '詳細議程' : 'Agenda';
   
-  let html = `<!-- 區塊開始: 快速導覽錨點 -->\n<div class="st26-anchor-nav">\n`;
+  let html = `\n<div class="st26-anchor-nav">\n`;
   if(hasRegUrl) {
-      html += `  <a href="#st26-pricing" class="st26-anchor-btn">${l_price}</a>\n`;
+      html += `  <a href="#st26-pricing" class="st26-anchor-btn" onclick="event.preventDefault(); document.getElementById('st26-pricing')?.scrollIntoView({behavior: 'smooth', block: 'start'})">${l_price}</a>\n`;
   }
-  html += `  <a href="#st26-speakers" class="st26-anchor-btn">${l_speaker}</a>\n  <a href="#st26-agenda" class="st26-anchor-btn">${l_agenda}</a>\n</div>`;
+  html += `  <a href="#speakers" class="st26-anchor-btn" id="btn-st26-speakers" style="display:none;" onclick="event.preventDefault(); document.querySelector('.session__people')?.scrollIntoView({behavior: 'smooth', block: 'start'})">${l_speaker}</a>\n`;
+  html += `  <a href="#agenda" class="st26-anchor-btn" id="btn-st26-agenda" style="display:none;" onclick="event.preventDefault(); document.querySelector('.session__subsession')?.scrollIntoView({behavior: 'smooth', block: 'start'})">${l_agenda}</a>\n</div>`;
   
   return html;
 }
@@ -774,7 +765,7 @@ function buildOrgBlock(advisedName,advisedUrl,chairs,mods,lang){
   const chairLabel = lang === 'zh' ? '論壇主席' : (chairs.length>1?'Forum Chairs':'Forum Chair');
   const modLabel = lang === 'zh' ? '論壇主持人' : (mods.length>1?'Forum Moderators':'Forum Moderator');
 
-  let html='<!-- 區塊開始: 人員名單 -->\n<div class="st26-org">\n';
+  let html='\n<div class="st26-org">\n';
   if(advisedName) {
     const alink=(advisedUrl)?`<a href="${esc(advisedUrl)}" target="_blank">${esc(advisedName)}</a>`:esc(advisedName);
     html+=`  <div class="st26-org-item"><span class="st26-org-role">${advisedLabel}</span><span class="st26-org-name">${alink}</span></div>\n`;
@@ -856,7 +847,7 @@ function buildPricingBlock(f,regUrlZh,regUrlEn,lang){
     return `<div class="st26-pr-wrap">\n  <div class="st26-pr-head">\n    <div>${colPeriod}</div>\n    <div>${colMem}</div>\n    <div>${colNon}</div>\n  </div>\n${tblRows}\n  <div class="st26-pr-row">\n    <div class="st26-pr-col1"><div class="st26-pname">${stuRowName}</div><div class="st26-pdate" style="color:#1d1d1f">${stuRowDate}</div></div>\n    <div class="st26-pr-col2" style="width:100%;grid-column:2/4;justify-content:flex-end;gap:12px;border:none">\n      <div style="font-size:12px;font-weight:700;color:#86868b">${stuNote}</div>\n      <div>${stuCell}</div>\n    </div>\n  </div>\n</div>`;
   })();
 
-  const scriptTag = (!f||!f.hasPrices)?'':'\n\n<scr'+'ipt>(function(){try{var r=document.querySelectorAll(\'.st26-pr-row\'),n=new Date(),y='+EVENT_YEAR+';r.forEach(function(e){var d=e.querySelector(\'.st26-pdate\');if(!d)return;var m=d.innerText.match(/(\\d+)\\s*\\/\\s*(\\d+)[^\\d]+(\\d+)\\s*\\/\\s*(\\d+)/);if(m){var s=new Date(y,parseInt(m[1])-1,parseInt(m[2])),t=new Date(y,parseInt(m[3])-1,parseInt(m[4]),23,59,59);if(n>=s&&n<=t){e.style.backgroundColor=\'#f9f8ff\';e.style.borderLeft=\'4px solid #673BB8\';var p=e.querySelector(\'.st26-pname\');if(p&&!p.querySelector(\'.st26-now\'))p.innerHTML+=\' <span class="st26-now" style="background:#673BB8;color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;vertical-align:middle;margin-left:8px">NOW</span>\'}}})}catch(e){}})();</scr'+'ipt>';
+  const scriptTag = (!f||!f.hasPrices)?'':'\n\n\n<scr'+'ipt>(function(){try{var r=document.querySelectorAll(\'.st26-pr-row\'),n=new Date(),y='+EVENT_YEAR+';r.forEach(function(e){var d=e.querySelector(\'.st26-pdate\');if(!d)return;var m=d.innerText.match(/(\\d+)\\s*\\/\\s*(\\d+)[^\\d]+(\\d+)\\s*\\/\\s*(\\d+)/);if(m){var s=new Date(y,parseInt(m[1])-1,parseInt(m[2])),t=new Date(y,parseInt(m[3])-1,parseInt(m[4]),23,59,59);if(n>=s&&n<=t){e.style.backgroundColor=\'#f9f8ff\';e.style.borderLeft=\'4px solid #673BB8\';var p=e.querySelector(\'.st26-pname\');if(p&&!p.querySelector(\'.st26-now\'))p.innerHTML+=\' <span class="st26-now" style="background:#673BB8;color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;vertical-align:middle;margin-left:8px">NOW</span>\'}}})}catch(e){} function c(){var s=document.querySelector(\'.session__people\'),a=document.querySelector(\'.session__subsession\');if(s){var bs=document.getElementById(\'btn-st26-speakers\');if(bs)bs.style.display=\'inline-flex\'}if(a){var ba=document.getElementById(\'btn-st26-agenda\');if(ba)ba.style.display=\'inline-flex\'}}c();window.addEventListener(\'DOMContentLoaded\',c);setTimeout(c,1000);setTimeout(c,3000);})();</scr'+'ipt>';
 
   return `\n<div class="st26-ph" id="st26-pricing">  <div class="st26-ph-title">${phTitle}</div>  ${btnHTML}</div>\n${priceTableHTML}\n<div class="st26-dp">  <div class="st26-dp-lbl"><div class="st26-dp-t">${dayPassTitle}</div><div class="st26-dp-s">${taxNote}</div></div>  <div class="st26-dp-grid">    <div class="st26-dp-item"><span class="st26-dp-role">${dpRole(1)}</span><span class="st26-dp-val">NT$ 13,755</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">${dpRole(2)}</span><span class="st26-dp-val">NT$ 26,040</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">${dpRole(3)}</span><span class="st26-dp-val">NT$ 36,960</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">${dpRole(4)}</span><span class="st26-dp-val">NT$ 46,515</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">${dpRole(5)}</span><span class="st26-dp-val">NT$ 54,915</span></div>  </div></div><div class="st26-discount">${discount}</div><div class="st26-note">${note}</div>${scriptTag}`;
 }
@@ -869,20 +860,15 @@ function buildFullHTML(lang){
   const advisedUrl=document.getElementById('advised-url').value.trim();
   const regUrlZh=document.getElementById('reg-url-zh').value.trim();
   const regUrlEn=document.getElementById('reg-url-en').value.trim();
-  const mapUrl=document.getElementById('map-url').value.trim();
   const chairs=getPeople('chairs-wrap');
   const mods=getPeople('mods-wrap');
   const orgLogos=getLogos('logo-org');
   const coorgLogos=getLogos('logo-coorg');
   const sponsorLogos=getLogos('logo-sponsor');
   
-  const venueDisplay=f?(lang==='zh'&&f.venueZh?f.venueZh:f.venueEn):'';
-  const locLabel=lang==='zh'?'地點':'Venue';
   const orgLabel=lang==='zh'?'主辦單位':'Organizer';
   const coorgLabel=lang==='zh'?'共同主辦單位':'Co-organizer';
   const sponLabel=lang==='zh'?'贊助單位':'Sponsored by';
-  
-  const badges=(venueDisplay)?`\n<div class="st26-badges">${mapUrl?`  <a class="st26-badge st26-venue" href="${esc(mapUrl)}" target="_blank">${locLabel}：${esc(venueDisplay)}</a>`:`  <span class="st26-badge st26-venue">${locLabel}：${esc(venueDisplay)}</span>`}</div>`:'';
   
   const themeBlock=buildThemeBlock(theme,outline,lang);
   
@@ -901,7 +887,7 @@ function buildFullHTML(lang){
   const logosHtml = [logoOrg, logoCoorg, logoSponsor].filter(Boolean).join('\n');
   const hasLogos = logosHtml.trim().length > 0;
   
-  return `${OUT_CSS}\n<div class="st26">\n${badges}\n${themeBlock}\n${anchorNav}\n${orgBlock}\n${hasLogos?'<!-- 區塊開始: Logo 合作單位 -->\n'+logosHtml+'\n<div class="st26-div" style="margin-top:20px;"></div>\n':''}${pricingBlock}\n</div>`;
+  return `${OUT_CSS}\n<div class="st26">\n${themeBlock}\n${anchorNav}\n${orgBlock}\n${hasLogos?'\n'+logosHtml+'\n<div class="st26-div" style="margin-top:20px;"></div>\n':''}${pricingBlock}\n</div>`;
 }
 
 function generate(){
@@ -984,6 +970,15 @@ function copyHTML(){
   },2500);
 }
 
+// ─────────────────────────────────────────────────────────────
+// Init
+// ─────────────────────────────────────────────────────────────
+addPerson('chairs-wrap');
+addPerson('mods-wrap');
+addPerson('mods-wrap');
+addLogoCard('logo-org');
+addLogoCard('logo-coorg');
+addLogoCard('logo-sponsor');
 </script>
 </body>
 </html>
