@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ST26 論壇 HTML 產生器 v7.5</title>
+<title>ST26 論壇 HTML 產生器 v8.3</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,"Helvetica Neue","Noto Sans TC",sans-serif;background:#f0ecfa;color:#333;padding:20px 12px;min-height:100vh}
@@ -24,24 +24,37 @@ body{font-family:Arial,"Helvetica Neue","Noto Sans TC",sans-serif;background:#f0
 .sec{background:#faf8ff;border:1px solid #d4c8f0;border-radius:8px;padding:14px 16px;margin-bottom:14px}
 .sec-title{font-size:11px;font-weight:700;color:#673BB8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
 .lbl{font-size:12px;font-weight:700;color:#555;margin-bottom:6px;display:block}
+.hint{font-size:11px;color:#888;font-weight:400;margin-left:5px}
 .inp{width:100%;padding:10px 12px;border:1px solid #d4c8f0;border-radius:6px;font-size:13px;outline:none;color:#333;font-family:inherit;line-height:1.5;background:#fff;transition:border .15s}
 .inp:focus{border-color:#673BB8}
 textarea.inp{resize:vertical}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.field{margin-bottom:10px}
+.field:last-child{margin-bottom:0}
 .person-row{display:flex;gap:7px;align-items:center;margin-bottom:7px}
 .person-row input{flex:1;min-width:0}
 .btn-rm{padding:8px 10px;background:#fff0f0;border:1px solid #fcc;border-radius:6px;cursor:pointer;font-size:11px;color:#c00;white-space:nowrap;font-weight:bold}
+.btn-rm:hover{background:#ffe0e0}
+.btn-add{padding:8px 16px;background:#fff;border:1px dashed #673BB8;border-radius:6px;color:#673BB8;font-weight:700;font-size:12px;cursor:pointer;margin-top:4px}
+.btn-add:hover{background:#f0edf9}
+.col-lbl{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.05em}
 .logo-grid{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
 .logo-card{width:160px;border:1px solid #d4c8f0;border-radius:8px;overflow:hidden;background:#fff;position:relative}
+.logo-card.drag-over{border-color:#673BB8;background:#ede8f8}
 .logo-preview{height:80px;display:flex;align-items:center;justify-content:center;background:#f5f3fb;position:relative;cursor:pointer}
 .logo-preview img{max-width:140px;max-height:60px;object-fit:contain;display:block}
 .logo-preview .drop-hint{font-size:11px;color:#bbb;text-align:center;line-height:1.4;padding:8px}
 .logo-card-actions{display:flex;border-top:1px solid #e5e5ea}
 .logo-card-actions button{flex:1;padding:6px;border:none;background:transparent;cursor:pointer;font-size:12px;color:#673BB8;border-right:1px solid #e5e5ea;font-weight:bold}
 .logo-card-actions button:last-child{border-right:none;color:#c00}
+.logo-card-actions button:hover{background:#f0edf9}
+.logo-card-url{padding:6px 8px;border-top:1px solid #f0edf9}
+.logo-card-url input{width:100%;font-size:11px;padding:6px;border:1px solid #e0d7f5;border-radius:4px;color:#555;background:#fafafa;outline:none}
+.logo-card-url input:focus{border-color:#673BB8}
 .logo-card-options{padding:6px 8px;background:#fafafa;border-top:1px solid #e0d7f5;font-size:11px;}
 .logo-card-options label{display:flex;align-items:center;gap:4px;cursor:pointer;color:#555;font-weight:600;}
 .logo-add-btn{width:160px;height:80px;border:1px dashed #d4c8f0;border-radius:8px;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#bbb;font-size:12px;font-weight:bold;gap:4px}
+.logo-add-btn:hover{border-color:#673BB8;color:#673BB8;background:#faf8ff}
 .logo-order-num{position:absolute;top:4px;left:4px;background:#673BB8;color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:2px 6px;line-height:1}
 .info-box{background:#f0edf9;border-left:4px solid #673BB8;border-radius:4px;padding:12px 16px;font-size:13px;color:#333;line-height:1.6;margin-bottom:16px;position:relative}
 .success-box{background:#edf7e3;border:1px solid #bbf7d0;border-radius:7px;padding:12px 16px;font-size:13px;color:#166534;margin-bottom:12px;font-weight:bold}
@@ -51,18 +64,33 @@ textarea.inp{resize:vertical}
 .out-tab.active{background:#673BB8;color:#fff}
 .output-ta{width:100%;padding:16px;border:1px solid #d4c8f0;border-radius:6px;font-size:11px;font-family:monospace;background:#2d2d2d;color:#f8f8f2;resize:vertical;line-height:1.55;outline:none}
 .btn-copy{padding:9px 24px;background:#1d1d1f;color:#fff;border:none;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer}
+.btn-copy.done{background:#55A51C}
 .nav{display:flex;justify-content:space-between;margin-top:20px;flex-wrap:wrap;gap:8px;padding-top:16px;border-top:1px solid #e5e5ea}
 .btn-next{padding:10px 24px;background:#1d1d1f;color:#fff;border:none;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer}
+.btn-next:hover{background:#000}
 .btn-prev{padding:10px 24px;background:#fff;color:#333;border:1px solid #d4c8f0;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer}
+.btn-prev:hover{background:#f5f5f7}
+.btn-save{padding:10px 24px;background:#55A51C;color:#fff;border:none;border-radius:6px;font-weight:700;font-size:13px;cursor:pointer;margin-left:auto}
+.btn-save:hover{background:#478f17}
+.btn-clear{position:absolute;right:16px;top:50%;transform:translateY(-50%);padding:6px 12px;background:#fff;border:1px solid #d4c8f0;color:#c00;border-radius:4px;font-size:12px;font-weight:bold;cursor:pointer}
+.btn-clear:hover{background:#fff0f0}
 .price-preview-tbl{width:100%;font-size:12px;border-collapse:collapse;margin-top:8px}
 .price-preview-tbl th{background:#ede8f8;padding:6px 10px;text-align:right;color:#673BB8;font-weight:700;font-size:11px;border-bottom:2px solid #673BB8}
 .price-preview-tbl th:first-child{text-align:left}
 .price-preview-tbl td{padding:8px 10px;border-bottom:1px solid #f0edf9;text-align:right;color:#333}
+.price-preview-tbl td:first-child{text-align:left;font-weight:600}
 
-.preview-wrap{border:1px solid #d4c8f0;border-radius:8px;overflow:hidden;margin-top:20px;background:#f9f8ff;}
+/* Preview pane overrides */
+.preview-wrap{border:1px solid #d4c8f0;border-radius:8px;overflow:hidden;margin-top:20px;box-shadow:0 2px 12px rgba(0,0,0,0.05);background:#f9f8ff;}
 .preview-header{background:#fff;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #d4c8f0}
-.preview-iframe-container{padding:20px;display:flex;justify-content:center;align-items:flex-start;min-height:500px;}
-.preview-iframe{width:100%;border:1px solid #e5e5ea;display:block;background:#fff;border-radius:4px;}
+.preview-label{font-size:13px;font-weight:700;color:#1d1d1f;display:flex;align-items:center;gap:8px}
+.preview-actions{display:flex;align-items:center;gap:12px}
+.view-btns{display:flex;border:1px solid #ccc;border-radius:4px;overflow:hidden}
+.view-btn{padding:6px 12px;font-size:12px;background:#fff;color:#555;border:none;cursor:pointer;font-weight:bold;transition:all 0.2s}
+.view-btn.active{background:#555;color:#fff}
+.preview-iframe-container{padding:20px;display:flex;justify-content:center;align-items:flex-start;min-height:500px;transition:all 0.3s ease}
+.preview-iframe{width:100%;border:1px solid #e5e5ea;display:block;background:#fff;transition:all 0.3s ease;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.05)}
+.preview-iframe.mobile-view{max-width:375px;height:667px;border-radius:24px;border:8px solid #1d1d1f;box-shadow:0 12px 32px rgba(0,0,0,0.2)}
 
 @media(max-width:640px){.grid2{grid-template-columns:1fr}}
 </style>
@@ -72,8 +100,8 @@ textarea.inp{resize:vertical}
 <div class="hdr">
   <div class="hdr-left">
     <div class="hdr-ey">SEMI Taiwan · ST26</div>
-    <div class="hdr-title">論壇 HTML 產生器 v7.5</div>
-    <div class="hdr-sub">人員連結欄位歸位、0511(L) 絕對座標鎖定、語法修復版</div>
+    <div class="hdr-title">論壇 HTML 產生器 v8.3</div>
+    <div class="hdr-sub">UI 膠囊融合排版、無污染動態前綴、語法斷點防護</div>
   </div>
   <button class="btn-gen" id="main-gen-btn" onclick="generate()" disabled>產生 HTML</button>
 </div>
@@ -125,7 +153,7 @@ textarea.inp{resize:vertical}
 <!-- ② 主題/大綱 -->
 <div id="tab-content" class="panel" style="display:none">
   <div class="info-box">
-    <strong>[Theme 功能說明]</strong> 系統會優先使用 Excel 帶入的 Theme 作為按鈕標題。若 Excel 該格為空，則使用下方手動輸入的標題。大綱留空則不具摺疊功能。
+    <strong>[Theme 前綴與摺疊設定]</strong> 系統會在前台使用 CSS 自動加入「主題：」或「Theme: 」標籤。若有填寫大綱，區塊將具備點擊展開的摺疊功能；若大綱留空，則顯示為靜態純文字標題。
   </div>
   <div class="sec">
     <div class="sec-title">論壇主題 (Theme / Tagline)</div>
@@ -214,20 +242,32 @@ textarea.inp{resize:vertical}
   </div>
   <div class="sec">
     <div class="sec-title">地點導航連結 (Google Maps)</div>
-    <input class="inp" id="map-url">
+    <input class="inp" id="map-url" placeholder="https://maps.google.com/...">
   </div>
   <div class="nav"><button class="btn-prev" onclick="go('logos')">← 上一步</button><button class="btn-next" style="background:#1d1d1f" onclick="generate()">產生最終 HTML →</button></div>
 </div>
 
 <!-- ⑥ 輸出 -->
 <div id="tab-output" class="panel" style="display:none">
+  <div id="out-success" class="success-box" style="display:none">代碼已產生！請於下方預覽確認無誤後，切換語言分頁進行複製。</div>
+  <div id="out-placeholder" style="text-align:center;padding:60px 0;color:#888">
+    <div style="font-size:14px">等待產出中...</div>
+  </div>
   <div id="out-area" style="display:none">
     <div class="preview-wrap">
       <div class="preview-header">
-        <span class="lbl">即時預覽確認</span>
-        <div class="out-tabs" style="border:1px solid #d4c8f0; border-radius:4px;">
+        <span class="preview-label">網頁即時預覽區</span>
+        <div class="preview-actions">
+          <!-- 裝置切換按鈕 -->
+          <div class="view-btns">
+            <button class="view-btn active" onclick="switchView('desktop',this)">電腦端</button>
+            <button class="view-btn" onclick="switchView('mobile',this)">手機端</button>
+          </div>
+          <!-- 語言切換按鈕 -->
+          <div class="out-tabs" style="border:1px solid #d4c8f0; border-radius:4px;">
             <button class="out-tab active" style="padding:6px 16px;font-size:12px" onclick="switchLang('zh',this)">中文版 (ZH)</button>
             <button class="out-tab" style="padding:6px 16px;font-size:12px" onclick="switchLang('en',this)">英文版 (EN)</button>
+          </div>
         </div>
       </div>
       <div class="preview-iframe-container">
@@ -246,9 +286,96 @@ textarea.inp{resize:vertical}
 
 <script>
 let forums=[], selectedForum=null, zhHTML='', enHTML='', currentOutLang='zh';
+let currentViewMode = 'desktop';
 const EVENT_YEAR = 2026;
+let lid = 0;
 
-// 安全解析 CSV，保護被引號包圍的逗號（例如: "Venue, 3F, Taipei"）
+// 預先載入的 CSS，渲染至 HTML 中
+const OUT_CSS = `<style>
+.st26*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+.st26{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Noto Sans TC",Arial,sans-serif;color:#1d1d1f;padding:0 0 32px;line-height:1.6}
+.st26-anchor-nav{display:flex;gap:12px;margin:16px 0 24px;flex-wrap:wrap}
+.st26-anchor-btn{font-size:14px;font-weight:700;color:#673BB8;text-decoration:none;padding:8px 16px;border:1px solid #673BB8;border-radius:100px;background:#fff;transition:all .2s;display:inline-flex;align-items:center;cursor:pointer}
+.st26-anchor-btn:hover{background:#673BB8;color:#fff}
+.st26-venue-btn-static{cursor:default}
+.st26-venue-btn-static:hover{background:#fff;color:#673BB8}
+.st26-details{margin-bottom:12px}
+.st26-summary{list-style:none;cursor:pointer;padding:12px 16px;background:#ede8f8;border-radius:8px;outline:none;display:block;margin-bottom:12px;transition:background-color .2s;border:1px solid #d4c8f0}
+.st26-summary:hover{background-color:#e2d9f3}
+.st26-summary::-webkit-details-marker{display:none}
+.st26-theme-line{font-size:24px;font-weight:800;color:#673BB8;display:inline}
+.st26-theme-line::after{content:'\\25BC';font-size:14px;color:#673BB8;margin-left:12px;display:inline-block;transition:transform .2s;vertical-align:middle;font-family:Arial,sans-serif}
+details[open] .st26-theme-line::after{transform:rotate(180deg)}
+.st26-theme-static{font-size:24px;font-weight:800;color:#673BB8;display:block;padding:12px 16px;background:#ede8f8;border-radius:8px;border:1px solid #d4c8f0;margin-bottom:16px}
+.st26-lang-zh .st26-theme-line::before, .st26-lang-zh .st26-theme-static::before { content: '主題：'; font-weight:800; color:#673BB8; }
+.st26-lang-en .st26-theme-line::before, .st26-lang-en .st26-theme-static::before { content: 'Theme: '; font-weight:800; color:#673BB8; }
+.st26-outline{padding:16px 20px;background:#f9f8ff;border-left:4px solid #673BB8;border-radius:0 6px 6px 0;margin-top:4px;margin-bottom:16px;font-size:16px;color:#444;line-height:1.8}
+.st26-outline p{margin-bottom:10px}
+.st26-outline p:last-child{margin-bottom:0}
+.st26-org{display:grid;grid-template-columns:repeat(3,1fr);align-items:start;gap:20px 24px;padding:16px 0;border-top:1px solid #e5e5ea;border-bottom:1px solid #e5e5ea;margin:20px 0}
+.st26-org-item{display:flex;flex-direction:column;gap:4px;min-width:200px;flex:1}
+.st26-org-role{font-size:13px;font-weight:700;color:#86868b;text-transform:uppercase;margin-bottom:4px}
+.st26-org-name{font-size:15px;font-weight:600;color:#333;line-height:1.5}
+.st26-org-name a{color:#673BB8;text-decoration:none;font-weight:600}
+.st26-org-name a:hover{text-decoration:underline}
+.st26-logo-row{display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid #f5f5f7}
+.st26-logo-label{width:120px;flex-shrink:0;font-size:13px;font-weight:700;color:#86868b;text-transform:uppercase;letter-spacing:.05em}
+.st26-logo-wrap{flex:1;display:flex;flex-wrap:wrap;gap:16px;align-items:center;min-height:48px}
+.st26-logo-wrap img{height:48px;width:auto;max-width:160px;object-fit:contain;display:block}
+.st26-logo-wrap img.st26-img-co{max-width:320px}
+.st26-div{height:1px;background:#e5e5ea;margin:20px 0}
+.st26-pricing-remark{padding:12px 16px;background:#f9f8ff;border-left:3px solid #673BB8;font-size:14px;color:#666;margin-bottom:16px;line-height:1.6}
+.st26-ph{display:flex;justify-content:space-between;align-items:center;margin:16px 0 12px;flex-wrap:wrap;gap:12px}
+.st26-ph-title{font-size:18px;font-weight:800}
+.st26-btn{display:inline-flex;align-items:center;gap:10px;background:#673BB8;color:#fff;padding:8px 16px;border-radius:100px;font-size:15px;font-weight:700;text-decoration:none;transition:background .2s}
+.st26-btn:hover{background:#5a2ea8}
+.st26-btn-arr{width:22px;height:22px;background:#fff;color:#673BB8;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900}
+.st26-pr-wrap{display:flex;flex-direction:column;width:100%;margin-bottom:16px}
+.st26-pr-head{display:grid;grid-template-columns:1.2fr 1fr 1fr;border-bottom:2px solid #1d1d1f;padding-bottom:10px;font-size:13px;font-weight:700;color:#86868b;text-transform:uppercase;letter-spacing:.05em}
+.st26-pr-head > div:not(:first-child){text-align:right}
+.st26-pr-row{display:grid;grid-template-columns:1.2fr 1fr 1fr;padding:10px 0;border-bottom:1px solid #eeeeee;align-items:center;transition:background-color .3s}
+.st26-pr-row:last-child{border-bottom:none}
+.st26-pr-col1{display:flex;flex-direction:column;justify-content:center}
+.st26-pr-col2, .st26-pr-col3{text-align:right}
+.st26-pr-label{display:none}
+.st26-pname{font-size:15px;font-weight:700;color:#333}
+.st26-pdate{font-size:12px;font-weight:700;color:#673BB8;margin-top:2px}
+.st26-price{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums}
+.st26-tbc{font-size:14px;font-weight:700;color:#86868b}
+.st26-dp{display:flex;align-items:center;gap:16px;padding:12px 16px;border:1px solid #e5e5ea;border-radius:8px;background:#fafafa;margin-top:12px;flex-wrap:wrap}
+.st26-dp-lbl{min-width:100px}
+.st26-dp-t{font-size:14px;font-weight:700;color:#555}
+.st26-dp-s{font-size:11px;color:#888;margin-top:2px}
+.st26-dp-grid{flex:1;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.st26-dp-item{display:flex;flex-direction:column;align-items:flex-end}
+.st26-dp-role{font-size:11px;font-weight:700;color:#888;margin-bottom:2px}
+.st26-dp-val{font-size:14px;font-weight:700;color:#555;font-variant-numeric:tabular-nums}
+.st26-discount{margin-top:16px;padding:14px 18px;background:#edf7e3;border-left:4px solid #55A51C;border-radius:0 6px 6px 0;font-size:14px;font-weight:600;color:#2d5a0e;line-height:1.6}
+.st26-note{margin-top:10px;font-size:13px;color:#888;line-height:1.5}
+@media(max-width:768px){
+  .st26-org{grid-template-columns:1fr;gap:16px}
+  .st26-org-item{min-width:100%}
+  .st26-dp{flex-direction:column;align-items:flex-start}
+  .st26-dp-grid{width:100%;display:grid;grid-template-columns:1fr;gap:12px}
+  .st26-dp-item{align-items:center;flex-direction:row;justify-content:space-between;width:100%;border-bottom:1px solid #eee;padding-bottom:8px}
+  .st26-dp-item:last-child{border-bottom:none;padding-bottom:0}
+  .st26-logo-row{flex-direction:column;align-items:flex-start;gap:8px}
+  .st26-logo-label{width:100%;margin-bottom:4px}
+  .st26-pr-head{display:none}
+  .st26-pr-row{display:flex;flex-direction:column;background:#fff;border:1px solid #d4c8f0;border-radius:8px;padding:16px;margin-bottom:12px;gap:0}
+  .st26-pr-col1{width:100%;border-bottom:2px solid #1d1d1f;padding-bottom:12px;margin-bottom:8px}
+  .st26-pr-col2, .st26-pr-col3{width:100%;display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid #eee;text-align:right}
+  .st26-pr-col3{border-bottom:none;padding-bottom:0}
+  .st26-pr-label{display:block;font-size:13px;color:#86868b;font-weight:700}
+}
+</style>`;
+
+// 修正跳脫字元防護 (修復 v8.1 遺漏)
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 function parseCSVLine(text, delim) {
   if(delim === '\t') return text.split('\t').map(s=>s.trim());
   let ret = [], val = '', inQ = false;
@@ -262,7 +389,6 @@ function parseCSVLine(text, delim) {
   return ret;
 }
 
-// --- 絕對座標對齊引擎 (v7.4) ---
 function parseExcel(){
   const raw=document.getElementById('excel-raw').value.trim();
   const errEl=document.getElementById('parse-err');
@@ -282,8 +408,6 @@ function parseExcel(){
     const c = parseCSVLine(line, delim);
     if(c.length < 10) continue;
     
-    // Offset 機制：防禦拷貝時產生的前端空白欄位
-    // 嚴謹判定：如果第0欄為空，且第1或第3欄有值，才平移。
     const offset = (!c[0] && (c[1] || c[3])) ? 1 : 0;
     
     const regTime=c[0+offset], frmTime=c[1+offset];
@@ -298,7 +422,6 @@ function parseExcel(){
     if(/monday|tuesday|wednesday|thursday|friday/i.test(nameEn)) continue;
     if(/semicon taiwan \d{4}/i.test(nameEn)) continue;
 
-    // 0511(L) 結構絕對鎖死：Theme(6), 中文連結(7), 英文連結(8), 票價從(9)開始
     const urlZh = c[7+offset] ? c[7+offset].trim() : '';
     const urlEn = c[8+offset] ? c[8+offset].trim() : '';
     const p0 = 9+offset;
@@ -308,7 +431,7 @@ function parseExcel(){
       eb_mem: parsePrice(c[p0+2]), eb_non: parsePrice(c[p0+3]),
       reg_mem:parsePrice(c[p0+4]), reg_non:parsePrice(c[p0+5]),
       os_mem: parsePrice(c[p0+6]), os_non: parsePrice(c[p0+7]),
-      student:parsePrice(c[p0+8]) // 校正: Student 在現場非會員之後，即 Index 17 (p0+8)
+      student:parsePrice(c[p0+8])
     };
 
     const hasPrices = Object.values(prices).some(v=>v!==null);
@@ -326,7 +449,6 @@ function parseExcel(){
   forums.forEach((f,i)=>{
     const o=document.createElement('option');
     o.value=i;
-    // 雙語下拉選單歸位
     o.textContent=`${f.nameEn}（${f.nameZh}）`;
     sel.appendChild(o);
   });
@@ -355,7 +477,6 @@ function selectForum(){
   selectedForum = forums[idx];
   const f = selectedForum;
   
-  // 場地擷取預覽歸位
   document.getElementById('prev-venue').textContent=f.venueEn || '—';
   document.getElementById('prev-venue-zh').textContent=f.venueZh || '';
   
@@ -366,7 +487,6 @@ function selectForum(){
   const pd=document.getElementById('prev-price');
   let statusHtml = `<div style="margin-bottom:8px;font-size:13px;background:#fff;padding:8px;border-radius:4px;border:1px solid #e5e5ea;display:inline-block;">Theme: <b>${themeStatus}</b> ｜ 報名連結: <b>ZH: ${urlZhStatus} / EN: ${urlEnStatus}</b></div>`;
 
-  // 票價表格預覽歸位
   if(!f.hasPrices){
     pd.innerHTML = statusHtml + '<br><span style="font-size:12px;color:#92400e;font-weight:600">此為無票價場次 (免費或 Partner Program)</span>';
   } else {
@@ -389,7 +509,298 @@ function selectForum(){
   document.getElementById('theme-en').value = f.theme || f.nameEn || '';
 }
 
-// --- Navigation & UI ---
+function go(id,btn){
+  document.querySelectorAll('[id^="tab-"]').forEach(el=>el.style.display='none');
+  document.getElementById('tab-'+id).style.display='block';
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+}
+
+function val(id){ return document.getElementById(id).value.trim(); }
+
+// --- 模塊構建邏輯 ---
+function buildThemeBlock(theme, outline, lang) {
+  const txt = theme || (lang === 'zh' ? '即將公告' : 'To be announced');
+  if(outline) {
+    const paras = outline.split(/\n\n+/).map(p=>p.trim()).filter(Boolean).map(p=>`    <p>${esc(p).replace(/\n/g,'<br>')}</p>`).join('\n');
+    return `<!-- 區塊開始: 主題與大綱 -->\n<details class="st26-details">\n  <summary class="st26-summary"><span class="st26-theme-line">${esc(txt)}</span></summary>\n  <div class="st26-outline">\n${paras}\n  </div>\n</details>`;
+  }
+  return `<!-- 區塊開始: 主題與大綱 -->\n<div style="padding:4px 0;"><span class="st26-theme-static">${esc(txt)}</span></div>`;
+}
+
+function buildAnchorNav(venueDisplay, mapUrl, lang, hasRegUrl) {
+  const l_price = lang === 'zh' ? '票價與報名' : 'Pricing & Registration';
+  const l_speaker = lang === 'zh' ? '講師陣容' : 'Speakers';
+  const l_agenda = lang === 'zh' ? '論壇議程' : 'Agenda';
+  const l_loc = lang === 'zh' ? '地點：' : 'Venue: ';
+
+  let html = `<!-- 區塊開始: 快速導覽與地點 -->\n<div class="st26-anchor-nav">\n`;
+  
+  if(venueDisplay) {
+     const vText = l_loc + esc(venueDisplay);
+     if(mapUrl) {
+       html += `  <a href="${esc(mapUrl)}" target="_blank" class="st26-anchor-btn st26-venue-btn">${vText}</a>\n`;
+     } else {
+       html += `  <span class="st26-anchor-btn st26-venue-btn-static">${vText}</span>\n`;
+     }
+  }
+
+  if(hasRegUrl) {
+      html += `  <a href="#st26-pricing" class="st26-anchor-btn" onclick="event.preventDefault(); document.getElementById('st26-pricing')?.scrollIntoView({behavior: 'smooth', block: 'start'})">${l_price}</a>\n`;
+  }
+  
+  html += `  <a href="#st26-speakers" class="st26-anchor-btn" id="btn-st26-speakers" style="display:none;" onclick="event.preventDefault(); document.querySelector('.session__people')?.scrollIntoView({behavior: 'smooth', block: 'start'})">${l_speaker}</a>\n`;
+  html += `  <a href="#st26-agenda" class="st26-anchor-btn" id="btn-st26-agenda" style="display:none;" onclick="event.preventDefault(); document.querySelector('.session__subsession')?.scrollIntoView({behavior: 'smooth', block: 'start'})">${l_agenda}</a>\n</div>`;
+  
+  return html;
+}
+
+function buildOrgBlock(advisedName,advisedUrl,chairs,mods,lang){
+  if(!advisedName && !chairs.length && !mods.length) return '';
+
+  const advisedLabel = lang === 'zh' ? '指導單位' : 'Advised by';
+  const chairLabel = lang === 'zh' ? '論壇主席' : (chairs.length>1?'Forum Chairs':'Forum Chair');
+  const modLabel = lang === 'zh' ? '論壇主持人' : (mods.length>1?'Forum Moderators':'Forum Moderator');
+
+  let html='<!-- 區塊開始: 人員名單 -->\n<div class="st26-org">\n';
+  if(advisedName) {
+    const alink=(advisedUrl)?`<a href="${esc(advisedUrl)}" target="_blank">${esc(advisedName)}</a>`:esc(advisedName);
+    html+=`  <div class="st26-org-item"><span class="st26-org-role">${advisedLabel}</span><span class="st26-org-name">${alink}</span></div>\n`;
+  }
+  if(chairs.length) {
+    const chairStr=chairs.map(p=>p.url?`<a href="${esc(p.url)}" target="_blank">${esc(p.name)}</a>`:esc(p.name)).join('<br>');
+    html+=`  <div class="st26-org-item"><span class="st26-org-role">${chairLabel}</span><span class="st26-org-name">${chairStr}</span></div>\n`;
+  }
+  if(mods.length) {
+    const modStr=mods.map(p=>p.url?`<a href="${esc(p.url)}" target="_blank">${esc(p.name)}</a>`:esc(p.name)).join('<br>');
+    html+=`  <div class="st26-org-item"><span class="st26-org-role">${modLabel}</span><span class="st26-org-name">${modStr}</span></div>\n`;
+  }
+  return html+'</div>';
+}
+
+function buildLogoSection(label,logos){
+  if(!logos.length) return ''; 
+  const imgs=logos.map(l=>{
+    const cls=l.isCo?' class="st26-img-co"':'';
+    return `    <img${cls} src="${l.src.startsWith('data:')?l.src:esc(l.src)}" alt="Logo">`;
+  }).join('\n');
+  return `<div class="st26-logo-row">\n  <div class="st26-logo-label">${esc(label)}</div>\n  <div class="st26-logo-wrap">\n${imgs}\n  </div>\n</div>`;
+}
+
+function pCell(v, lang){
+  if(v===null) return '<span class="st26-tbc">—</span>';
+  if(v==='TBC') return `<span class="st26-tbc">TBC</span>`;
+  return `<span class="st26-price">NT$ ${Number(v).toLocaleString()}</span>`;
+}
+
+function buildPricingBlock(f,regUrlZh,regUrlEn,remarkZh,remarkEn,lang){
+  let activeUrl = '';
+  if (lang === 'zh') {
+      activeUrl = regUrlZh || regUrlEn || '';
+  } else {
+      activeUrl = regUrlEn || regUrlZh || '';
+  }
+
+  let activeRemark = lang === 'zh' ? remarkZh : remarkEn;
+  const remarkHTML = activeRemark ? `<!-- 區塊開始: 票價備註 -->\n<div class="st26-pricing-remark">${esc(activeRemark).replace(/\n/g, '<br>')}</div>\n` : '';
+
+  const btnLabel    = lang==='zh'?'立即報名':'Register Now';
+  const colPeriod   = lang==='zh'?'時段':'Period';
+  const colMem      = lang==='zh'?'SEMI 會員':'SEMI Member';
+  const colNon      = lang==='zh'?'非會員':'Non-member';
+  const stuRowName  = lang==='zh'?'學生票':'Student';
+  const stuRowDate  = lang==='zh'?'不含 EMBA':'EMBA Excluded';
+  const stuNote     = lang==='zh'?'需出示有效學生證':'Valid Student ID Required';
+  const taxNote     = lang==='zh'?'（含稅）':'(Tax Included)';
+  const phTitle     = lang==='zh'?'報名費用（含稅）':'Registration Fees (Tax Included)';
+  const dayPassTitle = lang==='zh'?'單日論壇通行證':'Day Pass';
+  const dpRole      = (days) => lang==='zh' ? `${days}日` : (days===1 ? '1 Day' : `${days} Days`);
+
+  const discount    = lang==='zh'
+    ?'團報優惠（使用期限至 8/19）：3 位以上團體報名或報名 3 場以上論壇享 <strong>85 折優惠</strong>。'
+    :'Group Registration (available until August 19): Register 3 or more participants, or register for more than 3 forums hosted by SEMI Taiwan, to receive a <strong>15% discount</strong> on each purchase.';
+  const note        = lang==='zh'
+    ?'＊主辦單位保留調整或更改活動議程之權利，最終議程以現場安排為準。'
+    :'* The organizer reserves the right to adjust or change the agenda. The final agenda is subject to the on-site arrangement.';
+  const btnHTML=activeUrl?`<a class="st26-btn" href="${esc(activeUrl)}" target="_blank">${btnLabel} <span class="st26-btn-arr">→</span></a>`:'';
+  
+  const priceTableHTML=(!f||!f.hasPrices)?'':(() => {
+    const p=f.prices;
+    const row1Name = lang === 'zh' ? '超早鳥優惠' : 'Super Early-Bird';
+    const row2Name = lang === 'zh' ? '早鳥優惠' : 'Early-Bird';
+    const row3Name = lang === 'zh' ? '原價' : 'Regular';
+    const row4Name = lang === 'zh' ? '現場價' : 'On-Site';
+
+    const rows=[
+      [row1Name,'5/20 - 6/17',p.seb_mem,p.seb_non],
+      [row2Name,'6/18 - 8/5',p.eb_mem,p.eb_non],
+      [row3Name,'8/6 - 8/30',p.reg_mem,p.reg_non],
+      [row4Name,'8/31 - 9/4',p.os_mem,p.os_non],
+    ];
+    
+    const tblRows=rows.map(([n,d,m,nm])=>
+      `  <div class="st26-pr-row">\n    <div class="st26-pr-col1"><div class="st26-pname">${n}</div><div class="st26-pdate">${d}</div></div>\n    <div class="st26-pr-col2"><span class="st26-pr-label">${colMem}</span><div>${pCell(m, lang)}</div></div>\n    <div class="st26-pr-col3"><span class="st26-pr-label">${colNon}</span><div>${pCell(nm, lang)}</div></div>\n  </div>`
+    ).join('\n');
+    const stuCell=p.student?`<span class="st26-price">NT$ ${Number(p.student).toLocaleString()}</span>`:'<span class="st26-tbc">—</span>';
+    
+    return `<div class="st26-pr-wrap">\n  <div class="st26-pr-head">\n    <div>${colPeriod}</div>\n    <div>${colMem}</div>\n    <div>${colNon}</div>\n  </div>\n${tblRows}\n  <div class="st26-pr-row">\n    <div class="st26-pr-col1"><div class="st26-pname">${stuRowName}</div><div class="st26-pdate" style="color:#1d1d1f">${stuRowDate}</div></div>\n    <div class="st26-pr-col2" style="width:100%;grid-column:2/4;justify-content:flex-end;gap:12px;border:none">\n      <div style="font-size:12px;font-weight:700;color:#86868b">${stuNote}</div>\n      <div>${stuCell}</div>\n    </div>\n  </div>\n</div>`;
+  })();
+
+  const scriptTag = (!f||!f.hasPrices)?'':`
+<!-- 區塊開始: 腳本 (票價高亮與 DOM 錨點主動攔截) -->
+<scr`+`ipt>
+(function(){
+  try {
+    var r=document.querySelectorAll('.st26-pr-row'), n=new Date(), y=${EVENT_YEAR};
+    r.forEach(function(e){
+      var d=e.querySelector('.st26-pdate');
+      if(!d) return;
+      var m=d.innerText.match(/(\\d+)\\s*\\/\\s*(\\d+)[^\\d]+(\\d+)\\s*\\/\\s*(\\d+)/);
+      if(m){
+        var s=new Date(y,parseInt(m[1])-1,parseInt(m[2]));
+        var t=new Date(y,parseInt(m[3])-1,parseInt(m[4]),23,59,59);
+        if(n>=s && n<=t){
+          e.style.backgroundColor='#f9f8ff';
+          e.style.borderLeft='4px solid #673BB8';
+          var p=e.querySelector('.st26-pname');
+          if(p && !p.querySelector('.st26-now')) {
+            p.innerHTML += ' <span class="st26-now" style="background:#673BB8;color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;vertical-align:middle;margin-left:8px">NOW</span>';
+          }
+        }
+      }
+    });
+  } catch(err) {}
+  function c(){
+    var s=document.querySelector('.session__people'), a=document.querySelector('.session__subsession');
+    if(s){var bs=document.getElementById('btn-st26-speakers'); if(bs) bs.style.display='inline-flex';}
+    if(a){var ba=document.getElementById('btn-st26-agenda'); if(ba) ba.style.display='inline-flex';}
+  }
+  c();
+  window.addEventListener('DOMContentLoaded',c);
+  setTimeout(c,1000); setTimeout(c,3000);
+})();
+</scr`+`ipt>`;
+
+  return `<!-- 區塊開始: 票價與報名 -->\n<div class="st26-ph" id="st26-pricing">  <div class="st26-ph-title">${phTitle}</div>  ${btnHTML}</div>\n${remarkHTML}${priceTableHTML}\n<div class="st26-dp">  <div class="st26-dp-lbl"><div class="st26-dp-t">${dayPassTitle}</div><div class="st26-dp-s">${taxNote}</div></div>  <div class="st26-dp-grid">    <div class="st26-dp-item"><span class="st26-dp-role">${dpRole(1)}</span><span class="st26-dp-val">NT$ 13,755</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">${dpRole(2)}</span><span class="st26-dp-val">NT$ 26,040</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">${dpRole(3)}</span><span class="st26-dp-val">NT$ 36,960</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">${dpRole(4)}</span><span class="st26-dp-val">NT$ 46,515</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">${dpRole(5)}</span><span class="st26-dp-val">NT$ 54,915</span></div>  </div></div><div class="st26-discount">${discount}</div><div class="st26-note">${note}</div>\n${scriptTag}`;
+}
+
+function buildFullHTML(lang){
+  const f=selectedForum;
+  const theme=document.getElementById(`theme-${lang}`).value.trim();
+  const outline=document.getElementById(`outline-${lang}`).value.trim();
+  const advisedName=document.getElementById('advised-name').value.trim();
+  const advisedUrl=document.getElementById('advised-url').value.trim();
+  const regUrlZh=document.getElementById('reg-url-zh').value.trim();
+  const regUrlEn=document.getElementById('reg-url-en').value.trim();
+  const remarkZh=document.getElementById('remark-zh').value.trim();
+  const remarkEn=document.getElementById('remark-en').value.trim();
+  const mapUrl=document.getElementById('map-url').value.trim();
+  const chairs=getPeople('chairs-wrap');
+  const mods=getPeople('mods-wrap');
+  const orgLogos=getLogos('logo-org');
+  const coorgLogos=getLogos('logo-coorg');
+  const sponsorLogos=getLogos('logo-sponsor');
+  
+  const venueDisplay=f?(lang==='zh'&&f.venueZh?f.venueZh:f.venueEn):'';
+  const orgLabel=lang==='zh'?'主辦單位':'Organizer';
+  const coorgLabel=lang==='zh'?'共同主辦單位':'Co-organizer';
+  const sponLabel=lang==='zh'?'贊助單位':'Sponsored by';
+  
+  const themeBlock=buildThemeBlock(theme,outline,lang);
+  
+  const hasRegUrl = !!(regUrlZh || regUrlEn);
+  const anchorNav=buildAnchorNav(venueDisplay, mapUrl, lang, hasRegUrl);
+  
+  const orgBlock=buildOrgBlock(advisedName,advisedUrl,chairs,mods,lang);
+  
+  const logoOrg=buildLogoSection(orgLabel,orgLogos);
+  const logoCoorg=buildLogoSection(coorgLabel,coorgLogos);
+  const logoSponsor=buildLogoSection(sponLabel,sponsorLogos);
+  
+  const pricingBlock=buildPricingBlock(f,regUrlZh,regUrlEn,remarkZh,remarkEn,lang);
+  
+  const logosHtml = [logoOrg, logoCoorg, logoSponsor].filter(Boolean).join('\n');
+  const hasLogos = logosHtml.trim().length > 0;
+  
+  return `${OUT_CSS}\n<div class="st26 st26-lang-${lang}">\n${themeBlock}\n${anchorNav}\n${orgBlock}\n${hasLogos?'<!-- 區塊開始: Logo 合作單位 -->\n'+logosHtml+'\n<div class="st26-div" style="margin-top:20px;"></div>\n':''}${pricingBlock}\n</div>`;
+}
+
+function generate(){
+  if(!selectedForum) {
+    alert('驗證失敗：請先回到「① 選場次」貼入 Excel 數據並選擇場次！');
+    go('excel');
+    return;
+  }
+  zhHTML=buildFullHTML('zh');
+  enHTML=buildFullHTML('en');
+  
+  // 移除錯誤的 ID 參照，改回存在的預覽區塊控制
+  const outArea = document.getElementById('out-area');
+  if(outArea) outArea.style.display='block';
+  
+  const successBox = document.getElementById('out-success');
+  if(successBox) successBox.style.display='block';
+  
+  const placeholderBox = document.getElementById('out-placeholder');
+  if(placeholderBox) placeholderBox.style.display='none';
+  
+  switchLang('zh', document.querySelector('.out-tab.active'));
+  go('output');
+}
+
+function switchLang(lang, btn) {
+  currentOutLang=lang;
+  document.querySelectorAll('.out-tab').forEach(t=>t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  
+  document.getElementById('html-out').value=lang==='zh'?zhHTML:enHTML;
+  document.getElementById('copy-btn').textContent=lang==='zh'?'複製代碼 (ZH)':'複製代碼 (EN)';
+  document.getElementById('copy-btn').classList.remove('done');
+  
+  updatePreview(lang);
+}
+
+function switchView(mode, btn) {
+  currentViewMode = mode;
+  document.querySelectorAll('.view-btn').forEach(t=>t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  
+  const frame = document.getElementById('preview-frame');
+  if (mode === 'mobile') {
+    frame.classList.add('mobile-view');
+  } else {
+    frame.classList.remove('mobile-view');
+  }
+}
+
+function updatePreview(lang){
+  const html=lang==='zh'?zhHTML:enHTML;
+  const frame=document.getElementById('preview-frame');
+  frame.srcdoc='<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{margin:0;padding:20px;max-width:860px;}</style></head><body>'+html+'</body></html>';
+  frame.onload=()=>{
+    try{
+      const h=frame.contentDocument.body.scrollHeight;
+      if (currentViewMode === 'desktop') {
+        frame.style.height=(h+40)+'px';
+      }
+    }catch(e){}
+  };
+}
+
+function copyHTML(){
+  const ta=document.getElementById('html-out');
+  ta.select(); ta.setSelectionRange(0,99999);
+  let ok=false;
+  try{ok=document.execCommand('copy');}catch(e){}
+  const btn=document.getElementById('copy-btn');
+  btn.textContent=ok?'[已複製]':'請手動 Ctrl+C';
+  btn.classList.add('done');
+  setTimeout(()=>{
+    btn.textContent=currentOutLang==='zh'?'複製代碼 (ZH)':'複製代碼 (EN)';
+    btn.classList.remove('done');
+  },2500);
+}
+
 function go(id,btn){
   document.querySelectorAll('[id^="tab-"]').forEach(el=>el.style.display='none');
   document.getElementById('tab-'+id).style.display='block';
@@ -399,141 +810,6 @@ function go(id,btn){
 
 function val(id){ return document.getElementById(id).value.trim(); }
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-// --- HTML Generation ---
-const CSS = `<style>
-.st26{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Noto Sans TC",sans-serif;color:#1d1d1f;line-height:1.6;padding-bottom:32px}
-.st26-anchor-nav{display:flex;gap:12px;margin:16px 0 24px;flex-wrap:wrap}
-.st26-anchor-btn{font-size:14px;font-weight:700;color:#673BB8;text-decoration:none;padding:8px 16px;border:1px solid #d4c8f0;border-radius:100px;background:#f9f8ff;cursor:pointer;display:inline-flex;align-items:center}
-.st26-summary{list-style:none;cursor:pointer;padding:12px 16px;background:#ede8f8;border-radius:8px;border:1px solid #d4c8f0;margin-bottom:12px}
-.st26-theme-line{font-size:24px;font-weight:800;color:#673BB8}
-.st26-theme-line::after{content:' ▼';font-size:14px;vertical-align:middle}
-.st26-theme-static{font-size:24px;font-weight:800;color:#673BB8;display:block;padding:12px 16px;background:#ede8f8;border-radius:8px;border:1px solid #d4c8f0;margin-bottom:16px}
-.st26-outline{padding:16px 20px;background:#f9f8ff;border-left:4px solid #673BB8;border-radius:0 6px 6px 0;margin-top:4px;margin-bottom:16px;font-size:16px;color:#444}
-.st26-org{display:grid;grid-template-columns:repeat(3,1fr);gap:20px 24px;padding:16px 0;border-top:1px solid #e5e5ea;border-bottom:1px solid #e5e5ea;margin:20px 0}
-.st26-org-role{font-size:13px;font-weight:700;color:#86868b;text-transform:uppercase;margin-bottom:4px}
-.st26-org-name{font-size:15px;font-weight:600;color:#333}
-.st26-org-name a{color:#673BB8;text-decoration:none}
-.st26-logo-row{display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid #f5f5f7}
-.st26-logo-label{width:120px;flex-shrink:0;font-size:13px;font-weight:700;color:#86868b}
-.st26-logo-wrap{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
-.st26-logo-wrap img{height:48px;max-width:160px;object-fit:contain}
-.st26-logo-wrap img.st26-img-co{max-width:320px}
-.st26-pricing-remark{padding:12px 16px;background:#f9f8ff;border-left:3px solid #673BB8;font-size:14px;color:#666;margin-bottom:16px}
-.st26-ph{display:flex;justify-content:space-between;align-items:center;margin:16px 0 12px;flex-wrap:wrap;gap:12px}
-.st26-ph-title{font-size:18px;font-weight:800}
-.st26-btn{display:inline-flex;align-items:center;gap:10px;background:#673BB8;color:#fff;padding:8px 16px;border-radius:100px;font-size:15px;font-weight:700;text-decoration:none}
-.st26-pr-row{display:grid;grid-template-columns:1.2fr 1fr 1fr;padding:10px 0;border-bottom:1px solid #eee;align-items:center}
-.st26-pname{font-size:15px;font-weight:700}
-.st26-pdate{font-size:12px;font-weight:700;color:#673BB8}
-.st26-price{font-size:16px;font-weight:800;text-align:right}
-@media(max-width:768px){ .st26-org{grid-template-columns:1fr} .st26-pr-row{display:flex;flex-direction:column;align-items:flex-start} }
-</style>`;
-
-function generate(){
-  if(!selectedForum) return alert('請先選擇場次！');
-  zhHTML = buildFullHTML('zh');
-  enHTML = buildFullHTML('en');
-  document.getElementById('out-area').style.display='block';
-  go('output');
-  switchLang('zh', document.querySelector('.out-tab'));
-}
-
-function buildFullHTML(lang){
-  const f = selectedForum;
-  const theme = val(`theme-${lang}`) || f.theme;
-  const outline = val(`outline-${lang}`);
-  const remark = val(`remark-${lang}`);
-  const activeUrl = lang==='zh' ? (val('reg-url-zh')||val('reg-url-en')) : (val('reg-url-en')||val('reg-url-zh'));
-
-  let html = CSS + `<div class="st26">`;
-  
-  if(outline) {
-    const p = outline.split('\n\n').map(txt=>`<p>${esc(txt).replace(/\n/g,'<br>')}</p>`).join('');
-    html += `<details><summary class="st26-summary"><span class="st26-theme-line">${esc(theme||'即將公告')}</span></summary><div class="st26-outline">${p}</div></details>`;
-  } else {
-    html += `<span class="st26-theme-static">${esc(theme||'即將公告')}</span>`;
-  }
-
-  const l_p = lang==='zh'?'票價與報名':'Pricing';
-  const l_s = lang==='zh'?'講師陣容':'Speakers';
-  const l_a = lang==='zh'?'詳細議程':'Agenda';
-  html += `<div class="st26-anchor-nav">`;
-  if(activeUrl) html += `<a href="#pricing" class="st26-anchor-btn">${l_p}</a>`;
-  html += `<a id="btn-s" style="display:none" class="st26-anchor-btn" onclick="event.preventDefault();document.querySelector('.session__people')?.scrollIntoView({behavior:'smooth'})">${l_s}</a>
-    <a id="btn-a" style="display:none" class="st26-anchor-btn" onclick="event.preventDefault();document.querySelector('.session__subsession')?.scrollIntoView({behavior:'smooth'})">${l_a}</a>
-  </div>`;
-
-  const chairs = getPeople('chairs-wrap');
-  const mods = getPeople('mods-wrap');
-  const advisedName = val('advised-name');
-  
-  if(advisedName || chairs.length || mods.length){
-    html += `<div class="st26-org">`;
-    if(advisedName) {
-      const u = val('advised-url');
-      html += `<div><div class="st26-org-role">${lang==='zh'?'指導單位':'Advised by'}</div><div class="st26-org-name">${u?`<a href="${esc(u)}" target="_blank">${esc(advisedName)}</a>`:esc(advisedName)}</div></div>`;
-    }
-    if(chairs.length) html += `<div><div class="st26-org-role">${lang==='zh'?'論壇主席':'Forum Chair'}</div><div class="st26-org-name">${chairs.map(c=>c.url?`<a href="${esc(c.url)}" target="_blank">${esc(c.name)}</a>`:esc(c.name)).join('<br>')}</div></div>`;
-    if(mods.length) html += `<div><div class="st26-org-role">${lang==='zh'?'論壇主持人':'Forum Moderator'}</div><div class="st26-org-name">${mods.map(c=>c.url?`<a href="${esc(c.url)}" target="_blank">${esc(c.name)}</a>`:esc(c.name)).join('<br>')}</div></div>`;
-    html += `</div>`;
-  }
-  
-  const bLogo = (label, logos) => {
-    if(!logos.length) return '';
-    const imgs = logos.map(l => `<img${l.isCo?' class="st26-img-co"':''} src="${l.src.startsWith('data:')?l.src:esc(l.src)}" alt="Logo">`).join('');
-    return `<div class="st26-logo-row"><div class="st26-logo-label">${esc(label)}</div><div class="st26-logo-wrap">${imgs}</div></div>`;
-  };
-  
-  let lHtml = bLogo(lang==='zh'?'主辦單位':'Organizer', getLogos('logo-org')) + 
-              bLogo(lang==='zh'?'共同主辦單位':'Co-organizer', getLogos('logo-coorg')) + 
-              bLogo(lang==='zh'?'贊助單位':'Sponsored by', getLogos('logo-sponsor'));
-  if(lHtml) html += lHtml + `<div style="height:1px;background:#e5e5ea;margin:20px 0"></div>`;
-
-  html += `<div id="pricing" class="st26-ph"><div class="st26-ph-title">${lang==='zh'?'報名費用':'Registration Fee'}</div>`;
-  if(activeUrl) html += `<a href="${esc(activeUrl)}" target="_blank" class="st26-btn">${lang==='zh'?'立即報名':'Register Now'} →</a>`;
-  html += `</div>`;
-  
-  if(remark) html += `<div class="st26-pricing-remark">${esc(remark).replace(/\n/g,'<br>')}</div>`;
-
-  const p = f.prices;
-  const rows = [
-    [lang==='zh'?'超早鳥':'Super Early','5/20-6/17',p.seb_mem,p.seb_non],
-    [lang==='zh'?'早鳥':'Early-Bird','6/18-8/5',p.eb_mem,p.eb_non],
-    [lang==='zh'?'原價':'Regular','8/6-8/30',p.reg_mem,p.reg_non],
-    [lang==='zh'?'現場價':'On-Site','8/31-9/4',p.os_mem,p.os_non]
-  ];
-  html += `<div class="st26-pr-wrap">` + rows.map(r=>`
-    <div class="st26-pr-row">
-      <div><div class="st26-pname">${r[0]}</div><div class="st26-pdate">${r[1]}</div></div>
-      <div class="st26-price">${r[2]?`NT$ ${Number(r[2]).toLocaleString()}`:'—'}</div>
-      <div class="st26-price">${r[3]?`NT$ ${Number(r[3]).toLocaleString()}`:'—'}</div>
-    </div>`).join('') + `</div>`;
-
-  html += `<script>(function(){function c(){
-    if(document.querySelector('.session__people')) document.getElementById('btn-s').style.display='inline-flex';
-    if(document.querySelector('.session__subsession')) document.getElementById('btn-a').style.display='inline-flex';
-  }window.addEventListener('DOMContentLoaded',c);setTimeout(c,2000);})();<\/script></div>`;
-  
-  return html;
-}
-
-function switchLang(l, btn){
-  currentOutLang = l;
-  document.querySelectorAll('.out-tab').forEach(t=>t.classList.remove('active'));
-  if(btn) btn.classList.add('active');
-  const h = l==='zh'?zhHTML:enHTML;
-  document.getElementById('html-out').value = h;
-  document.getElementById('preview-frame').srcdoc = `<html><head><meta charset="UTF-8"></head><body style="padding:20px">${h}</body></html>`;
-}
-
-function copyHTML(){
-  const ta = document.getElementById('html-out');
-  ta.select(); document.execCommand('copy');
-  const b = document.getElementById('copy-btn');
-  const old = b.innerText; b.innerText='[已複製]';
-  setTimeout(()=>b.innerText=old, 2000);
-}
 
 function addPerson(id, nameVal='', urlVal=''){
   const d = document.createElement('div'); d.className='person-row';
@@ -550,20 +826,105 @@ function getPeople(id){
   })).filter(p=>p.name);
 }
 
-function addLogoCard(id){
-  const d = document.createElement('div'); d.className='logo-card';
-  d.innerHTML=`<div class="logo-preview"><div class="drop-hint">點擊上傳</div></div><input type="file" style="display:none" onchange="hL(this)"><div class="logo-card-actions"><button onclick="this.parentElement.parentElement.remove()">移除</button></div>`;
-  document.getElementById(id).appendChild(d);
+function addLogoCard(sectionId) { renderLogo(sectionId, '', false); }
+
+function renderLogo(sectionId, srcVal, isCoVal) {
+  const id='lc-'+lid++;
+  const grid=document.getElementById(sectionId);
+  const card=document.createElement('div');
+  card.className='logo-card'; card.id=id;
+  card.dataset.src=srcVal; card.dataset.co=isCoVal?'1':'0';
+  const chk = isCoVal ? 'checked' : '';
+  
+  card.innerHTML=`
+    <div class="logo-preview" onclick="this.parentElement.querySelector('input[type=file]').click()">
+      ${srcVal?`<img src="${srcVal}" alt="logo">`:'<div class="drop-hint">拖放圖片<br>或點擊選取</div>'}
+      <span class="logo-order-num"></span>
+    </div>
+    <div class="logo-card-url">
+      <input type="text" placeholder="或貼入圖片 URL" value="${srcVal}" onchange="handleUrlInput('${id}',this.value)" oninput="handleUrlInput('${id}',this.value)">
+    </div>
+    <div class="logo-card-options">
+      <label><input type="checkbox" onchange="document.getElementById('${id}').dataset.co=this.checked?'1':'0'" ${chk}> 設定為聯名 Logo (雙倍寬)</label>
+    </div>
+    <div class="logo-card-actions">
+      <button onclick="moveLogoCard('${id}',-1)">↑</button>
+      <button onclick="moveLogoCard('${id}',1)">↓</button>
+      <button onclick="document.getElementById('${id}').remove();updateOrderNums('${sectionId}')">✕</button>
+    </div>
+    <input type="file" accept="image/*" style="display:none" onchange="handleFileInput('${id}',this)">`;
+    
+  const preview=card.querySelector('.logo-preview');
+  preview.addEventListener('dragover', e => { e.preventDefault(); card.classList.add('drag-over'); });
+  preview.addEventListener('dragleave', () => card.classList.remove('drag-over'));
+  preview.addEventListener('drop', e => {
+    e.preventDefault(); 
+    card.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if(file && file.type.startsWith('image/')) processImageFile(file, id);
+  });
+  
+  grid.appendChild(card);
+  updateOrderNums(sectionId);
 }
 
-function hL(input){
-  const r = new FileReader();
-  r.onload = e => { input.parentElement.querySelector('.logo-preview').innerHTML = `<img src="${e.target.result}">`; input.parentElement.dataset.src=e.target.result; };
-  r.readAsDataURL(input.files[0]);
+function handleFileInput(cardId, input){
+  const file = input.files[0];
+  if(file) processImageFile(file, cardId);
 }
 
-function getLogos(id){
-  return Array.from(document.querySelectorAll(`#${id} .logo-card`)).map(c=>({src:c.dataset.src||'',isCo:false})).filter(l=>l.src);
+function processImageFile(file, cardId) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    updateLogoCardUI(cardId, e.target.result);
+  };
+  reader.readAsDataURL(file);
+}
+
+function updateLogoCardUI(cardId, src) {
+  const card=document.getElementById(cardId);
+  card.dataset.src=src;
+  const img=card.querySelector('.logo-preview img');
+  if(img){
+      img.src=src;
+  } else {
+      card.querySelector('.logo-preview').innerHTML=`<img src="${src}" alt=""><span class="logo-order-num"></span>`;
+  }
+  card.querySelector('.logo-card-url input').value='';
+}
+
+function handleUrlInput(cardId,url){
+  const card=document.getElementById(cardId);
+  card.dataset.src=url.trim();
+  const preview=card.querySelector('.logo-preview');
+  const img=preview.querySelector('img');
+  if(img){
+      img.src=url.trim();
+  } else if(url.trim()){
+      preview.innerHTML=`<img src="${url.trim()}" alt=""><span class="logo-order-num"></span>`;
+  }
+}
+
+function moveLogoCard(cardId,dir){
+  const card=document.getElementById(cardId);
+  const grid=card.parentElement;
+  if(dir===-1&&card.previousElementSibling) grid.insertBefore(card,card.previousElementSibling);
+  else if(dir===1&&card.nextElementSibling) grid.insertBefore(card.nextElementSibling,card);
+  updateOrderNums(grid.id);
+}
+
+function updateOrderNums(sectionId){
+  document.querySelectorAll('#'+sectionId+' .logo-card').forEach((c,i)=>{
+    const n=c.querySelector('.logo-order-num');
+    if(n) n.textContent=i+1;
+  });
+}
+
+function getLogos(sectionId){
+  return Array.from(document.querySelectorAll('#'+sectionId+' .logo-card')).map(c=>({
+    src:c.dataset.src||'',
+    isCo:c.dataset.co==='1'
+  })).filter(l=>l.src);
 }
 
 function clearAllDrafts(){ if(confirm('確定清除快取？')) { localStorage.clear(); location.reload(); } }
@@ -571,6 +932,9 @@ function clearAllDrafts(){ if(confirm('確定清除快取？')) { localStorage.c
 // Init
 addPerson('chairs-wrap');
 addPerson('mods-wrap');
+addLogoCard('logo-org');
+addLogoCard('logo-coorg');
+addLogoCard('logo-sponsor');
 </script>
 </body>
 </html>
