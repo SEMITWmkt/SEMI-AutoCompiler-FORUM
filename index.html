@@ -101,8 +101,8 @@ textarea.inp{resize:vertical}
 <div class="hdr">
   <div class="hdr-left">
     <div class="hdr-ey">SEMI Taiwan · ST26</div>
-    <div class="hdr-title">論壇 HTML 產生器 v8.8 (Final)</div>
-    <div class="hdr-sub">語法地雷排除、導覽膠囊化收束版、絕對靜態輸出</div>
+    <div class="hdr-title">論壇 HTML 產生器 v8.9 (Final)</div>
+    <div class="hdr-sub">絕對座標精準校正、導覽膠囊化收束版、絕對靜態輸出</div>
   </div>
   <button class="btn-gen" id="main-gen-btn" onclick="generate()" disabled>產生 HTML</button>
 </div>
@@ -413,11 +413,11 @@ function parseExcel(){
     if(skipWords.has(lw)||skipWords.has(lw.split(' ')[0])) continue;
     if(/monday|tuesday|wednesday|thursday|friday/i.test(nameEn)) continue;
     if(/semicon taiwan \d{4}/i.test(nameEn)) continue;
-
-    // 0511(L) ST26_官網連結 結構絕對鎖死
-    const urlZh = c[18+offset] ? c[18+offset].trim() : '';
-    const urlEn = c[19+offset] ? c[19+offset].trim() : '';
-    const p0 = 8+offset;
+    
+    // 0511(L) ST26_官網連結 結構絕對鎖死 (精準回歸 v7.9 穩定座標)
+    const urlZh = c[7+offset] ? c[7+offset].trim() : '';
+    const urlEn = c[8+offset] ? c[8+offset].trim() : '';
+    const p0 = 9+offset;
 
     const prices={
       seb_mem:parsePrice(c[p0]),   seb_non:parsePrice(c[p0+1]),
@@ -426,8 +426,8 @@ function parseExcel(){
       os_mem: parsePrice(c[p0+6]), os_non: parsePrice(c[p0+7]),
       student:parsePrice(c[p0+8])
     };
-
-    const hasPrices = Object.values(prices).some(v=>v!==null);
+    
+    const hasPrices=Object.values(prices).some(v=>v!==null);
     parsed.push({regTime,frmTime,nameEn,nameZh,venueEn,venueZh,theme,prices,hasPrices,urlZh,urlEn});
   }
 
