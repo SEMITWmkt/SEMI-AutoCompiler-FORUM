@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ST26 論壇 HTML 產生器 v8.10</title>
+<title>ST26 論壇 HTML 產生器 v8.11</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,"Helvetica Neue","Noto Sans TC",sans-serif;background:#f0ecfa;color:#333;padding:20px 12px;min-height:100vh}
@@ -103,8 +103,8 @@ textarea.inp{resize:vertical}
 <div class="hdr">
   <div class="hdr-left">
     <div class="hdr-ey">SEMI Taiwan · ST26</div>
-    <div class="hdr-title">論壇 HTML 產生器 v8.10 (Final)</div>
-    <div class="hdr-sub">絕對座標精準校正、導覽膠囊化收束、暫存機制歸位</div>
+    <div class="hdr-title">論壇 HTML 產生器 v8.11 (Final)</div>
+    <div class="hdr-sub">無毒純靜態防禦版、記憶體級剪貼簿 API 升級</div>
   </div>
   <button class="btn-gen" id="main-gen-btn" onclick="generate()" disabled>產生 HTML</button>
 </div>
@@ -117,7 +117,6 @@ textarea.inp{resize:vertical}
   <button class="tab" onclick="go('output',this)">⑥ 輸出與預覽</button>
 </div>
 
-<!-- ① 選場次 -->
 <div id="tab-excel" class="panel">
   <div class="info-box">
     <strong>[公版 ST26_官網連結 規範]</strong><br>
@@ -163,7 +162,6 @@ textarea.inp{resize:vertical}
   </div>
 </div>
 
-<!-- ② 主題/大綱 -->
 <div id="tab-content" class="panel" style="display:none">
   <div class="info-box">
     <strong>[純靜態無毒架構]</strong> 為保護 CMS 後台穩定，此版本已將所有「動態跳轉錨點」與「無效 JS」徹底拔除。<br>地點按鈕將會以「膠囊樣式」緊接在主題大綱的下方。
@@ -191,7 +189,6 @@ textarea.inp{resize:vertical}
   </div>
 </div>
 
-<!-- ③ 人員 -->
 <div id="tab-people" class="panel" style="display:none">
   <div class="sec">
     <div class="sec-title">指導單位 / Advised by</div>
@@ -229,7 +226,6 @@ textarea.inp{resize:vertical}
   </div>
 </div>
 
-<!-- ④ Logo -->
 <div id="tab-logos" class="panel" style="display:none">
   <div class="sec">
     <div class="sec-title">主辦單位 / Organizer</div>
@@ -255,7 +251,6 @@ textarea.inp{resize:vertical}
   </div>
 </div>
 
-<!-- ⑤ 報名 -->
 <div id="tab-reg" class="panel" style="display:none">
   <div class="sec">
     <div class="sec-title">票價備註 (Pricing Remarks) - 選填</div>
@@ -284,7 +279,6 @@ textarea.inp{resize:vertical}
   </div>
 </div>
 
-<!-- ⑥ 輸出 -->
 <div id="tab-output" class="panel" style="display:none">
   <div id="out-area" style="display:none">
     <div class="preview-wrap">
@@ -325,10 +319,10 @@ const OUT_CSS = `<style>
 .st26*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
 .st26{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Noto Sans TC",Arial,sans-serif;color:#1d1d1f;padding:0 0 32px;line-height:1.6}
 .st26-anchor-nav{display:flex;gap:12px;margin:16px 0 24px;flex-wrap:wrap}
-.st26-anchor-btn{font-size:14px;font-weight:700;color:#673BB8;text-decoration:none;padding:8px 16px;border:1px solid #673BB8;border-radius:100px;background:#fff;transition:all .2s;display:inline-flex;align-items:center;cursor:pointer}
-.st26-anchor-btn:hover{background:#673BB8;color:#fff}
+.st26-anchor-btn{font-size:14px;font-weight:700;color:#673BB8;text-decoration:none;padding:8px 16px;border:1px solid #d4c8f0;border-radius:100px;background:#f9f8ff;transition:all .2s;display:inline-flex;align-items:center;cursor:pointer}
+.st26-anchor-btn:hover{background:#673BB8;color:#fff;border-color:#673BB8}
 .st26-venue-btn-static{cursor:default}
-.st26-venue-btn-static:hover{background:#fff;color:#673BB8;border-color:#d4c8f0}
+.st26-venue-btn-static:hover{background:#f9f8ff;color:#673BB8;border-color:#d4c8f0}
 .st26-details{margin-bottom:12px}
 .st26-summary{list-style:none;cursor:pointer;padding:12px 16px;background:#ede8f8;border-radius:8px;outline:none;display:block;margin-bottom:12px;transition:background-color .2s;border:1px solid #d4c8f0}
 .st26-summary:hover{background-color:#e2d9f3}
@@ -339,12 +333,12 @@ details[open] .st26-theme-line::after{transform:rotate(180deg)}
 .st26-theme-static{font-size:24px;font-weight:800;color:#673BB8;display:block;padding:12px 16px;background:#ede8f8;border-radius:8px;border:1px solid #d4c8f0;margin-bottom:16px}
 .st26-lang-zh .st26-theme-line::before, .st26-lang-zh .st26-theme-static::before { content: '主題：'; font-weight:800; color:#673BB8; }
 .st26-lang-en .st26-theme-line::before, .st26-lang-en .st26-theme-static::before { content: 'Theme: '; font-weight:800; color:#673BB8; }
-.st26-outline{padding:16px 20px;background:#f9f8ff;border-left:4px solid #673BB8;border-radius:0 6px 6px 0;margin-top:4px;margin-bottom:16px;font-size:16px;color:#444;line-height:1.8}
+.st26-outline{padding:16px 20px;background:#f9f8ff;border-left:4px solid #673BB8;border-radius:0 6px 6px 0;margin-top:12px;font-size:16px;color:#444;line-height:1.8}
 .st26-outline p{margin-bottom:10px}
 .st26-outline p:last-child{margin-bottom:0}
 .st26-org{display:grid;grid-template-columns:repeat(3,1fr);align-items:start;gap:20px 24px;padding:16px 0;border-top:1px solid #e5e5ea;border-bottom:1px solid #e5e5ea;margin:20px 0}
 .st26-org-item{display:flex;flex-direction:column;gap:4px;min-width:200px;flex:1}
-.st26-org-role{font-size:13px;font-weight:700;color:#86868b;text-transform:uppercase;margin-bottom:4px}
+.st26-org-role{font-size:13px;font-weight:700;color:#86868b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
 .st26-org-name{font-size:15px;font-weight:600;color:#333;line-height:1.5}
 .st26-org-name a{color:#673BB8;text-decoration:none;font-weight:600}
 .st26-org-name a:hover{text-decoration:underline}
@@ -357,7 +351,7 @@ details[open] .st26-theme-line::after{transform:rotate(180deg)}
 .st26-pricing-remark{padding:12px 16px;background:#f9f8ff;border-left:3px solid #673BB8;border-radius:0 4px 4px 0;font-size:14px;color:#666;margin-bottom:16px;line-height:1.6}
 .st26-ph{display:flex;justify-content:space-between;align-items:center;margin:16px 0 12px;flex-wrap:wrap;gap:12px}
 .st26-ph-title{font-size:18px;font-weight:800}
-.st26-btn{display:inline-flex;align-items:center;gap:10px;background:#673BB8;color:#fff;padding:8px 16px;border-radius:100px;font-size:15px;font-weight:700;text-decoration:none;transition:background .2s}
+.st26-btn{display:inline-flex;align-items:center;gap:10px;background:#673BB8;color:#fff;padding:8px 12px 8px 16px;border-radius:100px;font-size:15px;font-weight:700;text-decoration:none;transition:background .2s}
 .st26-btn:hover{background:#5a2ea8}
 .st26-btn-arr{width:22px;height:22px;background:#fff;color:#673BB8;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900}
 .st26-pr-wrap{display:flex;flex-direction:column;width:100%;margin-bottom:16px}
@@ -403,7 +397,7 @@ details[open] .st26-theme-line::after{transform:rotate(180deg)}
 // 修正跳脫字元防護 
 function esc(s) {
   if (!s) return '';
-  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return String(s).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"');
 }
 
 function parseCSVLine(text, delim) {
@@ -452,11 +446,11 @@ function parseExcel(){
     if(skipWords.has(lw)||skipWords.has(lw.split(' ')[0])) continue;
     if(/monday|tuesday|wednesday|thursday|friday/i.test(nameEn)) continue;
     if(/semicon taiwan \d{4}/i.test(nameEn)) continue;
-    
-    // 0511(L) ST26_官網連結 結構絕對鎖死 (精準回歸 v7.9 穩定座標)
-    const urlZh = c[7+offset] ? c[7+offset].trim() : '';
-    const urlEn = c[8+offset] ? c[8+offset].trim() : '';
-    const p0 = 9+offset;
+
+    // 0511(L) ST26_官網連結 結構絕對鎖死
+    const urlZh = c[18+offset] ? c[18+offset].trim() : '';
+    const urlEn = c[19+offset] ? c[19+offset].trim() : '';
+    const p0 = 8+offset;
 
     const prices={
       seb_mem:parsePrice(c[p0]),   seb_non:parsePrice(c[p0+1]),
@@ -465,8 +459,8 @@ function parseExcel(){
       os_mem: parsePrice(c[p0+6]), os_non: parsePrice(c[p0+7]),
       student:parsePrice(c[p0+8])
     };
-    
-    const hasPrices=Object.values(prices).some(v=>v!==null);
+
+    const hasPrices = Object.values(prices).some(v=>v!==null);
     parsed.push({regTime,frmTime,nameEn,nameZh,venueEn,venueZh,theme,prices,hasPrices,urlZh,urlEn});
   }
 
@@ -481,7 +475,7 @@ function parseExcel(){
   forums.forEach((f,i)=>{
     const o=document.createElement('option');
     o.value=i;
-    o.textContent=`${f.nameEn}（${f.nameZh}）`;
+    o.textContent=f.nameEn + '（' + f.nameZh + '）';
     sel.appendChild(o);
   });
   
@@ -529,8 +523,8 @@ function selectForum(){
       ['On-Site (8/31–9/4)',f.prices.os_mem,f.prices.os_non],
     ];
     pd.innerHTML = '<table class="price-preview-tbl" style="margin-top:4px;"><tr><th>時段</th><th>SEMI 會員</th><th>非會員</th></tr>'+
-      rows.map(([l,m,n])=>`<tr><td>${l}</td><td style="color:#673BB8;font-weight:700">${fmtP(m)||'—'}</td><td>${fmtP(n)||'—'}</td></tr>`).join('')+
-      `<tr><td>學生票</td><td colspan="2" style="text-align:right;font-weight:700">${fmtP(f.prices.student)||'—'}</td></tr></table>`;
+      rows.map(([l,m,n])=>'<tr><td>' + l + '</td><td style="color:#673BB8;font-weight:700">' + (fmtP(m)||'—') + '</td><td>' + (fmtP(n)||'—') + '</td></tr>').join('')+
+      '<tr><td>學生票</td><td colspan="2" style="text-align:right;font-weight:700">' + (fmtP(f.prices.student)||'—') + '</td></tr></table>';
   }
     
   info.style.display = 'block';
@@ -630,15 +624,15 @@ function go(id,btn){
 
 function val(id){ return document.getElementById(id).value.trim(); }
 
-// --- 模塊構建邏輯 (v8.8 最終完美版) ---
+// --- 模塊構建邏輯 ---
 
 function buildThemeBlock(theme, outline, lang) {
   const txt = theme || (lang === 'zh' ? '即將公告' : 'To be announced');
   if(outline) {
-    const paras = outline.split(/\n\n+/).map(p=>p.trim()).filter(Boolean).map(p=>`    <p>${esc(p).replace(/\n/g,'<br>')}</p>`).join('\n');
-    return `<!-- 區塊開始: 主題與大綱 -->\n<details class="st26-details">\n  <summary class="st26-summary"><span class="st26-theme-line">${esc(txt)}</span></summary>\n  <div class="st26-outline">\n${paras}\n  </div>\n</details>`;
+    const paras = outline.split(/\n\n+/).map(p=>p.trim()).filter(Boolean).map(p=>'    <p>' + esc(p).replace(/\n/g,'<br>') + '</p>').join('\n');
+    return '\n<details class="st26-details">\n  <summary class="st26-summary"><span class="st26-theme-line">' + esc(txt) + '</span></summary>\n  <div class="st26-outline">\n' + paras + '\n  </div>\n</details>';
   }
-  return `<!-- 區塊開始: 主題與大綱 -->\n<div style="padding:4px 0;"><span class="st26-theme-static">${esc(txt)}</span></div>`;
+  return '\n<div style="padding:4px 0;"><span class="st26-theme-static">' + esc(txt) + '</span></div>';
 }
 
 function buildAnchorNav(venueDisplay, mapUrl, lang) {
@@ -646,13 +640,13 @@ function buildAnchorNav(venueDisplay, mapUrl, lang) {
   const locLabel = lang === 'zh' ? '地點：' : 'Venue: ';
   const vText = locLabel + esc(venueDisplay);
 
-  let html = `<!-- 區塊開始: 導覽按鈕 (地點) -->\n<div class="st26-anchor-nav">\n`;
+  let html = '\n<div class="st26-anchor-nav">\n';
   if(mapUrl) {
-    html += `  <a href="${esc(mapUrl)}" target="_blank" class="st26-anchor-btn">${vText}</a>\n`;
+    html += '  <a href="' + esc(mapUrl) + '" target="_blank" class="st26-anchor-btn">' + vText + '</a>\n';
   } else {
-    html += `  <span class="st26-anchor-btn st26-venue-btn-static">${vText}</span>\n`;
+    html += '  <span class="st26-anchor-btn st26-venue-btn-static">' + vText + '</span>\n';
   }
-  html += `</div>`;
+  html += '</div>';
   return html;
 }
 
@@ -663,18 +657,18 @@ function buildOrgBlock(advisedName,advisedUrl,chairs,mods,lang){
   const chairLabel = lang === 'zh' ? '論壇主席' : (chairs.length>1?'Forum Chairs':'Forum Chair');
   const modLabel = lang === 'zh' ? '論壇主持人' : (mods.length>1?'Forum Moderators':'Forum Moderator');
 
-  let html='<!-- 區塊開始: 人員名單 -->\n<div class="st26-org">\n';
+  let html='\n<div class="st26-org">\n';
   if(advisedName) {
-    const alink=(advisedUrl)?`<a href="${esc(advisedUrl)}" target="_blank">${esc(advisedName)}</a>`:esc(advisedName);
-    html+=`  <div class="st26-org-item"><span class="st26-org-role">${advisedLabel}</span><span class="st26-org-name">${alink}</span></div>\n`;
+    const alink=(advisedUrl)?'<a href="' + esc(advisedUrl) + '" target="_blank">' + esc(advisedName) + '</a>':esc(advisedName);
+    html+='  <div class="st26-org-item"><span class="st26-org-role">' + advisedLabel + '</span><span class="st26-org-name">' + alink + '</span></div>\n';
   }
   if(chairs.length) {
-    const chairStr=chairs.map(p=>p.url?`<a href="${esc(p.url)}" target="_blank">${esc(p.name)}</a>`:esc(p.name)).join('<br>');
-    html+=`  <div class="st26-org-item"><span class="st26-org-role">${chairLabel}</span><span class="st26-org-name">${chairStr}</span></div>\n`;
+    const chairStr=chairs.map(p=>p.url?'<a href="' + esc(p.url) + '" target="_blank">' + esc(p.name) + '</a>':esc(p.name)).join('<br>');
+    html+='  <div class="st26-org-item"><span class="st26-org-role">' + chairLabel + '</span><span class="st26-org-name">' + chairStr + '</span></div>\n';
   }
   if(mods.length) {
-    const modStr=mods.map(p=>p.url?`<a href="${esc(p.url)}" target="_blank">${esc(p.name)}</a>`:esc(p.name)).join('<br>');
-    html+=`  <div class="st26-org-item"><span class="st26-org-role">${modLabel}</span><span class="st26-org-name">${modStr}</span></div>\n`;
+    const modStr=mods.map(p=>p.url?'<a href="' + esc(p.url) + '" target="_blank">' + esc(p.name) + '</a>':esc(p.name)).join('<br>');
+    html+='  <div class="st26-org-item"><span class="st26-org-role">' + modLabel + '</span><span class="st26-org-name">' + modStr + '</span></div>\n';
   }
   return html+'</div>';
 }
@@ -683,15 +677,15 @@ function buildLogoSection(label,logos){
   if(!logos.length) return ''; 
   const imgs=logos.map(l=>{
     const cls=l.isCo?' class="st26-img-co"':'';
-    return `    <img${cls} src="${l.src.startsWith('data:')?l.src:esc(l.src)}" alt="Logo">`;
+    return '    <img' + cls + ' src="' + (l.src.startsWith('data:')?l.src:esc(l.src)) + '" alt="Logo">';
   }).join('\n');
-  return `<div class="st26-logo-row">\n  <div class="st26-logo-label">${esc(label)}</div>\n  <div class="st26-logo-wrap">\n${imgs}\n  </div>\n</div>`;
+  return '<div class="st26-logo-row">\n  <div class="st26-logo-label">' + esc(label) + '</div>\n  <div class="st26-logo-wrap">\n' + imgs + '\n  </div>\n</div>';
 }
 
 function pCell(v, lang){
   if(v===null) return '<span class="st26-tbc">—</span>';
-  if(v==='TBC') return `<span class="st26-tbc">TBC</span>`;
-  return `<span class="st26-price">NT$ ${Number(v).toLocaleString()}</span>`;
+  if(v==='TBC') return '<span class="st26-tbc">TBC</span>';
+  return '<span class="st26-price">NT$ ' + Number(v).toLocaleString() + '</span>';
 }
 
 function buildPricingBlock(f,regUrlZh,regUrlEn,remarkZh,remarkEn,lang){
@@ -703,7 +697,7 @@ function buildPricingBlock(f,regUrlZh,regUrlEn,remarkZh,remarkEn,lang){
   }
 
   let activeRemark = lang === 'zh' ? remarkZh : remarkEn;
-  const remarkHTML = activeRemark ? `<!-- 區塊開始: 票價備註 -->\n<div class="st26-pricing-remark">${esc(activeRemark).replace(/\\n/g, '<br>')}</div>\n` : '';
+  const remarkHTML = activeRemark ? '\n<div class="st26-pricing-remark">' + esc(activeRemark).replace(/\n/g, '<br>') + '</div>\n' : '';
 
   const btnLabel    = lang==='zh'?'立即報名':'Register Now';
   const colPeriod   = lang==='zh'?'時段':'Period';
@@ -715,7 +709,7 @@ function buildPricingBlock(f,regUrlZh,regUrlEn,remarkZh,remarkEn,lang){
   const taxNote     = lang==='zh'?'（含稅）':'(Tax Included)';
   const phTitle     = lang==='zh'?'報名費用（含稅）':'Registration Fees (Tax Included)';
   const dayPassTitle = lang==='zh'?'單日論壇通行證':'Day Pass';
-  const dpRole      = (days) => lang==='zh' ? `${days}日` : (days===1 ? '1 Day' : `${days} Days`);
+  const dpRole      = (days) => lang==='zh' ? days + '日' : (days===1 ? '1 Day' : days + ' Days');
 
   const discount    = lang==='zh'
     ?'團報優惠（使用期限至 8/19）：3 位以上團體報名或報名 3 場以上論壇享 <strong>85 折優惠</strong>。'
@@ -723,7 +717,7 @@ function buildPricingBlock(f,regUrlZh,regUrlEn,remarkZh,remarkEn,lang){
   const note        = lang==='zh'
     ?'＊主辦單位保留調整或更改活動議程之權利，最終議程以現場安排為準。'
     :'* The organizer reserves the right to adjust or change the agenda. The final agenda is subject to the on-site arrangement.';
-  const btnHTML=activeUrl?`<a class="st26-btn" href="${esc(activeUrl)}" target="_blank">${btnLabel} <span class="st26-btn-arr">→</span></a>`:'';
+  const btnHTML=activeUrl?'<a class="st26-btn" href="' + esc(activeUrl) + '" target="_blank">' + btnLabel + ' <span class="st26-btn-arr">→</span></a>':'';
   
   const priceTableHTML=(!f||!f.hasPrices)?'':(() => {
     const p=f.prices;
@@ -740,15 +734,14 @@ function buildPricingBlock(f,regUrlZh,regUrlEn,remarkZh,remarkEn,lang){
     ];
     
     const tblRows=rows.map(([n,d,m,nm])=>
-      `  <div class="st26-pr-row">\n    <div class="st26-pr-col1"><div class="st26-pname">${n}</div><div class="st26-pdate">${d}</div></div>\n    <div class="st26-pr-col2"><span class="st26-pr-label">${colMem}</span><div>${pCell(m, lang)}</div></div>\n    <div class="st26-pr-col3"><span class="st26-pr-label">${colNon}</span><div>${pCell(nm, lang)}</div></div>\n  </div>`
+      '  <div class="st26-pr-row">\n    <div class="st26-pr-col1"><div class="st26-pname">' + n + '</div><div class="st26-pdate">' + d + '</div></div>\n    <div class="st26-pr-col2"><span class="st26-pr-label">' + colMem + '</span><div>' + pCell(m, lang) + '</div></div>\n    <div class="st26-pr-col3"><span class="st26-pr-label">' + colNon + '</span><div>' + pCell(nm, lang) + '</div></div>\n  </div>'
     ).join('\n');
-    const stuCell=p.student?`<span class="st26-price">NT$ ${Number(p.student).toLocaleString()}</span>`:'<span class="st26-tbc">—</span>';
+    const stuCell=p.student?'<span class="st26-price">NT$ ' + Number(p.student).toLocaleString() + '</span>':'<span class="st26-tbc">—</span>';
     
-    return `<div class="st26-pr-wrap">\n  <div class="st26-pr-head">\n    <div>${colPeriod}</div>\n    <div>${colMem}</div>\n    <div>${colNon}</div>\n  </div>\n${tblRows}\n  <div class="st26-pr-row">\n    <div class="st26-pr-col1"><div class="st26-pname">${stuRowName}</div><div class="st26-pdate" style="color:#1d1d1f">${stuRowDate}</div></div>\n    <div class="st26-pr-col2" style="width:100%;grid-column:2/4;justify-content:flex-end;gap:12px;border:none">\n      <div style="font-size:12px;font-weight:700;color:#86868b">${stuNote}</div>\n      <div>${stuCell}</div>\n    </div>\n  </div>\n</div>`;
+    return '<div class="st26-pr-wrap">\n  <div class="st26-pr-head">\n    <div>' + colPeriod + '</div>\n    <div>' + colMem + '</div>\n    <div>' + colNon + '</div>\n  </div>\n' + tblRows + '\n  <div class="st26-pr-row">\n    <div class="st26-pr-col1"><div class="st26-pname">' + stuRowName + '</div><div class="st26-pdate" style="color:#1d1d1f">' + stuRowDate + '</div></div>\n    <div class="st26-pr-col2" style="width:100%;grid-column:2/4;justify-content:flex-end;gap:12px;border:none">\n      <div style="font-size:12px;font-weight:700;color:#86868b">' + stuNote + '</div>\n      <div>' + stuCell + '</div>\n    </div>\n  </div>\n</div>';
   })();
 
-  // 100% 無腳本
-  return `<!-- 區塊開始: 票價與報名 -->\n<div class="st26-ph">  <div class="st26-ph-title">${phTitle}</div>  ${btnHTML}</div>\n${remarkHTML}${priceTableHTML}\n<div class="st26-dp">  <div class="st26-dp-lbl"><div class="st26-dp-t">${dayPassTitle}</div><div class="st26-dp-s">${taxNote}</div></div>  <div class="st26-dp-grid">    <div class="st26-dp-item"><span class="st26-dp-role">${dpRole(1)}</span><span class="st26-dp-val">NT$ 13,755</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">${dpRole(2)}</span><span class="st26-dp-val">NT$ 26,040</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">${dpRole(3)}</span><span class="st26-dp-val">NT$ 36,960</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">${dpRole(4)}</span><span class="st26-dp-val">NT$ 46,515</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">${dpRole(5)}</span><span class="st26-dp-val">NT$ 54,915</span></div>  </div></div><div class="st26-discount">${discount}</div><div class="st26-note">${note}</div>`;
+  return '\n<div class="st26-ph">  <div class="st26-ph-title">' + phTitle + '</div>  ' + btnHTML + '</div>\n' + remarkHTML + priceTableHTML + '\n<div class="st26-dp">  <div class="st26-dp-lbl"><div class="st26-dp-t">' + dayPassTitle + '</div><div class="st26-dp-s">' + taxNote + '</div></div>  <div class="st26-dp-grid">    <div class="st26-dp-item"><span class="st26-dp-role">' + dpRole(1) + '</span><span class="st26-dp-val">NT$ 13,755</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">' + dpRole(2) + '</span><span class="st26-dp-val">NT$ 26,040</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">' + dpRole(3) + '</span><span class="st26-dp-val">NT$ 36,960</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">' + dpRole(4) + '</span><span class="st26-dp-val">NT$ 46,515</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">' + dpRole(5) + '</span><span class="st26-dp-val">NT$ 54,915</span></div>  </div></div><div class="st26-discount">' + discount + '</div><div class="st26-note">' + note + '</div>';
 }
 
 function buildFullHTML(lang){
@@ -786,8 +779,7 @@ function buildFullHTML(lang){
   const logosHtml = [logoOrg, logoCoorg, logoSponsor].filter(Boolean).join('\n');
   const hasLogos = logosHtml.trim().length > 0;
   
-  // 按照需求順序：主題 -> 地點 -> 人員
-  return `${OUT_CSS}\n<div class="st26 st26-lang-${lang}">\n${themeBlock}\n${anchorNav}\n${orgBlock}\n${hasLogos?'<!-- 區塊開始: Logo 合作單位 -->\n'+logosHtml+'\n<div class="st26-div" style="margin-top:20px;"></div>\n':''}${pricingBlock}\n</div>`;
+  return OUT_CSS + '\n<div class="st26 st26-lang-' + lang + '">\n' + themeBlock + '\n' + anchorNav + '\n' + orgBlock + '\n' + (hasLogos?'\n' + logosHtml + '\n<div class="st26-div" style="margin-top:20px;"></div>\n':'') + pricingBlock + '\n</div>';
 }
 
 function generate(){
@@ -851,18 +843,43 @@ function updatePreview(lang){
   };
 }
 
+// ─────────────────────────────────────────────────────────────
+// 升級記憶體級剪貼簿 API，徹底解決舊版指令造成的截斷問題
+// ─────────────────────────────────────────────────────────────
 function copyHTML(){
-  const ta=document.getElementById('html-out');
-  ta.select(); ta.setSelectionRange(0,99999);
-  let ok=false;
-  try{ok=document.execCommand('copy');}catch(e){}
-  const btn=document.getElementById('copy-btn');
-  btn.textContent=ok?'[已複製]':'請手動 Ctrl+C';
+  const ta = document.getElementById('html-out');
+  const btn = document.getElementById('copy-btn');
+  const textToCopy = ta.value;
+
+  // 優先使用現代的 Clipboard API，確保長字串 100% 完整複製
+  if (navigator.clipboard) {
+      navigator.clipboard.writeText(textToCopy).then(() => {
+          copySuccessUI(btn);
+      }).catch(() => {
+          fallbackCopy(ta, btn);
+      });
+  } else {
+      fallbackCopy(ta, btn);
+  }
+}
+
+// 防禦性備用方案：取代寫死的 99999 長度限制
+function fallbackCopy(ta, btn) {
+  ta.select();
+  ta.setSelectionRange(0, ta.value.length);
+  let ok = false;
+  try { ok = document.execCommand('copy'); } catch(e) {}
+  if(ok) copySuccessUI(btn);
+  else btn.textContent = '請手動 Ctrl+C';
+}
+
+function copySuccessUI(btn) {
+  btn.textContent = '[已複製]';
   btn.classList.add('done');
-  setTimeout(()=>{
-    btn.textContent=currentOutLang==='zh'?'複製代碼 (ZH)':'複製代碼 (EN)';
+  setTimeout(() => {
+    btn.textContent = currentOutLang === 'zh' ? '複製代碼 (ZH)' : '複製代碼 (EN)';
     btn.classList.remove('done');
-  },2500);
+  }, 2500);
 }
 
 function addPerson(id, nameVal='', urlVal=''){
