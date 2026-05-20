@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ST26 論壇 HTML 產生器 v8.11</title>
+<title>ST26 論壇 HTML 產生器 v8.12</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Arial,"Helvetica Neue","Noto Sans TC",sans-serif;background:#f0ecfa;color:#333;padding:20px 12px;min-height:100vh}
@@ -103,8 +103,8 @@ textarea.inp{resize:vertical}
 <div class="hdr">
   <div class="hdr-left">
     <div class="hdr-ey">SEMI Taiwan · ST26</div>
-    <div class="hdr-title">論壇 HTML 產生器 v8.11 (Final)</div>
-    <div class="hdr-sub">無毒純靜態防禦版、記憶體級剪貼簿 API 升級</div>
+    <div class="hdr-title">論壇 HTML 產生器 v8.12 (Final)</div>
+    <div class="hdr-sub">無毒純靜態防禦版、記憶體級剪貼簿、座標精準校正</div>
   </div>
   <button class="btn-gen" id="main-gen-btn" onclick="generate()" disabled>產生 HTML</button>
 </div>
@@ -333,7 +333,7 @@ details[open] .st26-theme-line::after{transform:rotate(180deg)}
 .st26-theme-static{font-size:24px;font-weight:800;color:#673BB8;display:block;padding:12px 16px;background:#ede8f8;border-radius:8px;border:1px solid #d4c8f0;margin-bottom:16px}
 .st26-lang-zh .st26-theme-line::before, .st26-lang-zh .st26-theme-static::before { content: '主題：'; font-weight:800; color:#673BB8; }
 .st26-lang-en .st26-theme-line::before, .st26-lang-en .st26-theme-static::before { content: 'Theme: '; font-weight:800; color:#673BB8; }
-.st26-outline{padding:16px 20px;background:#f9f8ff;border-left:4px solid #673BB8;border-radius:0 6px 6px 0;margin-top:12px;font-size:16px;color:#444;line-height:1.8}
+.st26-outline{padding:16px 20px;background:#f9f8ff;border-left:4px solid #673BB8;border-radius:0 6px 6px 0;margin-top:4px;margin-bottom:16px;font-size:16px;color:#444;line-height:1.8}
 .st26-outline p{margin-bottom:10px}
 .st26-outline p:last-child{margin-bottom:0}
 .st26-org{display:grid;grid-template-columns:repeat(3,1fr);align-items:start;gap:20px 24px;padding:16px 0;border-top:1px solid #e5e5ea;border-bottom:1px solid #e5e5ea;margin:20px 0}
@@ -397,7 +397,7 @@ details[open] .st26-theme-line::after{transform:rotate(180deg)}
 // 修正跳脫字元防護 
 function esc(s) {
   if (!s) return '';
-  return String(s).replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"');
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 function parseCSVLine(text, delim) {
@@ -448,9 +448,9 @@ function parseExcel(){
     if(/semicon taiwan \d{4}/i.test(nameEn)) continue;
 
     // 0511(L) ST26_官網連結 結構絕對鎖死
-    const urlZh = c[18+offset] ? c[18+offset].trim() : '';
-    const urlEn = c[19+offset] ? c[19+offset].trim() : '';
-    const p0 = 8+offset;
+    const urlZh = c[7+offset] ? c[7+offset].trim() : '';
+    const urlEn = c[8+offset] ? c[8+offset].trim() : '';
+    const p0 = 9+offset;
 
     const prices={
       seb_mem:parsePrice(c[p0]),   seb_non:parsePrice(c[p0+1]),
@@ -779,6 +779,7 @@ function buildFullHTML(lang){
   const logosHtml = [logoOrg, logoCoorg, logoSponsor].filter(Boolean).join('\n');
   const hasLogos = logosHtml.trim().length > 0;
   
+  // 按照需求順序：主題 -> 地點 -> 人員
   return OUT_CSS + '\n<div class="st26 st26-lang-' + lang + '">\n' + themeBlock + '\n' + anchorNav + '\n' + orgBlock + '\n' + (hasLogos?'\n' + logosHtml + '\n<div class="st26-div" style="margin-top:20px;"></div>\n':'') + pricingBlock + '\n</div>';
 }
 
@@ -843,15 +844,11 @@ function updatePreview(lang){
   };
 }
 
-// ─────────────────────────────────────────────────────────────
-// 升級記憶體級剪貼簿 API，徹底解決舊版指令造成的截斷問題
-// ─────────────────────────────────────────────────────────────
 function copyHTML(){
   const ta = document.getElementById('html-out');
   const btn = document.getElementById('copy-btn');
   const textToCopy = ta.value;
 
-  // 優先使用現代的 Clipboard API，確保長字串 100% 完整複製
   if (navigator.clipboard) {
       navigator.clipboard.writeText(textToCopy).then(() => {
           copySuccessUI(btn);
@@ -863,7 +860,6 @@ function copyHTML(){
   }
 }
 
-// 防禦性備用方案：取代寫死的 99999 長度限制
 function fallbackCopy(ta, btn) {
   ta.select();
   ta.setSelectionRange(0, ta.value.length);
