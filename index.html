@@ -234,20 +234,32 @@ textarea.inp{resize:vertical}
     <textarea class="inp" id="raw-input" rows="9" placeholder="在此貼入資料..."></textarea>
   </div>
 
-  <!-- API Key (only shown for text mode) -->
-  <details class="api-details" id="api-section" style="display:none">
-    <summary>⚙️ Claude API 設定（文字模式必填）</summary>
-    <div class="api-body">
+  <!-- API settings (only shown for text mode) -->
+  <div id="api-section" style="display:none;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px 16px;margin-bottom:14px">
+    <div style="font-size:12px;font-weight:700;color:#92400e;margin-bottom:10px">⚙️ AI 服務設定（文字模式必填）</div>
+
+    <!-- Provider selector -->
+    <div class="field">
+      <label class="lbl">選擇 AI 服務商</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap" id="provider-btns">
+        <button class="btn btn-sm active" id="prov-claude"  onclick="setProvider('claude',this)"  style="background:var(--brand);color:#fff;border:none">Claude (Anthropic)</button>
+        <button class="btn btn-sm" id="prov-openai"  onclick="setProvider('openai',this)"  style="background:#fff;color:#333;border:1.5px solid #d1d5db">GPT-4o (OpenAI)</button>
+        <button class="btn btn-sm" id="prov-gemini"  onclick="setProvider('gemini',this)"  style="background:#fff;color:#333;border:1.5px solid #d1d5db">Gemini (Google)</button>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;align-items:flex-end;margin-top:10px">
       <div style="flex:1">
-        <label class="lbl">API Key <span style="font-weight:400;color:var(--muted)">（儲存於 sessionStorage，頁面關閉即清除）</span></label>
+        <label class="lbl">API Key <span style="font-weight:400;color:var(--muted)">（頁面關閉即清除）</span></label>
         <input class="inp" id="api-key-inp" type="password" placeholder="sk-ant-...">
       </div>
       <button class="btn btn-secondary btn-sm" onclick="saveApiKey()">儲存</button>
     </div>
-    <div style="margin-top:8px;font-size:11px;color:var(--muted)">
-      申請 API Key：<a href="https://console.anthropic.com" target="_blank" style="color:var(--brand)">console.anthropic.com</a>
+    <div style="margin-top:8px;font-size:11px;color:#78350f;line-height:1.7" id="api-provider-hint">
+      申請 API Key：<a href="https://console.anthropic.com" target="_blank" style="color:var(--brand);font-weight:700">console.anthropic.com</a>
+      （免費額度可用，無需綁定信用卡即可開始）
     </div>
-  </details>
+  </div>
 
   <div class="err-box" id="parse-err"></div>
 
@@ -403,6 +415,25 @@ textarea.inp{resize:vertical}
     <button class="btn btn-ghost btn-sm" onclick="addLogoCard('logo-sponsor')">＋ 新增 Logo</button>
   </div>
 
+  <!-- 輸出選項 -->
+  <div class="card">
+    <div class="card-title">⚙️ 輸出內容選項</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;font-weight:600;color:#333">
+        <input type="checkbox" id="opt-daypass" checked style="width:16px;height:16px;accent-color:var(--brand);cursor:pointer">
+        顯示「單日論壇通行證」區塊
+      </label>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;font-weight:600;color:#333">
+        <input type="checkbox" id="opt-discount" checked style="width:16px;height:16px;accent-color:var(--brand);cursor:pointer">
+        顯示「團報優惠」說明
+      </label>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;font-weight:600;color:#333">
+        <input type="checkbox" id="opt-footnote" checked style="width:16px;height:16px;accent-color:var(--brand);cursor:pointer">
+        顯示「主辦單位保留調整議程」免責聲明
+      </label>
+    </div>
+  </div>
+
   <!-- 報名與地點 -->
   <div class="card">
     <div class="card-title">🔗 報名與地點</div>
@@ -504,6 +535,7 @@ textarea.inp{resize:vertical}
 <script>
 // ─────────────────────────── State ───────────────────────────
 let inputMode = 'excel';
+let aiProvider = 'claude'; // 'claude' | 'openai' | 'gemini'
 let forums = [];
 let selectedForum = null;
 let zhHTML = '', enHTML = '';
@@ -540,11 +572,36 @@ function setMode(mode, btn) {
   if(apiKey) document.getElementById('api-key-inp').value = apiKey;
 }
 
+function setProvider(provider, btn) {
+  aiProvider = provider;
+  document.querySelectorAll('#provider-btns .btn').forEach(b => {
+    b.style.background = '#fff'; b.style.color = '#333'; b.style.border = '1.5px solid #d1d5db';
+  });
+  btn.style.background = 'var(--brand)'; btn.style.color = '#fff'; btn.style.border = 'none';
+
+  const hints = {
+    claude: '申請 API Key：<a href="https://console.anthropic.com" target="_blank" style="color:var(--brand);font-weight:700">console.anthropic.com</a>（免費額度可用，無需綁定信用卡即可開始）',
+    openai: '申請 API Key：<a href="https://platform.openai.com/api-keys" target="_blank" style="color:var(--brand);font-weight:700">platform.openai.com</a>（GPT-4o，需綁定付款方式）',
+    gemini: '申請 API Key：<a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--brand);font-weight:700">aistudio.google.com</a>（Gemini 1.5 Flash，有免費額度）',
+  };
+  document.getElementById('api-provider-hint').innerHTML = hints[provider] || hints.claude;
+
+  const placeholders = { claude: 'sk-ant-...', openai: 'sk-...', gemini: 'AIza...' };
+  document.getElementById('api-key-inp').placeholder = placeholders[provider] || 'API Key...';
+
+  // Clear stored key when switching provider
+  const storedProvider = sessionStorage.getItem('st26_api_provider');
+  if(storedProvider && storedProvider !== provider) {
+    document.getElementById('api-key-inp').value = sessionStorage.getItem('st26_api_key_'+provider) || '';
+  }
+}
+
 function saveApiKey() {
   const k = document.getElementById('api-key-inp').value.trim();
   if(!k) return;
-  sessionStorage.setItem('st26_api_key', k);
-  alert('API Key 已儲存（本次瀏覽期間有效）');
+  sessionStorage.setItem('st26_api_key_'+aiProvider, k);
+  sessionStorage.setItem('st26_api_provider', aiProvider);
+  alert('✅ API Key 已儲存（本次瀏覽期間有效）');
 }
 
 // ─────────────────────────── Excel Parser ───────────────────────────
@@ -660,12 +717,12 @@ function fmtP(p){ if(p===null)return null; return 'NT$ '+Number(p).toLocaleStrin
 
 // ─────────────────────────── AI Parser ───────────────────────────
 async function parseWithAI(raw) {
-  const apiKey = sessionStorage.getItem('st26_api_key') || document.getElementById('api-key-inp').value.trim();
+  const apiKey = sessionStorage.getItem('st26_api_key_'+aiProvider) || document.getElementById('api-key-inp').value.trim();
   if(!apiKey) {
-    showErr('parse-err','❌ 請先在「Claude API 設定」輸入 API Key');
+    showErr('parse-err','❌ 請先輸入 API Key 並按儲存');
     return;
   }
-  sessionStorage.setItem('st26_api_key', apiKey);
+  sessionStorage.setItem('st26_api_key_'+aiProvider, apiKey);
 
   showLoading('AI 正在分析資料...', '請稍候，通常需要 5–15 秒');
 
@@ -713,31 +770,62 @@ Rules:
 - chairs/mods arrays should be empty [] if not found, never null`;
 
   try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 2000,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: raw }]
-      })
-    });
+    let parsed;
 
-    if(!resp.ok) {
-      const err = await resp.json();
-      throw new Error(err.error?.message || 'API 錯誤 ' + resp.status);
+    if(aiProvider === 'claude') {
+      const resp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 2000,
+          system: systemPrompt,
+          messages: [{ role: 'user', content: raw }]
+        })
+      });
+      if(!resp.ok) { const e = await resp.json(); throw new Error(e.error?.message || 'API 錯誤 '+resp.status); }
+      const data = await resp.json();
+      const text = data.content?.find(b => b.type==='text')?.text || '';
+      parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
+
+    } else if(aiProvider === 'openai') {
+      const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer '+apiKey },
+        body: JSON.stringify({
+          model: 'gpt-4o',
+          max_tokens: 2000,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: raw }
+          ]
+        })
+      });
+      if(!resp.ok) { const e = await resp.json(); throw new Error(e.error?.message || 'API 錯誤 '+resp.status); }
+      const data = await resp.json();
+      const text = data.choices?.[0]?.message?.content || '';
+      parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
+
+    } else if(aiProvider === 'gemini') {
+      const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: systemPrompt + '\n\nInput:\n' + raw }] }],
+          generationConfig: { maxOutputTokens: 2000 }
+        })
+      });
+      if(!resp.ok) { const e = await resp.json(); throw new Error(e.error?.message || 'API 錯誤 '+resp.status); }
+      const data = await resp.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
     }
 
-    const data = await resp.json();
-    const text = data.content?.find(b => b.type==='text')?.text || '';
-    const clean = text.replace(/```json|```/g,'').trim();
-    const parsed = JSON.parse(clean);
     hideLoading();
     applyAIData(parsed);
     goStep(2);
@@ -1339,6 +1427,10 @@ function pCell(v) {
 }
 
 function buildPricingBlock(f, regUrlZh, regUrlEn, remarkZh, remarkEn, lang) {
+  const showDayPass  = document.getElementById('opt-daypass')?.checked !== false;
+  const showDiscount = document.getElementById('opt-discount')?.checked !== false;
+  const showFootnote = document.getElementById('opt-footnote')?.checked !== false;
+
   const activeUrl = lang==='zh' ? (regUrlZh||regUrlEn||'') : (regUrlEn||regUrlZh||'');
   const activeRemark = lang==='zh' ? remarkZh : remarkEn;
   const remarkHTML = activeRemark ? '\n<div class="st26-pricing-remark">'+esc(activeRemark).replace(/\n/g,'<br>')+'</div>\n' : '';
@@ -1360,6 +1452,7 @@ function buildPricingBlock(f, regUrlZh, regUrlEn, remarkZh, remarkEn, lang) {
     ?'＊主辦單位保留調整或更改活動議程之權利，最終議程以現場安排為準。'
     :'* The organizer reserves the right to adjust or change the agenda. The final agenda is subject to the on-site arrangement.';
   const btnHTML = activeUrl ? '<a class="st26-btn" href="'+esc(activeUrl)+'" target="_blank">'+btnLabel+' <span class="st26-btn-arr">→</span></a>' : '';
+
   const priceTableHTML = (!f||!f.hasPrices) ? '' : (() => {
     const p = f.prices;
     const r1 = lang==='zh'?'超早鳥優惠':'Super Early-Bird';
@@ -1379,8 +1472,14 @@ function buildPricingBlock(f, regUrlZh, regUrlEn, remarkZh, remarkEn, lang) {
     return '<div class="st26-pr-wrap">\n  <div class="st26-pr-head">\n    <div>'+colPeriod+'</div>\n    <div>'+colMem+'</div>\n    <div>'+colNon+'</div>\n  </div>\n'+tblRows+'\n  <div class="st26-pr-row">\n    <div class="st26-pr-col1"><div class="st26-pname">'+stuRowName+'</div><div class="st26-pdate" style="color:#1d1d1f">'+stuRowDate+'</div></div>\n    <div class="st26-pr-col2" style="width:100%;grid-column:2/4;justify-content:flex-end;gap:12px;border:none">\n      <div style="font-size:12px;font-weight:700;color:#86868b">'+stuNote+'</div>\n      <div>'+stuCell+'</div>\n    </div>\n  </div>\n</div>';
   })();
 
-  return '\n<div class="st26-ph">  <div class="st26-ph-title">'+phTitle+'</div>  '+btnHTML+'</div>\n'+remarkHTML+priceTableHTML+
-    '\n<div class="st26-dp">  <div class="st26-dp-lbl"><div class="st26-dp-t">'+dayPassTitle+'</div><div class="st26-dp-s">'+taxNote+'</div></div>  <div class="st26-dp-grid">    <div class="st26-dp-item"><span class="st26-dp-role">'+dpRole(1)+'</span><span class="st26-dp-val">NT$ 13,755</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">'+dpRole(2)+'</span><span class="st26-dp-val">NT$ 26,040</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">'+dpRole(3)+'</span><span class="st26-dp-val">NT$ 36,960</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">'+dpRole(4)+'</span><span class="st26-dp-val">NT$ 46,515</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">'+dpRole(5)+'</span><span class="st26-dp-val">NT$ 54,915</span></div>  </div></div><div class="st26-discount">'+discount+'</div><div class="st26-note">'+note+'</div>';
+  const dayPassHTML = showDayPass
+    ? '\n<div class="st26-dp">  <div class="st26-dp-lbl"><div class="st26-dp-t">'+dayPassTitle+'</div><div class="st26-dp-s">'+taxNote+'</div></div>  <div class="st26-dp-grid">    <div class="st26-dp-item"><span class="st26-dp-role">'+dpRole(1)+'</span><span class="st26-dp-val">NT$ 13,755</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">'+dpRole(2)+'</span><span class="st26-dp-val">NT$ 26,040</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">'+dpRole(3)+'</span><span class="st26-dp-val">NT$ 36,960</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">'+dpRole(4)+'</span><span class="st26-dp-val">NT$ 46,515</span></div>    <div class="st26-dp-item"><span class="st26-dp-role">'+dpRole(5)+'</span><span class="st26-dp-val">NT$ 54,915</span></div>  </div></div>'
+    : '';
+  const discountHTML = showDiscount ? '<div class="st26-discount">'+discount+'</div>' : '';
+  const footnoteHTML = showFootnote ? '<div class="st26-note">'+note+'</div>' : '';
+
+  return '\n<div class="st26-ph">  <div class="st26-ph-title">'+phTitle+'</div>  '+btnHTML+'</div>\n'
+    + remarkHTML + priceTableHTML + dayPassHTML + discountHTML + footnoteHTML;
 }
 
 function buildFullHTML(lang) {
@@ -1431,8 +1530,13 @@ addLogoCard('logo-org');
 addLogoCard('logo-coorg');
 addLogoCard('logo-sponsor');
 
-// Load saved API key
-const savedKey = sessionStorage.getItem('st26_api_key');
+// Restore saved provider & key
+const savedProvider = sessionStorage.getItem('st26_api_provider') || 'claude';
+if(savedProvider !== 'claude') {
+  const provBtn = document.getElementById('prov-'+savedProvider);
+  if(provBtn) setProvider(savedProvider, provBtn);
+}
+const savedKey = sessionStorage.getItem('st26_api_key_'+savedProvider);
 if(savedKey) document.getElementById('api-key-inp').value = savedKey;
 </script>
 </body>
