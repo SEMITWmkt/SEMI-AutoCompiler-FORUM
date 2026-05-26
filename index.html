@@ -547,19 +547,6 @@ function saveApiKey() {
   alert('API Key 已儲存（本次瀏覽期間有效）');
 }
 
-// ─────────────────────────── Parse handler ───────────────────────────
-function handleParse() {
-  const raw = document.getElementById('raw-input').value.trim();
-  if(!raw) { showErr('parse-err','請先貼入資料'); return; }
-  hideErr('parse-err');
-
-  if(inputMode === 'excel') {
-    parseExcel(raw);
-  } else {
-    parseWithAI(raw);
-  }
-}
-
 // ─────────────────────────── Excel Parser ───────────────────────────
 function parseCSVLine(text, delim) {
   if(delim==='\t') return text.split('\t').map(s=>s.trim());
@@ -719,8 +706,11 @@ Rules:
 - prices are numeric values in NTD (no currency symbol), null if not found
 - hasPrices: true if any price field is not null
 - chairs/mods: extract name as "Full Name | Title | Company" format when possible
-- outlineZh/outlineEn: use double newline (\\n\\n) to separate paragraphs
-- If text is in Chinese only, leave English fields empty and vice versa`;
+- outlineZh/outlineEn: the main forum description/about section, use double newline (\\n\\n) to separate paragraphs
+- remarkZh/remarkEn: registration-related notes, disclaimers, discount instructions, or special conditions (e.g. "＊You are currently registering for..."). These are NOT part of the main description.
+- regUrlZh/regUrlEn: the primary registration URL. If only one URL is found, put it in both fields.
+- If text is in Chinese only, leave English fields as empty string. If English only, leave Chinese fields as empty string.
+- chairs/mods arrays should be empty [] if not found, never null`;
 
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
@@ -732,7 +722,7 @@ Rules:
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 2000,
         system: systemPrompt,
         messages: [{ role: 'user', content: raw }]
