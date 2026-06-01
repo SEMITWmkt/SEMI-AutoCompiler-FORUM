@@ -4,6 +4,10 @@ A high-performance, frontend-based automation compiler engineered to transform u
 
 Current production version: v9.1
 
+CP Team Chinese user guide:
+
+- [CP_User_Guide_zh-TW.md](CP_User_Guide_zh-TW.md)
+
 Operational usage:
 
 1. Open `index.html` in a browser or through the GitHub Pages deployment.
