@@ -1,5 +1,17 @@
 ST26 論壇 HTML 產生器更新日誌
 
+[v9.1] 2026-06-01 - Logo 輸出修復與交接穩定版
+
+【Bug 修復】Logo 輸出資料來源修正：修復 Logo 在產生器內可預覽、但輸出 HTML 未包含圖片的問題。輸出現在會正確使用標準化後的 trimmedSrc 或原始 origSrc。
+
+【架構整理】Logo 系統去重：清理重複定義的 Logo 處理函式，避免後定義函式覆蓋前定義函式造成維護誤判。
+
+【CSS 修復】輸出樣式 selector 修正：將 `.st26*` 修正為 `.st26,.st26 *`，確保輸出 HTML 的 scoped reset 正常套用。
+
+【草稿修復】URL Logo 狀態保存：載入草稿時會保留 URL Logo 狀態，避免 URL 欄位還原不完整。
+
+【安全性】輸出連結防護：新增 URL 基本檢查，阻擋 javascript: 等不安全連結，並為外部連結加入 rel="noopener noreferrer"。
+
 [v8.3] 2026-05-12 - 預覽模組修復與最終定案
 
 【Bug 修復】TypeError 排除：修復 generate 函式中因尋找舊版 DOM 容器導致的 Cannot read properties of null 錯誤，確保輸出與預覽流程切換順暢。

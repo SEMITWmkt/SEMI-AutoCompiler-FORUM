@@ -2,6 +2,24 @@ Web Deployment Automation Compiler (SEMI Taiwan)
 
 A high-performance, frontend-based automation compiler engineered to transform unstructured, multi-dimensional spreadsheet data into standardized, brand-compliant digital assets for SEMICON Taiwan.
 
+Current production version: v9.1
+
+Operational usage:
+
+1. Open `index.html` in a browser or through the GitHub Pages deployment.
+2. Paste forum source data from the ST26 spreadsheet, or use the AI-assisted text mode.
+3. Review and complete forum metadata, topic, outline, people, registration links, venue, and logos.
+4. Use the logo controls to normalize inconsistent vendor-provided assets.
+5. Generate Chinese and English HTML.
+6. Copy the generated code into the corresponding Drupal page.
+
+Important handover notes:
+
+- Drafts are currently stored in browser `localStorage`, so they are tied to the same browser, computer, and deployed URL.
+- Do not commit API keys, vendor-private assets, or unpublished internal content to GitHub.
+- Keep the deployed GitHub Pages URL stable when possible, because changing the URL can make existing browser drafts unavailable.
+- Future recommended improvement: add project JSON export/import so CP Team can move work across computers and handovers safely.
+
 This project demonstrates the transition from a highly manual, error-prone content management workflow into a fully automated, zero-defect generation pipeline.
 
 1. The Business Pain Point

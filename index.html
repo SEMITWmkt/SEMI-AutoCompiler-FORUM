@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ST26 論壇 HTML 產生器 v9</title>
+<title>ST26 論壇 HTML 產生器 v9.1</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -104,22 +104,23 @@ textarea.inp{resize:vertical}
 
 /* Logo grid */
 .logo-grid{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:10px}
-.logo-card{width:176px;border:1.5px solid var(--border);border-radius:8px;overflow:hidden;background:#fff;position:relative;transition:border-color .2s}
+.logo-card{border:1.5px solid var(--border);border-radius:8px;overflow:hidden;background:#fff;position:relative;transition:border-color .2s;width:184px}
+.logo-card.co-brand{width:368px}
 .logo-card:hover{border-color:var(--brand)}
 .logo-card.drag-over{border-color:var(--brand);background:var(--brand-lt)}
-.logo-preview{height:88px;display:flex;align-items:center;justify-content:center;background:#f7f7f9;cursor:pointer;position:relative;border-bottom:1px solid var(--border)}
-.logo-preview img{max-width:156px;max-height:76px;object-fit:contain}
+.logo-preview{height:92px;display:flex;align-items:center;justify-content:center;background:#f7f7f9;cursor:pointer;position:relative;border-bottom:1px solid var(--border);overflow:hidden}
+.logo-preview canvas{display:block}
 .logo-drop-hint{font-size:11px;color:#bbb;text-align:center;line-height:1.5;padding:8px;pointer-events:none}
-.logo-ord{position:absolute;top:4px;left:4px;background:var(--brand);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:2px 5px;line-height:1}
-.logo-sz-badge{position:absolute;top:4px;right:4px;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;line-height:1}
-.sz-S{background:#e5e5ea;color:#555}
-.sz-M{background:var(--brand-lt);color:var(--brand)}
-.sz-L{background:var(--brand);color:#fff}
-.logo-norm-overlay{position:absolute;inset:0;background:rgba(255,255,255,.85);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--brand);font-weight:700;display:none}
-.logo-controls{padding:8px;display:flex;flex-direction:column;gap:6px}
-.size-row{display:flex;gap:3px}
-.sz-btn{flex:1;padding:4px 0;font-size:11px;font-weight:700;border:1px solid var(--border);border-radius:4px;cursor:pointer;background:#fff;color:#666;transition:all .15s}
-.sz-btn.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+.logo-ord{position:absolute;top:4px;left:4px;background:var(--brand);color:#fff;font-size:9px;font-weight:700;border-radius:3px;padding:2px 5px;line-height:1;z-index:2}
+.logo-norm-overlay{position:absolute;inset:0;background:rgba(255,255,255,.85);display:none;align-items:center;justify-content:center;font-size:11px;color:var(--brand);font-weight:700;z-index:3}
+.logo-controls{padding:8px;display:flex;flex-direction:column;gap:7px}
+.logo-slider-row{display:flex;align-items:center;gap:7px}
+.logo-slider-row label{font-size:10px;font-weight:700;color:var(--muted);white-space:nowrap;min-width:28px}
+.logo-slider{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--border);outline:none;cursor:pointer}
+.logo-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--brand);cursor:pointer;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.logo-slider-val{font-size:10px;font-weight:700;color:var(--brand);min-width:28px;text-align:right}
+.logo-cobrand-row{display:flex;align-items:center;gap:6px}
+.logo-cobrand-row label{font-size:11px;font-weight:600;color:#555;cursor:pointer;display:flex;align-items:center;gap:5px}
 .logo-url{font-size:11px;padding:5px 8px;border:1px solid var(--border);border-radius:5px;outline:none;background:#fff;width:100%}
 .logo-url:focus{border-color:var(--brand)}
 .logo-acts{display:flex;gap:3px}
@@ -188,7 +189,7 @@ textarea.inp{resize:vertical}
   <div>
     <div class="hdr-eye">SEMI Taiwan · ST26</div>
     <div class="hdr-name">論壇 HTML 產生器</div>
-    <div class="hdr-ver">v9.0 · 三步驟流程 · AI 輔助 · Canvas 標準化</div>
+    <div class="hdr-ver">v9.1 · 三步驟流程 · AI 輔助 · Logo 輸出修正版</div>
   </div>
   <div class="hdr-badge">✦ AI 輔助版</div>
 </div>
@@ -398,7 +399,7 @@ textarea.inp{resize:vertical}
   <div class="card">
     <div class="card-title">🖼 Logo 管理</div>
     <div class="hint-box" style="margin-bottom:14px;font-size:12px">
-      上傳或貼入圖片 URL 後，系統自動將圖片 Canvas 標準化。選擇 <strong>S / M / L</strong> 調整尺寸（S=40px 高、M=64px 高、L=96px 高）。
+      上傳或貼入圖片 URL 後，系統自動去除多餘白邊並置中。用<strong>拉桿</strong>微調 Logo 在格子內的大小比例。勾選「聯名 Logo」可讓容器變為雙倍寬。
     </div>
     <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">主辦單位 Organizer</div>
     <div class="logo-grid" id="logo-org"></div>
@@ -413,25 +414,6 @@ textarea.inp{resize:vertical}
     <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">贊助單位 Sponsored by</div>
     <div class="logo-grid" id="logo-sponsor"></div>
     <button class="btn btn-ghost btn-sm" onclick="addLogoCard('logo-sponsor')">＋ 新增 Logo</button>
-  </div>
-
-  <!-- 輸出選項 -->
-  <div class="card">
-    <div class="card-title">⚙️ 輸出內容選項</div>
-    <div style="display:flex;flex-direction:column;gap:10px">
-      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;font-weight:600;color:#333">
-        <input type="checkbox" id="opt-daypass" checked style="width:16px;height:16px;accent-color:var(--brand);cursor:pointer">
-        顯示「單日論壇通行證」區塊
-      </label>
-      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;font-weight:600;color:#333">
-        <input type="checkbox" id="opt-discount" checked style="width:16px;height:16px;accent-color:var(--brand);cursor:pointer">
-        顯示「團報優惠」說明
-      </label>
-      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;font-weight:600;color:#333">
-        <input type="checkbox" id="opt-footnote" checked style="width:16px;height:16px;accent-color:var(--brand);cursor:pointer">
-        顯示「主辦單位保留調整議程」免責聲明
-      </label>
-    </div>
   </div>
 
   <!-- 報名與地點 -->
@@ -461,10 +443,35 @@ textarea.inp{resize:vertical}
       <label class="lbl">地點導航連結（Google Maps）</label>
       <input class="inp" id="map-url" placeholder="https://maps.google.com/...">
     </div>
+
+    <div style="height:1px;background:var(--border);margin:16px 0"></div>
+    <div style="font-size:11px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">輸出內容選項</div>
+    <div style="display:flex;flex-wrap:wrap;gap:12px">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:#333;white-space:nowrap">
+        <input type="checkbox" id="opt-theme" checked style="width:15px;height:15px;accent-color:var(--brand);cursor:pointer">
+        顯示主題
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:#333;white-space:nowrap">
+        <input type="checkbox" id="opt-outline" checked style="width:15px;height:15px;accent-color:var(--brand);cursor:pointer">
+        顯示大綱
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:#333;white-space:nowrap">
+        <input type="checkbox" id="opt-daypass" checked style="width:15px;height:15px;accent-color:var(--brand);cursor:pointer">
+        顯示單日通行證
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:#333;white-space:nowrap">
+        <input type="checkbox" id="opt-discount" checked style="width:15px;height:15px;accent-color:var(--brand);cursor:pointer">
+        顯示團報優惠
+      </label>
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:#333;white-space:nowrap">
+        <input type="checkbox" id="opt-footnote" checked style="width:15px;height:15px;accent-color:var(--brand);cursor:pointer">
+        顯示免責聲明
+      </label>
+    </div>
   </div>
 
   <div class="nav">
-    <button class="btn btn-secondary" onclick="goStep(1)">← 重新輸入</button>
+    <button class="btn btn-secondary" onclick="goStep(1)">← 回到輸入</button>
     <div class="nav-right">
       <button class="btn btn-ok" onclick="saveDraft()">💾 儲存草稿</button>
       <button class="btn btn-primary" onclick="handleGenerate()">產生 HTML →</button>
@@ -517,6 +524,7 @@ textarea.inp{resize:vertical}
     <button class="btn btn-secondary" onclick="goStep(2)">← 返回編輯</button>
     <div class="nav-right">
       <button class="btn btn-ok" onclick="saveDraft()">💾 儲存草稿</button>
+      <button class="btn btn-primary" onclick="handleGenerate()">🔄 重新產生</button>
     </div>
   </div>
 </div>
@@ -535,15 +543,12 @@ textarea.inp{resize:vertical}
 <script>
 // ─────────────────────────── State ───────────────────────────
 let inputMode = 'excel';
-let aiProvider = 'claude'; // 'claude' | 'openai' | 'gemini'
+let aiProvider = 'claude';
 let forums = [];
 let selectedForum = null;
 let zhHTML = '', enHTML = '';
 let currentLang = 'zh', currentView = 'desktop';
 let lid = 0;
-
-const SIZES = { S: 40, M: 64, L: 96 };
-const MAX_W  = { S: 160, M: 240, L: 360 };
 
 // ─────────────────────────── Navigation ───────────────────────────
 function goStep(n) {
@@ -554,7 +559,17 @@ function goStep(n) {
     if(i===n) tab.classList.add('active');
     else if(i<n) tab.classList.add('done');
   });
-  window.scrollTo(0,0);
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// Step 1 → parse button resets only parse state, never Step 2 fields
+function resetParseState() {
+  document.getElementById('forum-select-wrap').style.display = 'none';
+  document.getElementById('draft-banner').classList.remove('show');
+  hideErr('parse-err');
+  const btn = document.getElementById('parse-btn');
+  btn.textContent = '解析資料 →';
+  btn.onclick = handleParse;
 }
 
 // ─────────────────────────── Mode toggle ───────────────────────────
@@ -921,8 +936,25 @@ function handleGenerate() {
   enHTML = buildFullHTML('en');
   document.getElementById('code-zh').value = zhHTML;
   document.getElementById('code-en').value = enHTML;
-  switchLang('zh', null);
-  goStep(3);
+
+  const alreadyOnStep3 = document.getElementById('panel-3').classList.contains('active');
+  if(alreadyOnStep3) {
+    // Just refresh preview in place, no navigation
+    updatePreview(currentLang);
+    // Reset copy buttons in case they were in "copied" state
+    ['zh','en'].forEach(l => {
+      const b = document.getElementById('copy-'+l);
+      if(b) b.classList.remove('copied');
+    });
+  } else {
+    // Reset lang toggle to ZH and navigate
+    document.querySelectorAll('.tgl-grp:last-child .tgl-btn').forEach((b,i) => {
+      b.classList.toggle('active', i===0);
+    });
+    currentLang = 'zh';
+    goStep(3);
+    updatePreview('zh');
+  }
 }
 
 function switchLang(lang, btn) {
@@ -945,12 +977,13 @@ function switchView(mode, btn) {
 function updatePreview(lang) {
   const html = lang==='zh' ? zhHTML : enHTML;
   const frame = document.getElementById('preview-frame');
-  frame.srcdoc = `<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{margin:0;padding:20px;max-width:860px}</style></head><body>${html}</body></html>`;
+  // viewport meta tag ensures media queries fire correctly inside the iframe
+  frame.srcdoc = `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;padding:0;width:100%}body{padding:20px;box-sizing:border-box}</style></head><body>${html}</body></html>`;
   frame.onload = () => {
     try {
-      if(currentView==='desktop') {
+      if(currentView === 'desktop') {
         const h = frame.contentDocument.body.scrollHeight;
-        frame.style.height = (h+40)+'px';
+        frame.style.height = (h + 40) + 'px';
       }
     } catch(e) {}
   };
@@ -999,69 +1032,151 @@ function getPeople(wrapId) {
   })).filter(p => p.name);
 }
 
-// ─────────────────────────── Logo Canvas ───────────────────────────
-function normalizeToCanvas(src, size) {
-  return new Promise(resolve => {
+// ─────────────────────────── Logo System ───────────────────────────
+const CONTAINER_W   = 184;
+const CONTAINER_H   = 92;
+const CONTAINER_W_CO = 368;
+
+// Update the preview area of a card using CSS object-fit (no quality loss)
+function updateCardPreview(cardId) {
+  const card = document.getElementById(cardId);
+  if(!card) return;
+  const trimmedSrc = card.dataset.trimmedSrc;
+  if(!trimmedSrc) return;
+
+  const scale   = parseInt(card.dataset.scale || 80) / 100;
+  const isCo    = card.dataset.isCo === '1';
+  const contW   = isCo ? CONTAINER_W_CO : CONTAINER_W;
+  // inner box size = container × scale, logo fits inside that
+  const innerW  = Math.round(contW   * scale);
+  const innerH  = Math.round(CONTAINER_H * scale);
+
+  const hintEl   = document.getElementById('hint-'+cardId);
+  const imgWrap  = document.getElementById('imgwrap-'+cardId);
+  const imgEl    = document.getElementById('img-'+cardId);
+
+  if(hintEl)  hintEl.style.display  = 'none';
+  if(imgWrap) {
+    imgWrap.style.display = 'flex';
+    imgWrap.style.width   = contW + 'px';
+    imgWrap.style.height  = CONTAINER_H + 'px';
+  }
+  if(imgEl) {
+    imgEl.src = trimmedSrc;
+    imgEl.style.maxWidth  = innerW + 'px';
+    imgEl.style.maxHeight = innerH + 'px';
+  }
+}
+
+// Auto-trim: scan edges and crop whitespace/transparent pixels
+function autoCropCanvas(srcCanvas) {
+  const ctx = srcCanvas.getContext('2d');
+  const { width: w, height: h } = srcCanvas;
+  const data = ctx.getImageData(0, 0, w, h).data;
+
+  const isEdge = (x, y) => {
+    const i = (y * w + x) * 4;
+    const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+    if(a < 10) return true; // transparent
+    // near-white
+    return r > 240 && g > 240 && b > 240;
+  };
+
+  let top = 0, bottom = h - 1, left = 0, right = w - 1;
+
+  outer: for(let y = 0; y < h; y++) {
+    for(let x = 0; x < w; x++) { if(!isEdge(x, y)) { top = y; break outer; } }
+  }
+  outer: for(let y = h - 1; y >= 0; y--) {
+    for(let x = 0; x < w; x++) { if(!isEdge(x, y)) { bottom = y; break outer; } }
+  }
+  outer: for(let x = 0; x < w; x++) {
+    for(let y = top; y <= bottom; y++) { if(!isEdge(x, y)) { left = x; break outer; } }
+  }
+  outer: for(let x = w - 1; x >= 0; x--) {
+    for(let y = top; y <= bottom; y++) { if(!isEdge(x, y)) { right = x; break outer; } }
+  }
+
+  const cw = right - left + 1;
+  const ch = bottom - top + 1;
+  if(cw <= 0 || ch <= 0) return srcCanvas;
+
+  const cropped = document.createElement('canvas');
+  cropped.width = cw; cropped.height = ch;
+  cropped.getContext('2d').drawImage(srcCanvas, left, top, cw, ch, 0, 0, cw, ch);
+  return cropped;
+}
+
+async function loadAndTrimImage(src) {
+  return new Promise((resolve) => {
     const img = new Image();
-    img.crossOrigin = 'anonymous';
+    // Don't set crossOrigin for data URLs — it causes canvas taint on local files
+    if(!src.startsWith('data:')) img.crossOrigin = 'anonymous';
     img.onload = () => {
-      const h = SIZES[size];
-      const maxW = MAX_W[size];
-      let w = Math.round(img.naturalWidth * (h / img.naturalHeight));
-      if(w > maxW) w = maxW;
-      if(w < 1) w = 1;
-      const canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, w, h);
-      ctx.drawImage(img, 0, 0, w, h);
       try {
-        resolve({ data: canvas.toDataURL('image/png'), normalized: true, w, h });
+        const tmp = document.createElement('canvas');
+        tmp.width  = img.naturalWidth;
+        tmp.height = img.naturalHeight;
+        tmp.getContext('2d').drawImage(img, 0, 0);
+        const cropped = autoCropCanvas(tmp);
+        resolve(cropped.toDataURL('image/png')); // always return a data URL string
       } catch(e) {
-        resolve({ data: src, normalized: false, w: null, h: SIZES[size] });
+        resolve(src); // fallback: return original src as-is
       }
     };
-    img.onerror = () => resolve({ data: src, normalized: false, w: null, h: SIZES[size] });
+    img.onerror = () => resolve(src); // fallback on load error
     img.src = src;
   });
 }
 
-function addLogoCard(sectionId) { renderLogoCard(sectionId, '', 'M', false, null); }
+function addLogoCard(sectionId) { renderLogoCard(sectionId, '', false, 80); }
 
-function renderLogoCard(sectionId, srcVal, sizeVal, isUrl, _unused) {
+function renderLogoCard(sectionId, srcVal, isCo, scaleVal, isUrlVal) {
   const id = 'lc-' + lid++;
   const grid = document.getElementById(sectionId);
   const card = document.createElement('div');
-  card.className = 'logo-card';
+  card.className = 'logo-card' + (isCo ? ' co-brand' : '');
   card.id = id;
-  card.dataset.src = srcVal || '';
   card.dataset.origSrc = srcVal || '';
-  card.dataset.size = sizeVal || 'M';
-  card.dataset.isUrl = isUrl ? '1' : '0';
+  card.dataset.trimmedSrc = '';
+  card.dataset.isUrl = isUrlVal ? '1' : '0';
+  card.dataset.isCo = isCo ? '1' : '0';
+  card.dataset.scale = scaleVal || 80;
+
+  const contW = isCo ? CONTAINER_W_CO : CONTAINER_W;
 
   card.innerHTML = `
-    <div class="logo-preview" onclick="this.parentElement.querySelector('input[type=file]').click()">
-      ${srcVal ? `<img src="${srcVal}" alt="logo">` : `<div class="logo-drop-hint">點擊上傳<br>或貼入 URL</div>`}
+    <div class="logo-preview" id="prev-${id}" onclick="document.getElementById('file-${id}').click()">
+      <div id="hint-${id}" class="logo-drop-hint">點擊上傳<br>或貼入 URL</div>
+      <div id="imgwrap-${id}" style="display:none;align-items:center;justify-content:center;width:${contW}px;height:${CONTAINER_H}px">
+        <img id="img-${id}" src="" alt="logo" style="object-fit:contain;display:block">
+      </div>
       <span class="logo-ord"></span>
-      <span class="logo-sz-badge sz-${sizeVal||'M'}">${sizeVal||'M'}</span>
-      <div class="logo-norm-overlay" id="norm-${id}">標準化中...</div>
+      <div class="logo-norm-overlay" id="norm-${id}">處理中...</div>
     </div>
     <div class="logo-controls">
-      <div class="size-row">
-        <button class="sz-btn${sizeVal==='S'?' active':''}" onclick="setLogoSize('${id}','S',this)">S</button>
-        <button class="sz-btn${(!sizeVal||sizeVal==='M')?' active':''}" onclick="setLogoSize('${id}','M',this)">M</button>
-        <button class="sz-btn${sizeVal==='L'?' active':''}" onclick="setLogoSize('${id}','L',this)">L</button>
+      <div class="logo-slider-row">
+        <label>大小</label>
+        <input type="range" class="logo-slider" id="slider-${id}" min="30" max="100" value="${scaleVal||80}"
+          oninput="onSliderInput('${id}',this.value)">
+        <span class="logo-slider-val" id="slval-${id}">${scaleVal||80}%</span>
       </div>
-      <input class="logo-url" type="text" placeholder="或貼入圖片 URL" value="${srcVal&&isUrl?srcVal:''}" 
-        onchange="handleLogoUrl('${id}',this.value)" oninput="handleLogoUrl('${id}',this.value)">
+      <div class="logo-cobrand-row">
+        <label>
+          <input type="checkbox" id="co-${id}" ${isCo?'checked':''} onchange="toggleCoBrand('${id}','${sectionId}',this.checked)">
+          聯名 Logo（雙倍寬）
+        </label>
+      </div>
+      <input class="logo-url" type="text" placeholder="或貼入圖片 URL" value="${isUrlVal ? esc(srcVal) : ''}"
+        id="url-${id}" onchange="handleLogoUrl('${id}',this.value)">
       <div class="logo-acts">
         <button class="btn-mv" onclick="moveLogo('${id}',-1)">↑</button>
         <button class="btn-mv" onclick="moveLogo('${id}',1)">↓</button>
         <button class="btn-dl" onclick="document.getElementById('${id}').remove();updateOrdNums('${sectionId}')">✕</button>
       </div>
     </div>
-    <input type="file" accept="image/*" style="display:none" onchange="handleLogoFile('${id}','${sectionId}',this)">`;
+    <input type="file" accept="image/*" id="file-${id}" style="display:none"
+      onchange="handleLogoFile('${id}','${sectionId}',this)">`;
 
   // Drag and drop
   const preview = card.querySelector('.logo-preview');
@@ -1075,6 +1190,9 @@ function renderLogoCard(sectionId, srcVal, sizeVal, isUrl, _unused) {
 
   grid.appendChild(card);
   updateOrdNums(sectionId);
+
+  // If restoring with existing src
+  if(srcVal) applyLogoSrc(id, srcVal, !!isUrlVal, sectionId);
 }
 
 function handleLogoFile(cardId, sectionId, input) {
@@ -1088,52 +1206,57 @@ function processLogoFile(file, cardId, sectionId) {
   reader.readAsDataURL(file);
 }
 
-async function handleLogoUrl(cardId, url) {
+function handleLogoUrl(cardId, url) {
   const trimmed = url.trim();
   if(!trimmed) return;
-  await applyLogoSrc(cardId, trimmed, true, null);
+  applyLogoSrc(cardId, trimmed, true, null);
 }
 
 async function applyLogoSrc(cardId, src, isUrl, sectionId) {
   const card = document.getElementById(cardId);
   if(!card) return;
-  const size = card.dataset.size || 'M';
   card.dataset.origSrc = src;
-  card.dataset.isUrl = isUrl ? '1' : '0';
+  card.dataset.isUrl   = isUrl ? '1' : '0';
 
-  // Show normalizing overlay
-  document.getElementById('norm-'+cardId).style.display = 'flex';
+  const normOv = document.getElementById('norm-'+cardId);
+  if(normOv) normOv.style.display = 'flex';
 
-  const result = await normalizeToCanvas(src, size);
-
-  document.getElementById('norm-'+cardId).style.display = 'none';
-  card.dataset.src = result.data;
-
-  const preview = card.querySelector('.logo-preview');
-  const existImg = preview.querySelector('img');
-  if(existImg) {
-    existImg.src = result.data;
-  } else {
-    preview.innerHTML = `<img src="${result.data}" alt="logo"><span class="logo-ord"></span><span class="logo-sz-badge sz-${size}">${size}</span><div class="logo-norm-overlay" id="norm-${cardId}">標準化中...</div>`;
+  try {
+    // Canvas is only used for trimming — result is still high-res data URL
+    const trimmedSrc = await loadAndTrimImage(src);
+    card.dataset.trimmedSrc = trimmedSrc;
+    updateCardPreview(cardId);
+  } catch(e) {
+    card.dataset.trimmedSrc = src;
+    updateCardPreview(cardId);
+  } finally {
+    if(normOv) normOv.style.display = 'none';
   }
 
   if(sectionId) updateOrdNums(sectionId);
 }
 
-async function setLogoSize(cardId, size, btn) {
+function onSliderInput(cardId, val) {
   const card = document.getElementById(cardId);
   if(!card) return;
-  card.dataset.size = size;
+  card.dataset.scale = val;
+  const valEl = document.getElementById('slval-'+cardId);
+  if(valEl) valEl.textContent = val + '%';
+  // No re-encoding — just update CSS sizes via updateCardPreview
+  updateCardPreview(cardId);
+}
 
-  card.querySelectorAll('.sz-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+function toggleCoBrand(cardId, sectionId, isCo) {
+  const card = document.getElementById(cardId);
+  if(!card) return;
+  card.dataset.isCo = isCo ? '1' : '0';
+  card.classList.toggle('co-brand', isCo);
 
-  const badge = card.querySelector('.logo-sz-badge');
-  if(badge) { badge.textContent = size; badge.className = 'logo-sz-badge sz-'+size; }
+  const wrap  = document.getElementById('imgwrap-'+cardId);
+  const contW = isCo ? CONTAINER_W_CO : CONTAINER_W;
+  if(wrap) { wrap.style.width = contW+'px'; wrap.style.height = CONTAINER_H+'px'; }
 
-  // Re-normalize with new size
-  const origSrc = card.dataset.origSrc;
-  if(origSrc) await applyLogoSrc(cardId, origSrc, card.dataset.isUrl==='1', null);
+  updateCardPreview(cardId);
 }
 
 function moveLogo(cardId, dir) {
@@ -1153,10 +1276,11 @@ function updateOrdNums(sectionId) {
 
 function getLogos(sectionId) {
   return Array.from(document.querySelectorAll('#'+sectionId+' .logo-card')).map(c => ({
-    src: c.dataset.src || '',
+    src: c.dataset.trimmedSrc || c.dataset.origSrc || '',
     origSrc: c.dataset.origSrc || '',
     isUrl: c.dataset.isUrl === '1',
-    size: c.dataset.size || 'M'
+    isCo: c.dataset.isCo === '1',
+    scale: parseInt(c.dataset.scale || 80)
   })).filter(l => l.src);
 }
 
@@ -1178,11 +1302,14 @@ function saveDraft() {
   const key = getDraftKey();
   if(!key) { alert('請先填入場次名稱再儲存草稿'); return; }
 
-  const logos = {
-    org: getLogos('logo-org').map(l => ({ origSrc: l.isUrl ? l.origSrc : null, src: l.isUrl ? l.src : null, size: l.size, isUrl: l.isUrl })),
-    coorg: getLogos('logo-coorg').map(l => ({ origSrc: l.isUrl ? l.origSrc : null, src: l.isUrl ? l.src : null, size: l.size, isUrl: l.isUrl })),
-    sponsor: getLogos('logo-sponsor').map(l => ({ origSrc: l.isUrl ? l.origSrc : null, src: l.isUrl ? l.src : null, size: l.size, isUrl: l.isUrl }))
-  };
+  // For URL-based logos, save the URL. For file-based, save the base64 but warn about size.
+  const serializeLogos = (sectionId) =>
+    Array.from(document.querySelectorAll('#'+sectionId+' .logo-card')).map(c => ({
+      origSrc: c.dataset.origSrc || '',
+      isUrl:   c.dataset.isUrl === '1',
+      isCo:    c.dataset.isCo === '1',
+      scale:   parseInt(c.dataset.scale || 80)
+    })).filter(l => l.origSrc);
 
   const draft = {
     nameZh: getVal('name-zh'), nameEn: getVal('name-en'),
@@ -1191,7 +1318,11 @@ function saveDraft() {
     outlineZh: getVal('outline-zh'), outlineEn: getVal('outline-en'),
     advisedName: getVal('advised-name'), advisedUrl: getVal('advised-url'),
     chairs: getPeople('chairs-wrap'), mods: getPeople('mods-wrap'),
-    logos,
+    logos: {
+      org:     serializeLogos('logo-org'),
+      coorg:   serializeLogos('logo-coorg'),
+      sponsor: serializeLogos('logo-sponsor')
+    },
     remarkZh: getVal('remark-zh'), remarkEn: getVal('remark-en'),
     regUrlZh: getVal('reg-url-zh'), regUrlEn: getVal('reg-url-en'),
     mapUrl: getVal('map-url'),
@@ -1200,9 +1331,16 @@ function saveDraft() {
 
   try {
     localStorage.setItem(key, JSON.stringify(draft));
-    alert('✅ 草稿已儲存！\n注意：以本機上傳的 Logo 不會被儲存，下次開啟需重新上傳。');
+    const hasFileLogo = ['org','coorg','sponsor'].some(t =>
+      draft.logos[t].some(l => !l.isUrl && l.origSrc.startsWith('data:'))
+    );
+    if(hasFileLogo) {
+      alert('✅ 草稿已儲存！\n提示：本機上傳的 Logo 已一併儲存，但若圖片較多可能佔用較多空間。建議改用圖片 URL 以節省空間。');
+    } else {
+      alert('✅ 草稿已儲存！');
+    }
   } catch(e) {
-    alert('儲存失敗：瀏覽器空間不足，請先清除草稿。');
+    alert('儲存失敗：瀏覽器空間不足，請先清除草稿，或改用圖片 URL 取代本機上傳。');
   }
 }
 
@@ -1214,15 +1352,15 @@ function loadDraft() {
 
   try {
     const d = JSON.parse(raw);
-    ['nameZh','nameEn','venueZh','venueEn','themeZh','themeEn',
-     'outlineZh','outlineEn','advisedName','advisedUrl',
-     'remarkZh','remarkEn','regUrlZh','regUrlEn','mapUrl'].forEach(k => {
-      const map = { nameZh:'name-zh',nameEn:'name-en',venueZh:'venue-zh',venueEn:'venue-en',
-        themeZh:'theme-zh',themeEn:'theme-en',outlineZh:'outline-zh',outlineEn:'outline-en',
-        advisedName:'advised-name',advisedUrl:'advised-url',
-        remarkZh:'remark-zh',remarkEn:'remark-en',
-        regUrlZh:'reg-url-zh',regUrlEn:'reg-url-en',mapUrl:'map-url' };
-      if(d[k] !== undefined) setVal(map[k], d[k]);
+    const fieldMap = {
+      nameZh:'name-zh', nameEn:'name-en', venueZh:'venue-zh', venueEn:'venue-en',
+      themeZh:'theme-zh', themeEn:'theme-en', outlineZh:'outline-zh', outlineEn:'outline-en',
+      advisedName:'advised-name', advisedUrl:'advised-url',
+      remarkZh:'remark-zh', remarkEn:'remark-en',
+      regUrlZh:'reg-url-zh', regUrlEn:'reg-url-en', mapUrl:'map-url'
+    };
+    Object.entries(fieldMap).forEach(([k, id]) => {
+      if(d[k] !== undefined) setVal(id, d[k]);
     });
 
     document.getElementById('chairs-wrap').innerHTML = '';
@@ -1233,20 +1371,17 @@ function loadDraft() {
     (d.mods||[]).forEach(p => addPerson('mods-wrap', p.name, p.url));
     if(!d.mods?.length) addPerson('mods-wrap');
 
-    // Restore URL-based logos only
+    // Restore logos — both URL-based and file-based (base64)
     ['org','coorg','sponsor'].forEach(type => {
       document.getElementById('logo-'+type).innerHTML = '';
       (d.logos?.[type]||[]).forEach(l => {
-        if(l.isUrl && l.origSrc) {
-          renderLogoCard('logo-'+type, l.src||l.origSrc, l.size, true, null);
-        }
-        // Skip file-based logos (they can't be restored)
+        if(l.origSrc) renderLogoCard('logo-'+type, l.origSrc, l.isCo || false, l.scale || 80, l.isUrl || false);
       });
     });
 
     if(d.forumPrices) {
       selectedForum = selectedForum || {};
-      selectedForum.prices = d.forumPrices.prices;
+      selectedForum.prices    = d.forumPrices.prices;
       selectedForum.hasPrices = d.forumPrices.hasPrices;
     }
 
@@ -1276,6 +1411,18 @@ function esc(s) {
   if(!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
+function safeUrl(s, allowDataImage) {
+  const raw = String(s || '').trim();
+  if(!raw) return '';
+  if(allowDataImage && /^data:image\//i.test(raw)) return raw;
+  try {
+    const u = new URL(raw, window.location.href);
+    if(['http:', 'https:', 'mailto:', 'tel:'].includes(u.protocol)) return raw;
+  } catch(e) {
+    if(raw.startsWith('/')) return raw;
+  }
+  return '';
+}
 function showErr(id, msg) {
   const el = document.getElementById(id);
   if(!el) return;
@@ -1294,7 +1441,7 @@ function hideLoading() { document.getElementById('loading-ov').classList.remove(
 
 // ─────────────────────────── Build HTML Functions ───────────────────────────
 const OUT_CSS = `<style>
-.st26*{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
+.st26,.st26 *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
 .st26{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Noto Sans TC",Arial,sans-serif;color:#1d1d1f;padding:0 0 32px;line-height:1.6}
 .st26-anchor-nav{display:flex;gap:12px;margin:16px 0 24px;flex-wrap:wrap}
 .st26-anchor-btn{font-size:14px;font-weight:700;color:#673BB8;text-decoration:none;padding:8px 16px;border:1px solid #d4c8f0;border-radius:100px;background:#f9f8ff;transition:all .2s;display:inline-flex;align-items:center;cursor:pointer}
@@ -1372,8 +1519,14 @@ details[open] .st26-theme-line::after{transform:rotate(180deg)}
 </style>`;
 
 function buildThemeBlock(theme, outline, lang) {
+  const showTheme   = document.getElementById('opt-theme')?.checked !== false;
+  const showOutline = document.getElementById('opt-outline')?.checked !== false;
+
+  if(!showTheme) return '';
+
   const txt = theme || (lang==='zh' ? '即將公告' : 'To be announced');
-  if(outline) {
+
+  if(outline && showOutline) {
     const paras = outline.split(/\n\n+/).map(p=>p.trim()).filter(Boolean)
       .map(p=>'    <p>'+esc(p).replace(/\n/g,'<br>')+'</p>').join('\n');
     return '\n<details class="st26-details">\n  <summary class="st26-summary"><span class="st26-theme-line">'+esc(txt)+'</span></summary>\n  <div class="st26-outline">\n'+paras+'\n  </div>\n</details>';
@@ -1385,8 +1538,9 @@ function buildAnchorNav(venueDisplay, mapUrl, lang) {
   if(!venueDisplay) return '';
   const locLabel = lang==='zh' ? '地點：' : 'Venue: ';
   const vText = locLabel + esc(venueDisplay);
+  const href = safeUrl(mapUrl);
   let html = '\n<div class="st26-anchor-nav">\n';
-  if(mapUrl) html += '  <a href="'+esc(mapUrl)+'" target="_blank" class="st26-anchor-btn">'+vText+'</a>\n';
+  if(href) html += '  <a href="'+esc(href)+'" target="_blank" rel="noopener noreferrer" class="st26-anchor-btn">'+vText+'</a>\n';
   else html += '  <span class="st26-anchor-btn st26-venue-btn-static">'+vText+'</span>\n';
   return html + '</div>';
 }
@@ -1398,15 +1552,22 @@ function buildOrgBlock(advisedName, advisedUrl, chairs, mods, lang) {
   const mLabel = lang==='zh' ? '論壇主持人' : (mods.length>1?'Forum Moderators':'Forum Moderator');
   let html = '\n<div class="st26-org">\n';
   if(advisedName) {
-    const alink = advisedUrl ? '<a href="'+esc(advisedUrl)+'" target="_blank">'+esc(advisedName)+'</a>' : esc(advisedName);
+    const href = safeUrl(advisedUrl);
+    const alink = href ? '<a href="'+esc(href)+'" target="_blank" rel="noopener noreferrer">'+esc(advisedName)+'</a>' : esc(advisedName);
     html += '  <div class="st26-org-item"><span class="st26-org-role">'+aLabel+'</span><span class="st26-org-name">'+alink+'</span></div>\n';
   }
   if(chairs.length) {
-    const cs = chairs.map(p=>p.url?'<a href="'+esc(p.url)+'" target="_blank">'+esc(p.name)+'</a>':esc(p.name)).join('<br>');
+    const cs = chairs.map(p=>{
+      const href = safeUrl(p.url);
+      return href ? '<a href="'+esc(href)+'" target="_blank" rel="noopener noreferrer">'+esc(p.name)+'</a>' : esc(p.name);
+    }).join('<br>');
     html += '  <div class="st26-org-item"><span class="st26-org-role">'+cLabel+'</span><span class="st26-org-name">'+cs+'</span></div>\n';
   }
   if(mods.length) {
-    const ms = mods.map(p=>p.url?'<a href="'+esc(p.url)+'" target="_blank">'+esc(p.name)+'</a>':esc(p.name)).join('<br>');
+    const ms = mods.map(p=>{
+      const href = safeUrl(p.url);
+      return href ? '<a href="'+esc(href)+'" target="_blank" rel="noopener noreferrer">'+esc(p.name)+'</a>' : esc(p.name);
+    }).join('<br>');
     html += '  <div class="st26-org-item"><span class="st26-org-role">'+mLabel+'</span><span class="st26-org-name">'+ms+'</span></div>\n';
   }
   return html + '</div>';
@@ -1415,10 +1576,16 @@ function buildOrgBlock(advisedName, advisedUrl, chairs, mods, lang) {
 function buildLogoSection(label, logos) {
   if(!logos.length) return '';
   const imgs = logos.map(l => {
-    const h = SIZES[l.size||'M'];
-    return '    <img style="height:'+h+'px;width:auto" src="'+(l.src.startsWith('data:')?l.src:esc(l.src))+'" alt="Logo">';
-  }).join('\n');
-  return '<div class="st26-logo-row">\n  <div class="st26-logo-label">'+esc(label)+'</div>\n  <div class="st26-logo-wrap">\n'+imgs+'\n  </div>\n</div>';
+    const contW = l.isCo ? CONTAINER_W_CO : CONTAINER_W;
+    const innerW = Math.round(contW   * (l.scale / 100));
+    const innerH = Math.round(CONTAINER_H * (l.scale / 100));
+    const src = safeUrl(l.src, true);
+    if(!src) return '';
+    // Fixed outer box, logo centred inside with object-fit
+    return `    <span style="display:inline-flex;align-items:center;justify-content:center;width:${contW}px;height:${CONTAINER_H}px;flex-shrink:0"><img src="${esc(src)}" alt="Logo" style="max-width:${innerW}px;max-height:${innerH}px;width:auto;height:auto;object-fit:contain;display:block"></span>`;
+  }).filter(Boolean).join('\n');
+  if(!imgs) return '';
+  return `<div class="st26-logo-row">\n  <div class="st26-logo-label">${esc(label)}</div>\n  <div class="st26-logo-wrap">\n${imgs}\n  </div>\n</div>`;
 }
 
 function pCell(v) {
@@ -1431,7 +1598,7 @@ function buildPricingBlock(f, regUrlZh, regUrlEn, remarkZh, remarkEn, lang) {
   const showDiscount = document.getElementById('opt-discount')?.checked !== false;
   const showFootnote = document.getElementById('opt-footnote')?.checked !== false;
 
-  const activeUrl = lang==='zh' ? (regUrlZh||regUrlEn||'') : (regUrlEn||regUrlZh||'');
+  const activeUrl = safeUrl(lang==='zh' ? (regUrlZh||regUrlEn||'') : (regUrlEn||regUrlZh||''));
   const activeRemark = lang==='zh' ? remarkZh : remarkEn;
   const remarkHTML = activeRemark ? '\n<div class="st26-pricing-remark">'+esc(activeRemark).replace(/\n/g,'<br>')+'</div>\n' : '';
   const btnLabel    = lang==='zh'?'立即報名':'Register Now';
@@ -1451,7 +1618,7 @@ function buildPricingBlock(f, regUrlZh, regUrlEn, remarkZh, remarkEn, lang) {
   const note = lang==='zh'
     ?'＊主辦單位保留調整或更改活動議程之權利，最終議程以現場安排為準。'
     :'* The organizer reserves the right to adjust or change the agenda. The final agenda is subject to the on-site arrangement.';
-  const btnHTML = activeUrl ? '<a class="st26-btn" href="'+esc(activeUrl)+'" target="_blank">'+btnLabel+' <span class="st26-btn-arr">→</span></a>' : '';
+  const btnHTML = activeUrl ? '<a class="st26-btn" href="'+esc(activeUrl)+'" target="_blank" rel="noopener noreferrer">'+btnLabel+' <span class="st26-btn-arr">→</span></a>' : '';
 
   const priceTableHTML = (!f||!f.hasPrices) ? '' : (() => {
     const p = f.prices;
