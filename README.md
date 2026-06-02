@@ -2,7 +2,7 @@ Web Deployment Automation Compiler (SEMI Taiwan)
 
 A high-performance, frontend-based automation compiler engineered to transform unstructured, multi-dimensional spreadsheet data into standardized, brand-compliant digital assets for SEMICON Taiwan.
 
-Current production version: v9.2
+Current production version: v9.3
 
 CP Team Chinese user guide:
 
@@ -21,6 +21,7 @@ Logo output layout:
 
 - Desktop output uses a compact five-column logo grid.
 - Mobile output uses a compact four-column logo grid.
+- Logo section labels use compact, content-width spacing to keep the output flatter.
 - Co-branded logos span two grid slots to preserve readability for wide assets.
 
 Important handover notes:
