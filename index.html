@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ST26 論壇 HTML 產生器 v9.9</title>
+<title>ST26 論壇 HTML 產生器 v9.10</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -190,7 +190,7 @@ textarea.inp{resize:vertical}
   <div>
     <div class="hdr-eye">SEMI Taiwan · ST26</div>
     <div class="hdr-name">論壇 HTML 產生器</div>
-    <div class="hdr-ver">v9.9 · 三步驟流程 · AI 輔助 · 合作單位修正</div>
+    <div class="hdr-ver">v9.10 · 三步驟流程 · AI 輔助 · 連結驗證修正</div>
   </div>
   <div class="hdr-badge">✦ AI 輔助版</div>
 </div>
@@ -1549,11 +1549,13 @@ function safeUrl(s, allowDataImage) {
   if(allowDataImage && /^data:image\//i.test(raw)) return raw;
   if(/^www\./i.test(raw)) raw = 'https://' + raw;
   if(!/^[a-z][a-z0-9+.-]*:/i.test(raw) && /^[a-z0-9.-]+\.[a-z]{2,}(\/|$)/i.test(raw)) raw = 'https://' + raw;
+  if(raw.startsWith('/')) return raw;
+  if(!/^(https?:|mailto:|tel:)/i.test(raw)) return '';
   try {
-    const u = new URL(raw, window.location.href);
+    const u = new URL(raw);
     if(['http:', 'https:', 'mailto:', 'tel:'].includes(u.protocol)) return raw;
   } catch(e) {
-    if(raw.startsWith('/')) return raw;
+    return '';
   }
   return '';
 }
@@ -1819,7 +1821,11 @@ function parsePartnerOrgParts(parts, lastRole) {
   const secondIsRole = isPartnerOrgRole(name);
 
   if(firstIsRole) {
-    if(safeUrl(name) && !url) {
+    if(safeUrl(name) && url && !safeUrl(url)) {
+      const actualUrl = name;
+      name = url;
+      url = actualUrl;
+    } else if(safeUrl(name) && !url) {
       url = name;
       name = fallbackOrgNameFromUrl(url, role);
     } else if(secondIsRole && safeUrl(url)) {
