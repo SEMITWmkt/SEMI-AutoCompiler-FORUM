@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ST26 論壇 HTML 產生器 v9.3</title>
+<title>ST26 論壇 HTML 產生器 v9.4</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -189,7 +189,7 @@ textarea.inp{resize:vertical}
   <div>
     <div class="hdr-eye">SEMI Taiwan · ST26</div>
     <div class="hdr-name">論壇 HTML 產生器</div>
-    <div class="hdr-ver">v9.3 · 三步驟流程 · AI 輔助 · 扁平化 Logo 排版</div>
+    <div class="hdr-ver">v9.4 · 三步驟流程 · AI 輔助 · 合作論壇模式</div>
   </div>
   <div class="hdr-badge">✦ AI 輔助版</div>
 </div>
@@ -335,6 +335,18 @@ textarea.inp{resize:vertical}
     </div>
   </div>
 
+  <!-- 論壇類型 -->
+  <div class="card">
+    <div class="card-title">⚙️ 論壇類型</div>
+    <div class="hint-box" style="margin-bottom:12px;font-size:12px">
+      合作論壇可保留外部單位提供的完整說明與連結，但仍使用統一版型輸出；Logo 尚未收到時，可先用文字連結呈現合作單位。
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:700;color:#333">
+      <input type="checkbox" id="opt-partner" onchange="onPartnerModeChange(this.checked)" style="width:15px;height:15px;accent-color:var(--brand);cursor:pointer">
+      合作論壇模式（主題與大綱直接展開，關閉 SEMI 自辦票價附加資訊）
+    </label>
+  </div>
+
   <!-- 主題與大綱 -->
   <div class="card">
     <div class="card-title">💡 主題與大綱</div>
@@ -356,6 +368,24 @@ textarea.inp{resize:vertical}
       <div class="field" id="field-outline-en">
         <label class="lbl">英文大綱 / 簡介</label>
         <textarea class="inp" id="outline-en" rows="5"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- 合作單位文字連結 -->
+  <div class="card">
+    <div class="card-title">🤝 合作單位文字連結</div>
+    <div class="hint-box" style="margin-bottom:12px;font-size:12px">
+      適合 Logo 尚未收到的合作論壇。每行格式：角色 ｜ 單位名稱 ｜ URL，例如「主辦單位 ｜ 台灣高科技廠房設施協會 ｜ https://...」。
+    </div>
+    <div class="grid2">
+      <div class="field">
+        <label class="lbl">中文合作單位（選填）</label>
+        <textarea class="inp" id="partner-orgs-zh" rows="4" placeholder="主辦單位 ｜ 台灣高科技廠房設施協會 ｜ https://...&#10;協辦單位 ｜ 臺大土木系高科技廠房設施研究中心 ｜ https://..."></textarea>
+      </div>
+      <div class="field">
+        <label class="lbl">英文合作單位（選填）</label>
+        <textarea class="inp" id="partner-orgs-en" rows="4" placeholder="Organizer | Taiwan High-Tech Facility Association | https://...&#10;Co-Organizer | High-Tech Facility Research Center, NTU | https://..."></textarea>
       </div>
     </div>
   </div>
@@ -442,6 +472,16 @@ textarea.inp{resize:vertical}
     <div class="field" style="margin-top:12px">
       <label class="lbl">地點導航連結（Google Maps）</label>
       <input class="inp" id="map-url" placeholder="https://maps.google.com/...">
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="field">
+        <label class="lbl">中文相關連結（選填）</label>
+        <textarea class="inp" id="related-links-zh" rows="3" placeholder="晚宴報名 ｜ https://...&#10;協會官方網站 ｜ https://..."></textarea>
+      </div>
+      <div class="field">
+        <label class="lbl">英文相關連結（選填）</label>
+        <textarea class="inp" id="related-links-en" rows="3" placeholder="VIP Banquet Registration | https://...&#10;Association Website | https://..."></textarea>
+      </div>
     </div>
 
     <div style="height:1px;background:var(--border);margin:16px 0"></div>
@@ -930,6 +970,14 @@ function proceedFromExcel() {
   btn.onclick = handleParse;
 }
 
+function onPartnerModeChange(checked) {
+  if(!checked) return;
+  setChecked('opt-theme', true);
+  setChecked('opt-outline', true);
+  setChecked('opt-daypass', false);
+  setChecked('opt-discount', false);
+}
+
 // ─────────────────────────── Generate ───────────────────────────
 function handleGenerate() {
   zhHTML = buildFullHTML('zh');
@@ -1316,6 +1364,8 @@ function saveDraft() {
     venueZh: getVal('venue-zh'), venueEn: getVal('venue-en'),
     themeZh: getVal('theme-zh'), themeEn: getVal('theme-en'),
     outlineZh: getVal('outline-zh'), outlineEn: getVal('outline-en'),
+    partnerMode: document.getElementById('opt-partner')?.checked || false,
+    partnerOrgsZh: getVal('partner-orgs-zh'), partnerOrgsEn: getVal('partner-orgs-en'),
     advisedName: getVal('advised-name'), advisedUrl: getVal('advised-url'),
     chairs: getPeople('chairs-wrap'), mods: getPeople('mods-wrap'),
     logos: {
@@ -1324,6 +1374,7 @@ function saveDraft() {
       sponsor: serializeLogos('logo-sponsor')
     },
     remarkZh: getVal('remark-zh'), remarkEn: getVal('remark-en'),
+    relatedLinksZh: getVal('related-links-zh'), relatedLinksEn: getVal('related-links-en'),
     regUrlZh: getVal('reg-url-zh'), regUrlEn: getVal('reg-url-en'),
     mapUrl: getVal('map-url'),
     forumPrices: selectedForum ? { prices: selectedForum.prices, hasPrices: selectedForum.hasPrices } : null
@@ -1355,13 +1406,17 @@ function loadDraft() {
     const fieldMap = {
       nameZh:'name-zh', nameEn:'name-en', venueZh:'venue-zh', venueEn:'venue-en',
       themeZh:'theme-zh', themeEn:'theme-en', outlineZh:'outline-zh', outlineEn:'outline-en',
+      partnerOrgsZh:'partner-orgs-zh', partnerOrgsEn:'partner-orgs-en',
       advisedName:'advised-name', advisedUrl:'advised-url',
       remarkZh:'remark-zh', remarkEn:'remark-en',
+      relatedLinksZh:'related-links-zh', relatedLinksEn:'related-links-en',
       regUrlZh:'reg-url-zh', regUrlEn:'reg-url-en', mapUrl:'map-url'
     };
     Object.entries(fieldMap).forEach(([k, id]) => {
       if(d[k] !== undefined) setVal(id, d[k]);
     });
+
+    setChecked('opt-partner', !!d.partnerMode);
 
     document.getElementById('chairs-wrap').innerHTML = '';
     (d.chairs||[]).forEach(p => addPerson('chairs-wrap', p.name, p.url));
@@ -1407,6 +1462,7 @@ function clearDrafts() {
 // ─────────────────────────── Utilities ───────────────────────────
 function getVal(id) { return document.getElementById(id)?.value.trim() || ''; }
 function setVal(id, v) { const el = document.getElementById(id); if(el) el.value = v||''; }
+function setChecked(id, v) { const el = document.getElementById(id); if(el) el.checked = !!v; }
 function esc(s) {
   if(!s) return '';
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -1461,6 +1517,8 @@ details[open] .st26-theme-line::after{transform:rotate(180deg)}
 .st26-outline{padding:16px 20px;background:#f9f8ff;border-left:4px solid #673BB8;border-radius:0 6px 6px 0;margin-top:4px;margin-bottom:16px;font-size:16px;color:#444;line-height:1.8}
 .st26-outline p{margin-bottom:10px}
 .st26-outline p:last-child{margin-bottom:0}
+.st26-outline a,.st26-pricing-remark a,.st26-related a,.st26-partner-orgs a{color:#673BB8;text-decoration:none;font-weight:700}
+.st26-outline a:hover,.st26-pricing-remark a:hover,.st26-related a:hover,.st26-partner-orgs a:hover{text-decoration:underline}
 .st26-org{display:grid;grid-template-columns:repeat(3,1fr);align-items:start;gap:20px 24px;padding:16px 0;border-top:1px solid #e5e5ea;border-bottom:1px solid #e5e5ea;margin:20px 0}
 .st26-org-item{display:flex;flex-direction:column;gap:4px;min-width:200px;flex:1}
 .st26-org-role{font-size:13px;font-weight:700;color:#86868b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
@@ -1473,8 +1531,17 @@ details[open] .st26-theme-line::after{transform:rotate(180deg)}
 .st26-logo-item{--logo-max-w:80%;--logo-max-h:43px;display:flex;align-items:center;justify-content:center;min-width:0;height:56px}
 .st26-logo-item-wide{grid-column:span 2}
 .st26-logo-item img{max-width:var(--logo-max-w);max-height:var(--logo-max-h);width:auto;height:auto;object-fit:contain;display:block}
+.st26-partner-orgs{display:grid;gap:8px;margin:14px 0 18px;padding:12px 0;border-top:1px solid #e5e5ea;border-bottom:1px solid #e5e5ea}
+.st26-partner-org-row{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:12px;align-items:start}
+.st26-partner-org-role{font-size:13px;font-weight:700;color:#86868b;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.st26-partner-org-name{font-size:15px;font-weight:600;color:#333;line-height:1.5}
+.st26-related{display:flex;flex-wrap:wrap;gap:8px 10px;margin:12px 0 18px}
+.st26-related-link{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid #d4c8f0;border-radius:100px;background:#fff;color:#673BB8;font-size:13px;font-weight:700;text-decoration:none}
+.st26-related-link::after{content:'↗';font-size:11px;line-height:1;color:#673BB8}
 .st26-div{height:1px;background:#e5e5ea;margin:20px 0}
 .st26-pricing-remark{padding:12px 16px;background:#f9f8ff;border-left:3px solid #673BB8;border-radius:0 4px 4px 0;font-size:14px;color:#666;margin-bottom:16px;line-height:1.6}
+.st26-pricing-remark p{margin-bottom:6px}
+.st26-pricing-remark p:last-child{margin-bottom:0}
 .st26-ph{display:flex;justify-content:space-between;align-items:center;margin:16px 0 12px;flex-wrap:wrap;gap:12px}
 .st26-ph-title{font-size:18px;font-weight:800}
 .st26-btn{display:inline-flex;align-items:center;gap:10px;background:#673BB8;color:#fff;padding:8px 12px 8px 16px;border-radius:100px;font-size:15px;font-weight:700;text-decoration:none;transition:background .2s}
@@ -1513,6 +1580,8 @@ details[open] .st26-theme-line::after{transform:rotate(180deg)}
   .st26-logo-label{width:100%;padding-top:0;margin-bottom:6px;font-size:12px}
   .st26-logo-wrap{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;min-height:50px}
   .st26-logo-item{height:50px}
+  .st26-partner-org-row{grid-template-columns:1fr;gap:2px}
+  .st26-partner-org-role{font-size:12px}
   .st26-pr-head{display:none}
   .st26-pr-row{display:flex;flex-direction:column;background:#fff;border:1px solid #d4c8f0;border-radius:8px;padding:16px;margin-bottom:12px;gap:0}
   .st26-pr-col1{width:100%;border-bottom:2px solid #1d1d1f;padding-bottom:12px;margin-bottom:8px}
@@ -1522,17 +1591,78 @@ details[open] .st26-theme-line::after{transform:rotate(180deg)}
 }
 </style>`;
 
+function isPartnerMode() {
+  return document.getElementById('opt-partner')?.checked || false;
+}
+
+function splitTrailingPunctuation(s) {
+  const m = String(s || '').match(/^(.+?)([.,;:!?，。；：！？）)]*)$/);
+  return m ? [m[1], m[2] || ''] : [s, ''];
+}
+
+function renderPlainWithLinks(text) {
+  const re = /(https?:\/\/[^\s<>"']+|mailto:[^\s<>"']+|tel:[^\s<>"']+|[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})/g;
+  let out = '', last = 0, m;
+  while((m = re.exec(text)) !== null) {
+    out += esc(text.slice(last, m.index));
+    let raw = m[0];
+    const parts = splitTrailingPunctuation(raw);
+    raw = parts[0];
+    const trailing = parts[1];
+    let href = raw;
+    if(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(raw)) href = 'mailto:' + raw;
+    const safe = safeUrl(href);
+    out += safe ? '<a href="'+esc(safe)+'" target="_blank" rel="noopener noreferrer">'+esc(raw)+'</a>' : esc(raw);
+    out += esc(trailing);
+    last = m.index + m[0].length;
+  }
+  return out + esc(text.slice(last));
+}
+
+function renderInlineRichText(text) {
+  const raw = String(text || '');
+  const re = /\[([^\]]+)\]\(([^)]+)\)/g;
+  let out = '', last = 0, m;
+  while((m = re.exec(raw)) !== null) {
+    out += renderPlainWithLinks(raw.slice(last, m.index));
+    const href = safeUrl(m[2].trim());
+    out += href ? '<a href="'+esc(href)+'" target="_blank" rel="noopener noreferrer">'+esc(m[1].trim())+'</a>' : esc(m[0]);
+    last = m.index + m[0].length;
+  }
+  return out + renderPlainWithLinks(raw.slice(last));
+}
+
+function renderParagraphs(text) {
+  return String(text || '').split(/\n\n+/).map(p=>p.trim()).filter(Boolean)
+    .map(p=>'    <p>'+renderInlineRichText(p).replace(/\n/g,'<br>')+'</p>').join('\n');
+}
+
+function parsePipeRows(raw, expected) {
+  return String(raw || '').split(/\r?\n/).map(line => line.trim()).filter(Boolean).map(line => {
+    const parts = line.split(/\s*[|｜]\s*/).map(p => p.trim()).filter(Boolean);
+    while(parts.length < expected) parts.push('');
+    return parts;
+  });
+}
+
 function buildThemeBlock(theme, outline, lang) {
   const showTheme   = document.getElementById('opt-theme')?.checked !== false;
   const showOutline = document.getElementById('opt-outline')?.checked !== false;
+  const partnerMode = isPartnerMode();
 
   if(!showTheme) return '';
 
   const txt = theme || (lang==='zh' ? '即將公告' : 'To be announced');
 
+  if(partnerMode) {
+    const outlineHTML = (outline && showOutline)
+      ? '\n  <div class="st26-outline">\n'+renderParagraphs(outline)+'\n  </div>'
+      : '';
+    return '\n<div style="padding:4px 0;"><span class="st26-theme-static">'+esc(txt)+'</span></div>' + outlineHTML;
+  }
+
   if(outline && showOutline) {
-    const paras = outline.split(/\n\n+/).map(p=>p.trim()).filter(Boolean)
-      .map(p=>'    <p>'+esc(p).replace(/\n/g,'<br>')+'</p>').join('\n');
+    const paras = renderParagraphs(outline);
     return '\n<details class="st26-details">\n  <summary class="st26-summary"><span class="st26-theme-line">'+esc(txt)+'</span></summary>\n  <div class="st26-outline">\n'+paras+'\n  </div>\n</details>';
   }
   return '\n<div style="padding:4px 0;"><span class="st26-theme-static">'+esc(txt)+'</span></div>';
@@ -1549,9 +1679,34 @@ function buildAnchorNav(venueDisplay, mapUrl, lang) {
   return html + '</div>';
 }
 
-function buildOrgBlock(advisedName, advisedUrl, chairs, mods, lang) {
+function buildPartnerOrgsBlock(raw) {
+  const rows = parsePipeRows(raw, 3).map(parts => {
+    const role = parts[0], name = parts[1], url = parts[2];
+    if(!role || !name) return '';
+    const href = safeUrl(url);
+    const nameHtml = href ? '<a href="'+esc(href)+'" target="_blank" rel="noopener noreferrer">'+esc(name)+'</a>' : esc(name);
+    return '  <div class="st26-partner-org-row"><span class="st26-partner-org-role">'+esc(role)+'</span><span class="st26-partner-org-name">'+nameHtml+'</span></div>';
+  }).filter(Boolean).join('\n');
+  return rows ? '\n<div class="st26-partner-orgs">\n'+rows+'\n</div>' : '';
+}
+
+function buildRelatedLinksBlock(raw, lang) {
+  const rows = parsePipeRows(raw, 2).map(parts => {
+    let label = parts[0], url = parts[1];
+    if(!url && safeUrl(label)) {
+      url = label;
+      label = lang === 'zh' ? '相關連結' : 'Related Link';
+    }
+    const href = safeUrl(url);
+    if(!label || !href) return '';
+    return '<a class="st26-related-link" href="'+esc(href)+'" target="_blank" rel="noopener noreferrer">'+esc(label)+'</a>';
+  }).filter(Boolean).join('\n');
+  return rows ? '\n<div class="st26-related">\n'+rows+'\n</div>' : '';
+}
+
+function buildOrgBlock(advisedName, advisedUrl, chairs, mods, lang, partnerMode) {
   if(!advisedName && !chairs.length && !mods.length) return '';
-  const aLabel = lang==='zh' ? '指導單位' : 'Advised by';
+  const aLabel = partnerMode ? (lang==='zh' ? '主辦單位' : 'Organizer') : (lang==='zh' ? '指導單位' : 'Advised by');
   const cLabel = lang==='zh' ? '論壇主席' : (chairs.length>1?'Forum Chairs':'Forum Chair');
   const mLabel = lang==='zh' ? '論壇主持人' : (mods.length>1?'Forum Moderators':'Forum Moderator');
   let html = '\n<div class="st26-org">\n';
@@ -1597,13 +1752,14 @@ function pCell(v) {
 }
 
 function buildPricingBlock(f, regUrlZh, regUrlEn, remarkZh, remarkEn, lang) {
-  const showDayPass  = document.getElementById('opt-daypass')?.checked !== false;
-  const showDiscount = document.getElementById('opt-discount')?.checked !== false;
+  const partnerMode = isPartnerMode();
+  const showDayPass  = !partnerMode && document.getElementById('opt-daypass')?.checked !== false;
+  const showDiscount = !partnerMode && document.getElementById('opt-discount')?.checked !== false;
   const showFootnote = document.getElementById('opt-footnote')?.checked !== false;
 
   const activeUrl = safeUrl(lang==='zh' ? (regUrlZh||regUrlEn||'') : (regUrlEn||regUrlZh||''));
   const activeRemark = lang==='zh' ? remarkZh : remarkEn;
-  const remarkHTML = activeRemark ? '\n<div class="st26-pricing-remark">'+esc(activeRemark).replace(/\n/g,'<br>')+'</div>\n' : '';
+  const remarkHTML = activeRemark ? '\n<div class="st26-pricing-remark">\n'+renderParagraphs(activeRemark)+'\n</div>\n' : '';
   const btnLabel    = lang==='zh'?'立即報名':'Register Now';
   const colPeriod   = lang==='zh'?'時段':'Period';
   const colMem      = lang==='zh'?'SEMI 會員':'SEMI Member';
@@ -1654,14 +1810,17 @@ function buildPricingBlock(f, regUrlZh, regUrlEn, remarkZh, remarkEn, lang) {
 
 function buildFullHTML(lang) {
   const f = selectedForum;
+  const partnerMode = isPartnerMode();
   const theme   = getVal('theme-'+lang);
   const outline = getVal('outline-'+lang);
+  const partnerOrgs = getVal('partner-orgs-'+lang);
   const advisedName = getVal('advised-name');
   const advisedUrl  = getVal('advised-url');
   const regUrlZh = getVal('reg-url-zh');
   const regUrlEn = getVal('reg-url-en');
   const remarkZh = getVal('remark-zh');
   const remarkEn = getVal('remark-en');
+  const relatedLinks = getVal('related-links-'+lang);
   const mapUrl   = getVal('map-url');
   const chairs   = getPeople('chairs-wrap');
   const mods     = getPeople('mods-wrap');
@@ -1679,7 +1838,9 @@ function buildFullHTML(lang) {
 
   const themeBlock  = buildThemeBlock(theme, outline, lang);
   const anchorNav   = buildAnchorNav(venueDisplay, mapUrl, lang);
-  const orgBlock    = buildOrgBlock(advisedName, advisedUrl, chairs, mods, lang);
+  const partnerOrgsBlock = buildPartnerOrgsBlock(partnerOrgs);
+  const orgBlock    = buildOrgBlock(advisedName, advisedUrl, chairs, mods, lang, partnerMode);
+  const relatedBlock = buildRelatedLinksBlock(relatedLinks, lang);
   const logoOrg     = buildLogoSection(orgLabel, orgLogos);
   const logoCoorg   = buildLogoSection(coorgLabel, coorgLogos);
   const logoSponsor = buildLogoSection(sponLabel, sponsorLogos);
@@ -1688,7 +1849,7 @@ function buildFullHTML(lang) {
   const hasLogos    = logosHtml.trim().length > 0;
 
   return OUT_CSS + '\n<div class="st26 st26-lang-'+lang+'">\n' +
-    themeBlock + '\n' + anchorNav + '\n' + orgBlock + '\n' +
+    themeBlock + '\n' + anchorNav + '\n' + partnerOrgsBlock + '\n' + orgBlock + '\n' + relatedBlock + '\n' +
     (hasLogos ? '\n'+logosHtml+'\n<div class="st26-div" style="margin-top:20px;"></div>\n' : '') +
     pricingBlock + '\n</div>';
 }
