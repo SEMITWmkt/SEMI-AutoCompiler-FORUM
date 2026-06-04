@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ST26 論壇 HTML 產生器 v9.6</title>
+<title>ST26 論壇 HTML 產生器 v9.7</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -190,7 +190,7 @@ textarea.inp{resize:vertical}
   <div>
     <div class="hdr-eye">SEMI Taiwan · ST26</div>
     <div class="hdr-name">論壇 HTML 產生器</div>
-    <div class="hdr-ver">v9.6 · 三步驟流程 · AI 輔助 · 分流編輯</div>
+    <div class="hdr-ver">v9.7 · 三步驟流程 · AI 輔助 · 合作單位分組</div>
   </div>
   <div class="hdr-badge">✦ AI 輔助版</div>
 </div>
@@ -387,16 +387,16 @@ textarea.inp{resize:vertical}
   <div class="card" id="partner-orgs-card">
     <div class="card-title">🤝 合作單位文字連結</div>
     <div class="hint-box" style="margin-bottom:12px;font-size:12px">
-      適合 Logo 尚未收到的合作論壇。每行格式：角色 ｜ 單位名稱 ｜ URL，例如「主辦單位 ｜ 台灣高科技廠房設施協會 ｜ https://...」。
+      適合 Logo 尚未收到的合作論壇。每行格式：角色 ｜ 單位名稱 ｜ URL；相同角色會自動合併成同一區，例如多個「協辦單位」會列在同一個標題下。
     </div>
     <div class="grid2">
       <div class="field">
         <label class="lbl">中文合作單位（選填）</label>
-        <textarea class="inp" id="partner-orgs-zh" rows="4" placeholder="主辦單位 ｜ 台灣高科技廠房設施協會 ｜ https://...&#10;協辦單位 ｜ 臺大土木系高科技廠房設施研究中心 ｜ https://..."></textarea>
+        <textarea class="inp" id="partner-orgs-zh" rows="4" placeholder="主辦單位 ｜ 台灣高科技廠房設施協會 ｜ https://...&#10;協辦單位 ｜ 臺大土木系高科技廠房設施研究中心 ｜ https://...&#10;協辦單位 ｜ 臺大氣候天氣災害研究中心 ｜ https://..."></textarea>
       </div>
       <div class="field">
         <label class="lbl">英文合作單位（選填）</label>
-        <textarea class="inp" id="partner-orgs-en" rows="4" placeholder="Organizer | Taiwan High-Tech Facility Association | https://...&#10;Co-Organizer | High-Tech Facility Research Center, NTU | https://..."></textarea>
+        <textarea class="inp" id="partner-orgs-en" rows="4" placeholder="Organizer | Taiwan High-Tech Facility Association | https://...&#10;Co-Organizer | High-Tech Facility Research Center, NTU | https://...&#10;Co-Organizer | Center for Weather and Climate Disaster Research, NTU | https://..."></textarea>
       </div>
     </div>
   </div>
@@ -844,6 +844,7 @@ Rules:
 - outlineZh/outlineEn: the main forum description/about section, use double newline (\\n\\n) to separate paragraphs
 - remarkZh/remarkEn: registration-related notes, disclaimers, discount instructions, or special conditions (e.g. "＊You are currently registering for..."). These are NOT part of the main description.
 - partnerOrgsZh/partnerOrgsEn: organizer/co-organizer/advisor text links, one item per line in "Role | Organization Name | URL" format. Preserve URLs from Word hyperlinks when available.
+- If multiple organizations share the same role, repeat the same role label on each line. Do not invent separate role variants.
 - relatedLinksZh/relatedLinksEn: external links such as banquet registration, association website, official forum page, one item per line in "Label | URL" format.
 - regUrlZh/regUrlEn: the primary registration URL. If only one URL is found, put it in both fields.
 - If text is in Chinese only, leave English fields as empty string. If English only, leave Chinese fields as empty string.
@@ -1593,7 +1594,8 @@ details[open] .st26-theme-line::after{transform:rotate(180deg)}
 .st26-partner-orgs{display:grid;gap:8px;margin:14px 0 18px;padding:12px 0;border-top:1px solid #e5e5ea;border-bottom:1px solid #e5e5ea}
 .st26-partner-org-row{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:12px;align-items:start}
 .st26-partner-org-role{font-size:13px;font-weight:700;color:#86868b;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
-.st26-partner-org-name{font-size:15px;font-weight:600;color:#333;line-height:1.5}
+.st26-partner-org-name{display:grid;gap:4px;font-size:15px;font-weight:600;color:#333;line-height:1.5}
+.st26-partner-org-name-item{display:block}
 .st26-related{display:flex;flex-wrap:wrap;gap:8px 10px;margin:12px 0 18px}
 .st26-related-link{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid #d4c8f0;border-radius:100px;background:#fff;color:#673BB8;font-size:13px;font-weight:700;text-decoration:none}
 .st26-related-link::after{content:'↗';font-size:11px;line-height:1;color:#673BB8}
@@ -1739,13 +1741,25 @@ function buildAnchorNav(venueDisplay, mapUrl, lang) {
 }
 
 function buildPartnerOrgsBlock(raw) {
-  const rows = parsePipeRows(raw, 3).map(parts => {
+  const groups = [];
+  const byRole = new Map();
+  parsePipeRows(raw, 3).forEach(parts => {
     const role = parts[0], name = parts[1], url = parts[2];
-    if(!role || !name) return '';
+    if(!role || !name) return;
+    const key = role.toLowerCase().replace(/\s+/g, ' ').trim();
+    if(!byRole.has(key)) {
+      byRole.set(key, { role, names: [] });
+      groups.push(byRole.get(key));
+    }
     const href = safeUrl(url);
-    const nameHtml = href ? '<a href="'+esc(href)+'" target="_blank" rel="noopener noreferrer">'+esc(name)+'</a>' : esc(name);
-    return '  <div class="st26-partner-org-row"><span class="st26-partner-org-role">'+esc(role)+'</span><span class="st26-partner-org-name">'+nameHtml+'</span></div>';
-  }).filter(Boolean).join('\n');
+    const nameHtml = href
+      ? '<a href="'+esc(href)+'" target="_blank" rel="noopener noreferrer">'+esc(name)+'</a>'
+      : renderInlineRichText(name);
+    byRole.get(key).names.push('<span class="st26-partner-org-name-item">'+nameHtml+'</span>');
+  });
+  const rows = groups.map(g =>
+    '  <div class="st26-partner-org-row"><span class="st26-partner-org-role">'+esc(g.role)+'</span><span class="st26-partner-org-name">'+g.names.join('')+'</span></div>'
+  ).join('\n');
   return rows ? '\n<div class="st26-partner-orgs">\n'+rows+'\n</div>' : '';
 }
 
