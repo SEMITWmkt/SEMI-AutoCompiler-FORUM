@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ST26 論壇 HTML 產生器 v9.8</title>
+<title>ST26 論壇 HTML 產生器 v9.9</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -190,7 +190,7 @@ textarea.inp{resize:vertical}
   <div>
     <div class="hdr-eye">SEMI Taiwan · ST26</div>
     <div class="hdr-name">論壇 HTML 產生器</div>
-    <div class="hdr-ver">v9.8 · 三步驟流程 · AI 輔助 · 輸入減法</div>
+    <div class="hdr-ver">v9.9 · 三步驟流程 · AI 輔助 · 合作單位修正</div>
   </div>
   <div class="hdr-badge">✦ AI 輔助版</div>
 </div>
@@ -838,6 +838,7 @@ Rules:
 - remarkZh/remarkEn: registration-related notes, banquet registration instructions, external forum links, disclaimers, discount instructions, or special conditions (e.g. "＊You are currently registering for..."). These are NOT part of the main description.
 - partnerOrgsZh/partnerOrgsEn: organizer/co-organizer/advisor text links, one item per line in "Role | Organization Name | URL" format. Preserve URLs from Word hyperlinks when available.
 - If multiple organizations share the same role, repeat the same role label on each line. Do not invent separate role variants.
+- Never put the role label itself as the organization name. For example, do not output "Co-Organizer | Co-Organizer | URL"; extract the actual organization name.
 - relatedLinksZh/relatedLinksEn: leave these fields empty. Do not extract banquet registration or association websites into separate button links unless the user explicitly asks for standalone related buttons.
 - regUrlZh/regUrlEn: the primary registration URL. If only one URL is found, put it in both fields.
 - If text is in Chinese only, leave English fields as empty string. If English only, leave Chinese fields as empty string.
@@ -1542,9 +1543,12 @@ function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 function safeUrl(s, allowDataImage) {
-  const raw = String(s || '').trim();
+  let raw = String(s || '').trim();
   if(!raw) return '';
+  raw = raw.replace(/^[<「『（(]+|[>」』）)]+$/g, '').replace(/[，,。；;、]+$/g, '');
   if(allowDataImage && /^data:image\//i.test(raw)) return raw;
+  if(/^www\./i.test(raw)) raw = 'https://' + raw;
+  if(!/^[a-z][a-z0-9+.-]*:/i.test(raw) && /^[a-z0-9.-]+\.[a-z]{2,}(\/|$)/i.test(raw)) raw = 'https://' + raw;
   try {
     const u = new URL(raw, window.location.href);
     if(['http:', 'https:', 'mailto:', 'tel:'].includes(u.protocol)) return raw;
@@ -1756,16 +1760,9 @@ function buildPartnerOrgsBlock(raw) {
   const byRole = new Map();
   let lastRole = '';
   parsePipeRows(raw, 3).forEach(parts => {
-    let role = parts[0], name = parts[1], url = parts[2];
-    if(lastRole && role && !name) {
-      name = role;
-      role = lastRole;
-    } else if(lastRole && role && name && !url && safeUrl(name)) {
-      url = name;
-      name = role;
-      role = lastRole;
-    }
-    if(!role || !name) return;
+    const parsed = parsePartnerOrgParts(parts, lastRole);
+    if(!parsed) return;
+    const { role, name, url } = parsed;
     lastRole = role;
     const key = role.toLowerCase().replace(/\s+/g, ' ').trim();
     if(!byRole.has(key)) {
@@ -1782,6 +1779,64 @@ function buildPartnerOrgsBlock(raw) {
     '  <div class="st26-partner-org-row"><span class="st26-partner-org-role">'+esc(g.role)+'</span><span class="st26-partner-org-name">'+g.names.join('')+'</span></div>'
   ).join('\n');
   return rows ? '\n<div class="st26-partner-orgs">\n'+rows+'\n</div>' : '';
+}
+
+function isPartnerOrgRole(value) {
+  const text = String(value || '').trim().toLowerCase()
+    .replace(/[：:]/g, '')
+    .replace(/[–—-]/g, ' ')
+    .replace(/\s+/g, ' ');
+  if(!text) return false;
+  return [
+    '主辦單位','共同主辦單位','協辦單位','指導單位','贊助單位',
+    'organizer','co organizer','co organiser','co host','cohost',
+    'advisor','advised by','sponsor','sponsored by'
+  ].includes(text);
+}
+
+function fallbackOrgNameFromUrl(url, role) {
+  const href = safeUrl(url);
+  if(!href) return '';
+  const zh = /[\u4e00-\u9fff]/.test(role);
+  const known = [
+    [/htfa\.org\.tw/i, '台灣高科技廠房設施協會', 'Taiwan High-Tech Facility Association'],
+    [/ntu-htfrc\.org/i, '臺大土木系高科技廠房設施研究中心', 'High-Tech Facility Research Center, NTU'],
+    [/wcdr\.ntu\.edu\.tw/i, '臺大氣候天氣災害研究中心', 'Center for Weather and Climate Disaster Research, NTU']
+  ];
+  const hit = known.find(([re]) => re.test(href));
+  if(hit) return zh ? hit[1] : hit[2];
+  try {
+    const u = new URL(href, window.location.href);
+    return u.hostname.replace(/^www\./i, '');
+  } catch(e) {
+    return href;
+  }
+}
+
+function parsePartnerOrgParts(parts, lastRole) {
+  let role = parts[0] || '', name = parts[1] || '', url = parts[2] || '';
+  const firstIsRole = isPartnerOrgRole(role);
+  const secondIsRole = isPartnerOrgRole(name);
+
+  if(firstIsRole) {
+    if(safeUrl(name) && !url) {
+      url = name;
+      name = fallbackOrgNameFromUrl(url, role);
+    } else if(secondIsRole && safeUrl(url)) {
+      name = fallbackOrgNameFromUrl(url, role);
+    }
+  } else if(lastRole) {
+    url = name || url;
+    name = role;
+    role = lastRole;
+  }
+
+  if(isPartnerOrgRole(name) && safeUrl(url)) {
+    name = fallbackOrgNameFromUrl(url, role);
+  }
+
+  if(!role || !name || isPartnerOrgRole(name)) return null;
+  return { role, name, url };
 }
 
 function buildOrgBlock(advisedName, advisedUrl, chairs, mods, lang, partnerMode) {
