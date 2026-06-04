@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ST26 論壇 HTML 產生器 v9.4</title>
+<title>ST26 論壇 HTML 產生器 v9.5</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -189,7 +189,7 @@ textarea.inp{resize:vertical}
   <div>
     <div class="hdr-eye">SEMI Taiwan · ST26</div>
     <div class="hdr-name">論壇 HTML 產生器</div>
-    <div class="hdr-ver">v9.4 · 三步驟流程 · AI 輔助 · 合作論壇模式</div>
+    <div class="hdr-ver">v9.5 · 三步驟流程 · AI 輔助 · 合作論壇入口</div>
   </div>
   <div class="hdr-badge">✦ AI 輔助版</div>
 </div>
@@ -221,6 +221,9 @@ textarea.inp{resize:vertical}
     <button class="mode-btn" onclick="setMode('text',this)">
       📝 貼上文字 / 任意描述
     </button>
+    <button class="mode-btn" onclick="setMode('partner',this)">
+      🤝 合作論壇 / Word 內容
+    </button>
   </div>
 
   <div id="mode-hint-excel" class="warn-box" style="font-size:12px">
@@ -228,6 +231,9 @@ textarea.inp{resize:vertical}
   </div>
   <div id="mode-hint-text" class="warn-box" style="font-size:12px;display:none">
     可貼入 email 內文、活動說明、Word 段落，或任何包含論壇資訊的文字。AI 會自動萃取欄位內容。
+  </div>
+  <div id="mode-hint-partner" class="warn-box" style="font-size:12px;display:none">
+    適合外部單位或合作論壇。請貼上 Word 內容、email 內文或活動說明；解析後會自動進入「合作論壇模式」，主題與大綱會直接展開，連結會保留為可點擊內容。
   </div>
 
   <div class="field">
@@ -619,7 +625,8 @@ function setMode(mode, btn) {
   btn.classList.add('active');
   document.getElementById('mode-hint-excel').style.display = mode==='excel' ? 'block' : 'none';
   document.getElementById('mode-hint-text').style.display  = mode==='text'  ? 'block' : 'none';
-  document.getElementById('api-section').style.display     = mode==='text'  ? 'block' : 'none';
+  document.getElementById('mode-hint-partner').style.display = mode==='partner' ? 'block' : 'none';
+  document.getElementById('api-section').style.display     = (mode==='text' || mode==='partner') ? 'block' : 'none';
   document.getElementById('forum-select-wrap').style.display = 'none';
   document.getElementById('draft-banner').classList.remove('show');
 
@@ -797,11 +804,15 @@ Return this exact JSON structure (use null for missing fields, empty array [] fo
   "outlineEn": "",
   "advisedName": "",
   "advisedUrl": "",
+  "partnerOrgsZh": "",
+  "partnerOrgsEn": "",
   "regUrlZh": "",
   "regUrlEn": "",
   "mapUrl": "",
   "remarkZh": "",
   "remarkEn": "",
+  "relatedLinksZh": "",
+  "relatedLinksEn": "",
   "chairs": [{"name": "", "url": ""}],
   "mods": [{"name": "", "url": ""}],
   "prices": {
@@ -820,6 +831,8 @@ Rules:
 - chairs/mods: extract name as "Full Name | Title | Company" format when possible
 - outlineZh/outlineEn: the main forum description/about section, use double newline (\\n\\n) to separate paragraphs
 - remarkZh/remarkEn: registration-related notes, disclaimers, discount instructions, or special conditions (e.g. "＊You are currently registering for..."). These are NOT part of the main description.
+- partnerOrgsZh/partnerOrgsEn: organizer/co-organizer/advisor text links, one item per line in "Role | Organization Name | URL" format. Preserve URLs from Word hyperlinks when available.
+- relatedLinksZh/relatedLinksEn: external links such as banquet registration, association website, official forum page, one item per line in "Label | URL" format.
 - regUrlZh/regUrlEn: the primary registration URL. If only one URL is found, put it in both fields.
 - If text is in Chinese only, leave English fields as empty string. If English only, leave Chinese fields as empty string.
 - chairs/mods arrays should be empty [] if not found, never null`;
@@ -894,16 +907,23 @@ Rules:
 function applyAIData(d) {
   selectedForum = d.hasPrices ? { ...d } : null;
   if(d.hasPrices) selectedForum = d;
+  if(inputMode === 'partner') {
+    setChecked('opt-partner', true);
+    onPartnerModeChange(true);
+  }
 
   const aiFields = ['nameZh','nameEn','venueZh','venueEn','themeZh','themeEn',
-    'outlineZh','outlineEn','regUrlZh','regUrlEn','mapUrl','remarkZh','remarkEn','advisedName','advisedUrl'];
+    'outlineZh','outlineEn','regUrlZh','regUrlEn','mapUrl','remarkZh','remarkEn','advisedName','advisedUrl',
+    'partnerOrgsZh','partnerOrgsEn','relatedLinksZh','relatedLinksEn'];
 
   const map = {
     nameZh:'name-zh', nameEn:'name-en', venueZh:'venue-zh', venueEn:'venue-en',
     themeZh:'theme-zh', themeEn:'theme-en', outlineZh:'outline-zh', outlineEn:'outline-en',
     regUrlZh:'reg-url-zh', regUrlEn:'reg-url-en', mapUrl:'map-url',
     remarkZh:'remark-zh', remarkEn:'remark-en',
-    advisedName:'advised-name', advisedUrl:'advised-url'
+    advisedName:'advised-name', advisedUrl:'advised-url',
+    partnerOrgsZh:'partner-orgs-zh', partnerOrgsEn:'partner-orgs-en',
+    relatedLinksZh:'related-links-zh', relatedLinksEn:'related-links-en'
   };
 
   aiFields.forEach(k => {

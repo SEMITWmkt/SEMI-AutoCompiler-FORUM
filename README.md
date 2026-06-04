@@ -2,7 +2,7 @@ Web Deployment Automation Compiler (SEMI Taiwan)
 
 A high-performance, frontend-based automation compiler engineered to transform unstructured, multi-dimensional spreadsheet data into standardized, brand-compliant digital assets for SEMICON Taiwan.
 
-Current production version: v9.4
+Current production version: v9.5
 
 CP Team Chinese user guide:
 
@@ -19,6 +19,7 @@ Operational usage:
 
 Partner forum mode:
 
+- A dedicated "Partner Forum / Word Content" input path is available in Step 1.
 - Use this mode for externally provided or co-hosted forum content.
 - Topic and outline are shown directly instead of being collapsed in an accordion.
 - URLs and email addresses in outlines and registration notes are automatically converted into clickable links.
