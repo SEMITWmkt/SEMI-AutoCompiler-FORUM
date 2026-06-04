@@ -2,7 +2,7 @@ Web Deployment Automation Compiler (SEMI Taiwan)
 
 A high-performance, frontend-based automation compiler engineered to transform unstructured, multi-dimensional spreadsheet data into standardized, brand-compliant digital assets for SEMICON Taiwan.
 
-Current production version: v9.5
+Current production version: v9.6
 
 CP Team Chinese user guide:
 
@@ -11,11 +11,18 @@ CP Team Chinese user guide:
 Operational usage:
 
 1. Open `index.html` in a browser or through the GitHub Pages deployment.
-2. Paste forum source data from the ST26 spreadsheet, or use the AI-assisted text mode.
+2. Choose the correct workflow first: CP Excel forum, AI-assisted text, or Partner Forum / Word Content.
 3. Review and complete forum metadata, topic, outline, people, registration links, venue, and logos.
 4. Use the logo controls to normalize inconsistent vendor-provided assets.
 5. Generate Chinese and English HTML.
 6. Copy the generated code into the corresponding Drupal page.
+
+Workflow separation:
+
+- General forum editing and partner forum editing are separated in Step 2.
+- General forum mode hides partner-only fields to reduce CP Team editing noise.
+- Partner forum mode hides CP Excel-specific people and output option controls, while keeping shared design output.
+- The generator defines the required editing workflow; source teams should provide clean data that fits the workflow rather than expecting the page editor to absorb every inconsistent source format.
 
 Partner forum mode:
 

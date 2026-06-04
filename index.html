@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ST26 論壇 HTML 產生器 v9.5</title>
+<title>ST26 論壇 HTML 產生器 v9.6</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -39,6 +39,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Noto Sans TC
 /* Cards */
 .card{background:#faf8ff;border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;margin-bottom:14px}
 .card-title{font-size:11px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.workflow-note{background:#f5f5f7;border:1px solid #e5e5ea;border-radius:8px;padding:10px 12px;font-size:12px;color:#555;line-height:1.6;margin-bottom:14px}
 
 /* Forms */
 .lbl{font-size:12px;font-weight:700;color:#555;display:block;margin-bottom:5px}
@@ -189,7 +190,7 @@ textarea.inp{resize:vertical}
   <div>
     <div class="hdr-eye">SEMI Taiwan · ST26</div>
     <div class="hdr-name">論壇 HTML 產生器</div>
-    <div class="hdr-ver">v9.5 · 三步驟流程 · AI 輔助 · 合作論壇入口</div>
+    <div class="hdr-ver">v9.6 · 三步驟流程 · AI 輔助 · 分流編輯</div>
   </div>
   <div class="hdr-badge">✦ AI 輔助版</div>
 </div>
@@ -243,7 +244,7 @@ textarea.inp{resize:vertical}
 
   <!-- API settings (only shown for text mode) -->
   <div id="api-section" style="display:none;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:14px 16px;margin-bottom:14px">
-    <div style="font-size:12px;font-weight:700;color:#92400e;margin-bottom:10px">⚙️ AI 服務設定（文字模式必填）</div>
+    <div style="font-size:12px;font-weight:700;color:#92400e;margin-bottom:10px">⚙️ AI 服務設定（文字 / 合作論壇模式必填）</div>
 
     <!-- Provider selector -->
     <div class="field">
@@ -318,6 +319,10 @@ textarea.inp{resize:vertical}
 <!-- ═══════════════════════════ STEP 2 ═══════════════════════════ -->
 <div class="panel" id="panel-2">
 
+  <div class="workflow-note" id="workflow-note">
+    目前為一般論壇流程，只保留 CP Team 上架常用欄位；合作論壇欄位已收起，避免一般論壇編輯時被不相關內容干擾。
+  </div>
+
   <!-- 基本資訊 -->
   <div class="card">
     <div class="card-title">📋 基本場次資訊</div>
@@ -342,7 +347,7 @@ textarea.inp{resize:vertical}
   </div>
 
   <!-- 論壇類型 -->
-  <div class="card">
+  <div class="card" id="forum-type-card">
     <div class="card-title">⚙️ 論壇類型</div>
     <div class="hint-box" style="margin-bottom:12px;font-size:12px">
       合作論壇可保留外部單位提供的完整說明與連結，但仍使用統一版型輸出；Logo 尚未收到時，可先用文字連結呈現合作單位。
@@ -354,7 +359,7 @@ textarea.inp{resize:vertical}
   </div>
 
   <!-- 主題與大綱 -->
-  <div class="card">
+  <div class="card" id="theme-card">
     <div class="card-title">💡 主題與大綱</div>
     <div class="grid2" style="margin-bottom:12px">
       <div class="field" id="field-theme-zh">
@@ -379,7 +384,7 @@ textarea.inp{resize:vertical}
   </div>
 
   <!-- 合作單位文字連結 -->
-  <div class="card">
+  <div class="card" id="partner-orgs-card">
     <div class="card-title">🤝 合作單位文字連結</div>
     <div class="hint-box" style="margin-bottom:12px;font-size:12px">
       適合 Logo 尚未收到的合作論壇。每行格式：角色 ｜ 單位名稱 ｜ URL，例如「主辦單位 ｜ 台灣高科技廠房設施協會 ｜ https://...」。
@@ -397,7 +402,7 @@ textarea.inp{resize:vertical}
   </div>
 
   <!-- 人員 -->
-  <div class="card">
+  <div class="card" id="people-card">
     <div class="card-title">👥 人員資訊</div>
     <div class="grid2" style="margin-bottom:16px">
       <div class="field">
@@ -432,7 +437,7 @@ textarea.inp{resize:vertical}
   </div>
 
   <!-- Logo -->
-  <div class="card">
+  <div class="card" id="logo-card">
     <div class="card-title">🖼 Logo 管理</div>
     <div class="hint-box" style="margin-bottom:14px;font-size:12px">
       上傳或貼入圖片 URL 後，系統自動去除多餘白邊並置中。用<strong>拉桿</strong>微調 Logo 在格子內的大小比例。輸出後電腦版一排五個、手機版一排四個；標題與 Logo 採緊湊扁平排版，勾選「聯名 Logo」會佔用兩格寬。
@@ -453,7 +458,7 @@ textarea.inp{resize:vertical}
   </div>
 
   <!-- 報名與地點 -->
-  <div class="card">
+  <div class="card" id="registration-card">
     <div class="card-title">🔗 報名與地點</div>
     <div class="grid2">
       <div class="field" id="field-reg-zh">
@@ -465,7 +470,7 @@ textarea.inp{resize:vertical}
         <input class="inp" id="reg-url-en" placeholder="https://...">
       </div>
     </div>
-    <div class="grid2" style="margin-top:12px">
+    <div class="grid2" id="related-links-wrap" style="margin-top:12px">
       <div class="field">
         <label class="lbl">中文備註（選填）</label>
         <textarea class="inp" id="remark-zh" rows="2" placeholder="例：委員會成員享會員價..."></textarea>
@@ -490,6 +495,7 @@ textarea.inp{resize:vertical}
       </div>
     </div>
 
+    <div id="output-options-wrap">
     <div style="height:1px;background:var(--border);margin:16px 0"></div>
     <div style="font-size:11px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">輸出內容選項</div>
     <div style="display:flex;flex-wrap:wrap;gap:12px">
@@ -513,6 +519,7 @@ textarea.inp{resize:vertical}
         <input type="checkbox" id="opt-footnote" checked style="width:15px;height:15px;accent-color:var(--brand);cursor:pointer">
         顯示免責聲明
       </label>
+    </div>
     </div>
   </div>
 
@@ -605,6 +612,7 @@ function goStep(n) {
     if(i===n) tab.classList.add('active');
     else if(i<n) tab.classList.add('done');
   });
+  if(n===2) updateWorkflowView();
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
@@ -629,6 +637,10 @@ function setMode(mode, btn) {
   document.getElementById('api-section').style.display     = (mode==='text' || mode==='partner') ? 'block' : 'none';
   document.getElementById('forum-select-wrap').style.display = 'none';
   document.getElementById('draft-banner').classList.remove('show');
+
+  setChecked('opt-partner', mode === 'partner');
+  onPartnerModeChange(mode === 'partner');
+  updateWorkflowView();
 
   const apiKey = sessionStorage.getItem('st26_api_key');
   if(apiKey) document.getElementById('api-key-inp').value = apiKey;
@@ -991,11 +1003,37 @@ function proceedFromExcel() {
 }
 
 function onPartnerModeChange(checked) {
-  if(!checked) return;
-  setChecked('opt-theme', true);
-  setChecked('opt-outline', true);
-  setChecked('opt-daypass', false);
-  setChecked('opt-discount', false);
+  if(checked) {
+    setChecked('opt-theme', true);
+    setChecked('opt-outline', true);
+    setChecked('opt-daypass', false);
+    setChecked('opt-discount', false);
+  } else {
+    setChecked('opt-daypass', true);
+    setChecked('opt-discount', true);
+  }
+  updateWorkflowView();
+}
+
+function updateWorkflowView() {
+  const partnerMode = document.getElementById('opt-partner')?.checked || inputMode === 'partner';
+  const show = (id, visible) => {
+    const el = document.getElementById(id);
+    if(el) el.style.display = visible ? '' : 'none';
+  };
+
+  show('forum-type-card', false);
+  show('partner-orgs-card', partnerMode);
+  show('people-card', !partnerMode);
+  show('related-links-wrap', partnerMode);
+  show('output-options-wrap', !partnerMode);
+
+  const note = document.getElementById('workflow-note');
+  if(note) {
+    note.textContent = partnerMode
+      ? '目前為合作論壇流程，只保留外部論壇上架需要的欄位；CP Excel、主席主持人與一般論壇輸出細項已收起。'
+      : '目前為一般論壇流程，只保留 CP Team 上架常用欄位；合作論壇欄位已收起，避免一般論壇編輯時被不相關內容干擾。';
+  }
 }
 
 // ─────────────────────────── Generate ───────────────────────────
@@ -1437,6 +1475,7 @@ function loadDraft() {
     });
 
     setChecked('opt-partner', !!d.partnerMode);
+    onPartnerModeChange(!!d.partnerMode);
 
     document.getElementById('chairs-wrap').innerHTML = '';
     (d.chairs||[]).forEach(p => addPerson('chairs-wrap', p.name, p.url));
