@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ST26 論壇 HTML 產生器 v9.7</title>
+<title>ST26 論壇 HTML 產生器 v9.8</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -190,7 +190,7 @@ textarea.inp{resize:vertical}
   <div>
     <div class="hdr-eye">SEMI Taiwan · ST26</div>
     <div class="hdr-name">論壇 HTML 產生器</div>
-    <div class="hdr-ver">v9.7 · 三步驟流程 · AI 輔助 · 合作單位分組</div>
+    <div class="hdr-ver">v9.8 · 三步驟流程 · AI 輔助 · 輸入減法</div>
   </div>
   <div class="hdr-badge">✦ AI 輔助版</div>
 </div>
@@ -217,24 +217,18 @@ textarea.inp{resize:vertical}
 
   <div class="mode-toggle">
     <button class="mode-btn active" onclick="setMode('excel',this)">
-      📊 貼上 Excel 資料
-    </button>
-    <button class="mode-btn" onclick="setMode('text',this)">
-      📝 貼上文字 / 任意描述
+      📊 有 Excel 資料
     </button>
     <button class="mode-btn" onclick="setMode('partner',this)">
-      🤝 合作論壇 / Word 內容
+      📝 沒有 Excel / Word 內容
     </button>
   </div>
 
   <div id="mode-hint-excel" class="warn-box" style="font-size:12px">
     請直接從 Excel 複製「ST26_官網連結」資料表的內容（含標題列），貼入下方。
   </div>
-  <div id="mode-hint-text" class="warn-box" style="font-size:12px;display:none">
-    可貼入 email 內文、活動說明、Word 段落，或任何包含論壇資訊的文字。AI 會自動萃取欄位內容。
-  </div>
   <div id="mode-hint-partner" class="warn-box" style="font-size:12px;display:none">
-    適合外部單位或合作論壇。請貼上 Word 內容、email 內文或活動說明；解析後會自動進入「合作論壇模式」，主題與大綱會直接展開，連結會保留為可點擊內容。
+    適合沒有 Excel 的外部單位或合作論壇。請貼上 Word 內容、email 內文或活動說明；解析後會自動進入合作論壇流程，文字中的連結會保留為可點擊內容。
   </div>
 
   <div class="field">
@@ -632,7 +626,6 @@ function setMode(mode, btn) {
   document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('mode-hint-excel').style.display = mode==='excel' ? 'block' : 'none';
-  document.getElementById('mode-hint-text').style.display  = mode==='text'  ? 'block' : 'none';
   document.getElementById('mode-hint-partner').style.display = mode==='partner' ? 'block' : 'none';
   document.getElementById('api-section').style.display     = (mode==='text' || mode==='partner') ? 'block' : 'none';
   document.getElementById('forum-select-wrap').style.display = 'none';
@@ -842,10 +835,10 @@ Rules:
 - hasPrices: true if any price field is not null
 - chairs/mods: extract name as "Full Name | Title | Company" format when possible
 - outlineZh/outlineEn: the main forum description/about section, use double newline (\\n\\n) to separate paragraphs
-- remarkZh/remarkEn: registration-related notes, disclaimers, discount instructions, or special conditions (e.g. "＊You are currently registering for..."). These are NOT part of the main description.
+- remarkZh/remarkEn: registration-related notes, banquet registration instructions, external forum links, disclaimers, discount instructions, or special conditions (e.g. "＊You are currently registering for..."). These are NOT part of the main description.
 - partnerOrgsZh/partnerOrgsEn: organizer/co-organizer/advisor text links, one item per line in "Role | Organization Name | URL" format. Preserve URLs from Word hyperlinks when available.
 - If multiple organizations share the same role, repeat the same role label on each line. Do not invent separate role variants.
-- relatedLinksZh/relatedLinksEn: external links such as banquet registration, association website, official forum page, one item per line in "Label | URL" format.
+- relatedLinksZh/relatedLinksEn: leave these fields empty. Do not extract banquet registration or association websites into separate button links unless the user explicitly asks for standalone related buttons.
 - regUrlZh/regUrlEn: the primary registration URL. If only one URL is found, put it in both fields.
 - If text is in Chinese only, leave English fields as empty string. If English only, leave Chinese fields as empty string.
 - chairs/mods arrays should be empty [] if not found, never null`;
@@ -924,6 +917,7 @@ function applyAIData(d) {
     setChecked('opt-partner', true);
     onPartnerModeChange(true);
   }
+  mergeRelatedLinksIntoRemarks(d);
 
   const aiFields = ['nameZh','nameEn','venueZh','venueEn','themeZh','themeEn',
     'outlineZh','outlineEn','regUrlZh','regUrlEn','mapUrl','remarkZh','remarkEn','advisedName','advisedUrl',
@@ -965,6 +959,26 @@ function applyAIData(d) {
       urlZh: d.regUrlZh, urlEn: d.regUrlEn
     };
   }
+}
+
+function mergeRelatedLinksIntoRemarks(d) {
+  const merge = (remarkKey, linksKey) => {
+    if(!d[linksKey]) return;
+    const lines = parsePipeRows(d[linksKey], 2).map(parts => {
+      let label = parts[0], url = parts[1];
+      if(!url && safeUrl(label)) {
+        url = label;
+        label = '';
+      }
+      if(!url) return parts.filter(Boolean).join(' ');
+      return label ? label + ': ' + url : url;
+    }).filter(Boolean);
+    if(!lines.length) return;
+    d[remarkKey] = [d[remarkKey], lines.join('\n')].filter(Boolean).join('\n');
+    d[linksKey] = '';
+  };
+  merge('remarkZh', 'relatedLinksZh');
+  merge('remarkEn', 'relatedLinksEn');
 }
 
 // ─────────────────────────── Handle Parse → Step 2 ───────────────────────────
@@ -1026,7 +1040,7 @@ function updateWorkflowView() {
   show('forum-type-card', false);
   show('partner-orgs-card', partnerMode);
   show('people-card', !partnerMode);
-  show('related-links-wrap', partnerMode);
+  show('related-links-wrap', false);
   show('output-options-wrap', !partnerMode);
 
   const note = document.getElementById('workflow-note');
@@ -1577,8 +1591,8 @@ details[open] .st26-theme-line::after{transform:rotate(180deg)}
 .st26-outline{padding:16px 20px;background:#f9f8ff;border-left:4px solid #673BB8;border-radius:0 6px 6px 0;margin-top:4px;margin-bottom:16px;font-size:16px;color:#444;line-height:1.8}
 .st26-outline p{margin-bottom:10px}
 .st26-outline p:last-child{margin-bottom:0}
-.st26-outline a,.st26-pricing-remark a,.st26-related a,.st26-partner-orgs a{color:#673BB8;text-decoration:none;font-weight:700}
-.st26-outline a:hover,.st26-pricing-remark a:hover,.st26-related a:hover,.st26-partner-orgs a:hover{text-decoration:underline}
+.st26-outline a,.st26-pricing-remark a,.st26-partner-orgs a{color:#673BB8;text-decoration:none;font-weight:700}
+.st26-outline a:hover,.st26-pricing-remark a:hover,.st26-partner-orgs a:hover{text-decoration:underline}
 .st26-org{display:grid;grid-template-columns:repeat(3,1fr);align-items:start;gap:20px 24px;padding:16px 0;border-top:1px solid #e5e5ea;border-bottom:1px solid #e5e5ea;margin:20px 0}
 .st26-org-item{display:flex;flex-direction:column;gap:4px;min-width:200px;flex:1}
 .st26-org-role{font-size:13px;font-weight:700;color:#86868b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
@@ -1596,9 +1610,6 @@ details[open] .st26-theme-line::after{transform:rotate(180deg)}
 .st26-partner-org-role{font-size:13px;font-weight:700;color:#86868b;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
 .st26-partner-org-name{display:grid;gap:4px;font-size:15px;font-weight:600;color:#333;line-height:1.5}
 .st26-partner-org-name-item{display:block}
-.st26-related{display:flex;flex-wrap:wrap;gap:8px 10px;margin:12px 0 18px}
-.st26-related-link{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid #d4c8f0;border-radius:100px;background:#fff;color:#673BB8;font-size:13px;font-weight:700;text-decoration:none}
-.st26-related-link::after{content:'↗';font-size:11px;line-height:1;color:#673BB8}
 .st26-div{height:1px;background:#e5e5ea;margin:20px 0}
 .st26-pricing-remark{padding:12px 16px;background:#f9f8ff;border-left:3px solid #673BB8;border-radius:0 4px 4px 0;font-size:14px;color:#666;margin-bottom:16px;line-height:1.6}
 .st26-pricing-remark p{margin-bottom:6px}
@@ -1743,9 +1754,19 @@ function buildAnchorNav(venueDisplay, mapUrl, lang) {
 function buildPartnerOrgsBlock(raw) {
   const groups = [];
   const byRole = new Map();
+  let lastRole = '';
   parsePipeRows(raw, 3).forEach(parts => {
-    const role = parts[0], name = parts[1], url = parts[2];
+    let role = parts[0], name = parts[1], url = parts[2];
+    if(lastRole && role && !name) {
+      name = role;
+      role = lastRole;
+    } else if(lastRole && role && name && !url && safeUrl(name)) {
+      url = name;
+      name = role;
+      role = lastRole;
+    }
     if(!role || !name) return;
+    lastRole = role;
     const key = role.toLowerCase().replace(/\s+/g, ' ').trim();
     if(!byRole.has(key)) {
       byRole.set(key, { role, names: [] });
@@ -1761,20 +1782,6 @@ function buildPartnerOrgsBlock(raw) {
     '  <div class="st26-partner-org-row"><span class="st26-partner-org-role">'+esc(g.role)+'</span><span class="st26-partner-org-name">'+g.names.join('')+'</span></div>'
   ).join('\n');
   return rows ? '\n<div class="st26-partner-orgs">\n'+rows+'\n</div>' : '';
-}
-
-function buildRelatedLinksBlock(raw, lang) {
-  const rows = parsePipeRows(raw, 2).map(parts => {
-    let label = parts[0], url = parts[1];
-    if(!url && safeUrl(label)) {
-      url = label;
-      label = lang === 'zh' ? '相關連結' : 'Related Link';
-    }
-    const href = safeUrl(url);
-    if(!label || !href) return '';
-    return '<a class="st26-related-link" href="'+esc(href)+'" target="_blank" rel="noopener noreferrer">'+esc(label)+'</a>';
-  }).filter(Boolean).join('\n');
-  return rows ? '\n<div class="st26-related">\n'+rows+'\n</div>' : '';
 }
 
 function buildOrgBlock(advisedName, advisedUrl, chairs, mods, lang, partnerMode) {
@@ -1893,7 +1900,6 @@ function buildFullHTML(lang) {
   const regUrlEn = getVal('reg-url-en');
   const remarkZh = getVal('remark-zh');
   const remarkEn = getVal('remark-en');
-  const relatedLinks = getVal('related-links-'+lang);
   const mapUrl   = getVal('map-url');
   const chairs   = getPeople('chairs-wrap');
   const mods     = getPeople('mods-wrap');
@@ -1913,7 +1919,6 @@ function buildFullHTML(lang) {
   const anchorNav   = buildAnchorNav(venueDisplay, mapUrl, lang);
   const partnerOrgsBlock = buildPartnerOrgsBlock(partnerOrgs);
   const orgBlock    = buildOrgBlock(advisedName, advisedUrl, chairs, mods, lang, partnerMode);
-  const relatedBlock = buildRelatedLinksBlock(relatedLinks, lang);
   const logoOrg     = buildLogoSection(orgLabel, orgLogos);
   const logoCoorg   = buildLogoSection(coorgLabel, coorgLogos);
   const logoSponsor = buildLogoSection(sponLabel, sponsorLogos);
@@ -1922,7 +1927,7 @@ function buildFullHTML(lang) {
   const hasLogos    = logosHtml.trim().length > 0;
 
   return OUT_CSS + '\n<div class="st26 st26-lang-'+lang+'">\n' +
-    themeBlock + '\n' + anchorNav + '\n' + partnerOrgsBlock + '\n' + orgBlock + '\n' + relatedBlock + '\n' +
+    themeBlock + '\n' + anchorNav + '\n' + partnerOrgsBlock + '\n' + orgBlock + '\n' +
     (hasLogos ? '\n'+logosHtml+'\n<div class="st26-div" style="margin-top:20px;"></div>\n' : '') +
     pricingBlock + '\n</div>';
 }

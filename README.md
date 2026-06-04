@@ -2,7 +2,7 @@ Web Deployment Automation Compiler (SEMI Taiwan)
 
 A high-performance, frontend-based automation compiler engineered to transform unstructured, multi-dimensional spreadsheet data into standardized, brand-compliant digital assets for SEMICON Taiwan.
 
-Current production version: v9.7
+Current production version: v9.8
 
 CP Team Chinese user guide:
 
@@ -11,7 +11,7 @@ CP Team Chinese user guide:
 Operational usage:
 
 1. Open `index.html` in a browser or through the GitHub Pages deployment.
-2. Choose the correct workflow first: CP Excel forum, AI-assisted text, or Partner Forum / Word Content.
+2. Choose the correct source type first: Excel data, or non-Excel Word/text content.
 3. Review and complete forum metadata, topic, outline, people, registration links, venue, and logos.
 4. Use the logo controls to normalize inconsistent vendor-provided assets.
 5. Generate Chinese and English HTML.
@@ -26,12 +26,13 @@ Workflow separation:
 
 Partner forum mode:
 
-- A dedicated "Partner Forum / Word Content" input path is available in Step 1.
-- Use this mode for externally provided or co-hosted forum content.
+- A dedicated non-Excel Word/text input path is available in Step 1.
+- Use this mode for externally provided or co-hosted forum content that does not come from the CP Excel sheet.
 - Topic and outline are shown directly instead of being collapsed in an accordion.
 - URLs and email addresses in outlines and registration notes are automatically converted into clickable links.
 - Partner organization text links can be published first, then replaced or supplemented with logos later.
 - Partner organizations with the same role, such as multiple co-organizers, are grouped under one role label while keeping each organization as its own clickable link.
+- Banquet registration and association website links stay inside the provided text/remarks instead of being extracted as standalone related-link buttons.
 
 Logo output layout:
 
