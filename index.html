@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ST26 論壇 HTML 產生器 v9.10</title>
+<title>ST26 論壇 HTML 產生器 v9.11</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -190,7 +190,7 @@ textarea.inp{resize:vertical}
   <div>
     <div class="hdr-eye">SEMI Taiwan · ST26</div>
     <div class="hdr-name">論壇 HTML 產生器</div>
-    <div class="hdr-ver">v9.10 · 三步驟流程 · AI 輔助 · 連結驗證修正</div>
+    <div class="hdr-ver">v9.11 · 三步驟流程 · AI 輔助 · CMS 版面修正</div>
   </div>
   <div class="hdr-badge">✦ AI 輔助版</div>
 </div>
@@ -1615,7 +1615,11 @@ details[open] .st26-theme-line::after{transform:rotate(180deg)}
 .st26-partner-org-row{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:12px;align-items:start}
 .st26-partner-org-role{font-size:13px;font-weight:700;color:#86868b;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
 .st26-partner-org-name{display:grid;gap:4px;font-size:15px;font-weight:600;color:#333;line-height:1.5}
-.st26-partner-org-name-item{display:block}
+.st26-partner-org-name-item{display:block;font-size:15px;font-weight:700;line-height:1.5}
+.st26-partner-org-name a,.st26-partner-org-row>a{color:#673BB8;text-decoration:none;font-weight:700}
+.st26-partner-org-name a:hover,.st26-partner-org-row>a:hover{text-decoration:underline}
+.st26-partner-org-row>a{grid-column:2;display:block}
+.st26-partner-org-row>a .st26-partner-org-name{display:block;color:#673BB8;font-weight:700}
 .st26-div{height:1px;background:#e5e5ea;margin:20px 0}
 .st26-pricing-remark{padding:12px 16px;background:#f9f8ff;border-left:3px solid #673BB8;border-radius:0 4px 4px 0;font-size:14px;color:#666;margin-bottom:16px;line-height:1.6}
 .st26-pricing-remark p{margin-bottom:6px}
@@ -1773,12 +1777,12 @@ function buildPartnerOrgsBlock(raw) {
     }
     const href = safeUrl(url);
     const nameHtml = href
-      ? '<a href="'+esc(href)+'" target="_blank" rel="noopener noreferrer">'+esc(name)+'</a>'
-      : renderInlineRichText(name);
-    byRole.get(key).names.push('<span class="st26-partner-org-name-item">'+nameHtml+'</span>');
+      ? '<a class="st26-partner-org-name-item" href="'+esc(href)+'" target="_blank" rel="noopener noreferrer">'+esc(name)+'</a>'
+      : '<span class="st26-partner-org-name-item">'+renderInlineRichText(name)+'</span>';
+    byRole.get(key).names.push(nameHtml);
   });
   const rows = groups.map(g =>
-    '  <div class="st26-partner-org-row"><span class="st26-partner-org-role">'+esc(g.role)+'</span><span class="st26-partner-org-name">'+g.names.join('')+'</span></div>'
+    '  <div class="st26-partner-org-row"><div class="st26-partner-org-role">'+esc(g.role)+'</div><div class="st26-partner-org-name">'+g.names.join('')+'</div></div>'
   ).join('\n');
   return rows ? '\n<div class="st26-partner-orgs">\n'+rows+'\n</div>' : '';
 }
