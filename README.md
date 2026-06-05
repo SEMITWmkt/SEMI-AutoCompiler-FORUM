@@ -2,7 +2,7 @@ Web Deployment Automation Compiler (SEMI Taiwan)
 
 A high-performance, frontend-based automation compiler engineered to transform unstructured, multi-dimensional spreadsheet data into standardized, brand-compliant digital assets for SEMICON Taiwan.
 
-Current production version: v9.12
+Current production version: v9.13
 
 CP Team Chinese user guide:
 
@@ -23,6 +23,13 @@ Workflow separation:
 - General forum mode hides partner-only fields to reduce CP Team editing noise.
 - Partner forum mode hides CP Excel-specific people and output option controls, while keeping shared design output.
 - The generator defines the required editing workflow; source teams should provide clean data that fits the workflow rather than expecting the page editor to absorb every inconsistent source format.
+
+Excel input resilience:
+
+- Excel parsing is header-based where possible, not tied only to fixed column positions.
+- Required recognizable headers include Registration, Time, Forum, 論壇名稱, Venue, 中文地點, plus optional Theme, 中文連結, 英文連結.
+- Repeated section headers may omit some labels; missing header positions inherit from the previous complete header row.
+- Current supported source is Program-at-a-glance(L), but future sheets should preserve clear header names to remain compatible.
 
 Partner forum mode:
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ST26 論壇 HTML 產生器 v9.12</title>
+<title>ST26 論壇 HTML 產生器 v9.13</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -190,7 +190,7 @@ textarea.inp{resize:vertical}
   <div>
     <div class="hdr-eye">SEMI Taiwan · ST26</div>
     <div class="hdr-name">論壇 HTML 產生器</div>
-    <div class="hdr-ver">v9.12 · 三步驟流程 · AI 輔助 · 上站穩定修正</div>
+    <div class="hdr-ver">v9.13 · 三步驟流程 · AI 輔助 · Excel 彈性解析</div>
   </div>
   <div class="hdr-badge">✦ AI 輔助版</div>
 </div>
@@ -691,41 +691,121 @@ function parsePrice(s){
   return isNaN(n)?null:n;
 }
 
+function normalizeHeader(s) {
+  return String(s || '').toLowerCase()
+    .replace(/[　\s_()（）\-/–—:：.]/g, '')
+    .trim();
+}
+
+function findHeaderIndex(cells, aliases) {
+  const normalized = cells.map(normalizeHeader);
+  const targets = aliases.map(normalizeHeader);
+  for(let i = 0; i < normalized.length; i++) {
+    if(targets.includes(normalized[i])) return i;
+  }
+  for(let i = 0; i < normalized.length; i++) {
+    if(targets.some(t => t && normalized[i].includes(t))) return i;
+  }
+  return -1;
+}
+
+function isExcelHeaderRow(cells) {
+  const n = cells.map(normalizeHeader);
+  return n.some(v => v === 'forum' || v === 'forumname') &&
+    n.some(v => v === 'time' || v === '時間') &&
+    n.some(v => v === '論壇名稱' || v === '中文論壇名稱');
+}
+
+function buildExcelHeaderMap(cells) {
+  const normalized = cells.map(normalizeHeader);
+  const map = {
+    regTime: findHeaderIndex(cells, ['Registration', '報名時間', '報到時間']),
+    frmTime: findHeaderIndex(cells, ['Time', '時間']),
+    nameEn:  findHeaderIndex(cells, ['Forum', 'Forum Name', '英文名稱', '英文論壇名稱']),
+    nameZh:  findHeaderIndex(cells, ['論壇名稱', '中文名稱', '中文論壇名稱']),
+    venueEn: findHeaderIndex(cells, ['Venue', 'Venue EN', '英文地點']),
+    venueZh: findHeaderIndex(cells, ['中文地點', '地點中文', 'Venue ZH']),
+    theme:   findHeaderIndex(cells, ['Theme', '主題']),
+    urlZh:   findHeaderIndex(cells, ['中文連結', '中文報名連結', 'ZH Link', 'Chinese Link']),
+    urlEn:   findHeaderIndex(cells, ['英文連結', '英文報名連結', 'EN Link', 'English Link'])
+  };
+  const after = Math.max(
+    map.urlZh, map.urlEn, map.theme, map.venueZh, map.venueEn,
+    map.nameZh, map.nameEn, map.frmTime, map.regTime
+  ) + 1;
+  const priceHeaderStart = normalized.findIndex((v, i) =>
+    i >= after && ['semimember','nonmember','student','學生票'].includes(v)
+  );
+  map.priceStart = priceHeaderStart >= 0 ? priceHeaderStart : Math.max(0, after);
+  return map;
+}
+
+function mergeExcelHeaderMap(next, prev) {
+  if(!prev) return next;
+  const merged = { ...next };
+  ['regTime','frmTime','nameEn','nameZh','venueEn','venueZh','theme','urlZh','urlEn'].forEach(k => {
+    if(merged[k] < 0 && prev[k] >= 0) merged[k] = prev[k];
+  });
+  return merged;
+}
+
+function readExcelCell(cells, idx) {
+  return idx >= 0 && idx < cells.length ? String(cells[idx] || '').trim() : '';
+}
+
+function rowToForum(cells, map) {
+  const regTime = readExcelCell(cells, map.regTime);
+  const frmTime = readExcelCell(cells, map.frmTime);
+  const nameEn  = readExcelCell(cells, map.nameEn);
+  const nameZh  = readExcelCell(cells, map.nameZh);
+  const venueEn = readExcelCell(cells, map.venueEn);
+  const venueZh = readExcelCell(cells, map.venueZh);
+  const theme   = readExcelCell(cells, map.theme);
+  if(!nameEn || !frmTime) return null;
+
+  const lw = nameEn.toLowerCase().trim();
+  const skip = new Set(['forum','registration','monday','tuesday','wednesday','thursday','friday','semicon','program','glance']);
+  if(skip.has(lw) || skip.has(lw.split(' ')[0])) return null;
+  if(/monday|tuesday|wednesday|thursday|friday/i.test(nameEn)) return null;
+  if(/semicon taiwan \d{4}/i.test(nameEn)) return null;
+
+  const rawUrlZh = readExcelCell(cells, map.urlZh);
+  const rawUrlEn = readExcelCell(cells, map.urlEn);
+  const urlZh = safeUrl(rawUrlZh) ? rawUrlZh : '';
+  const urlEn = safeUrl(rawUrlEn) ? rawUrlEn : '';
+  const p0 = map.priceStart;
+  const prices = {
+    seb_mem:parsePrice(cells[p0]),   seb_non:parsePrice(cells[p0+1]),
+    eb_mem: parsePrice(cells[p0+2]), eb_non: parsePrice(cells[p0+3]),
+    reg_mem:parsePrice(cells[p0+4]), reg_non:parsePrice(cells[p0+5]),
+    os_mem: parsePrice(cells[p0+6]), os_non: parsePrice(cells[p0+7]),
+    student:parsePrice(cells[p0+8])
+  };
+  const hasPrices = Object.values(prices).some(v => v !== null);
+  return {regTime,frmTime,nameEn,nameZh,venueEn,venueZh,theme,prices,hasPrices,urlZh,urlEn};
+}
+
 function parseExcel(raw) {
   const lines = raw.split(/\r?\n/).filter(l=>l.trim());
   const delim = (lines[0].match(/\t/g)||[]).length >= (lines[0].match(/,/g)||[]).length ? '\t' : ',';
-  const skip = new Set(['forum','registration','monday','tuesday','wednesday','thursday','friday','semicon','program','glance']);
   const parsed = [];
+  let headerMap = null;
 
   for(const line of lines) {
     const c = parseCSVLine(line, delim);
-    if(c.length < 10) continue;
-    const off = (!c[0] && (c[1]||c[3])) ? 1 : 0;
-    const regTime=c[0+off], frmTime=c[1+off];
-    const nameEn=c[2+off], nameZh=c[3+off];
-    const venueEn=c[4+off]||'', venueZh=c[5+off]||'';
-    const theme=c[6+off]||'';
-    if(!nameEn||!frmTime) continue;
-    const lw=nameEn.toLowerCase().trim();
-    if(skip.has(lw)||skip.has(lw.split(' ')[0])) continue;
-    if(/monday|tuesday|wednesday|thursday|friday/i.test(nameEn)) continue;
-    if(/semicon taiwan \d{4}/i.test(nameEn)) continue;
-    const urlZh=c[7+off]?c[7+off].trim():'';
-    const urlEn=c[8+off]?c[8+off].trim():'';
-    const p0=9+off;
-    const prices={
-      seb_mem:parsePrice(c[p0]),   seb_non:parsePrice(c[p0+1]),
-      eb_mem: parsePrice(c[p0+2]), eb_non: parsePrice(c[p0+3]),
-      reg_mem:parsePrice(c[p0+4]), reg_non:parsePrice(c[p0+5]),
-      os_mem: parsePrice(c[p0+6]), os_non: parsePrice(c[p0+7]),
-      student:parsePrice(c[p0+8])
-    };
-    const hasPrices=Object.values(prices).some(v=>v!==null);
-    parsed.push({regTime,frmTime,nameEn,nameZh,venueEn,venueZh,theme,prices,hasPrices,urlZh,urlEn});
+    if(c.length < 6) continue;
+    if(isExcelHeaderRow(c)) {
+      headerMap = mergeExcelHeaderMap(buildExcelHeaderMap(c), headerMap);
+      continue;
+    }
+
+    const activeMap = headerMap || buildExcelHeaderMap(['Registration','Time','Forum','論壇名稱','Venue','中文地點','Theme','中文連結','英文連結']);
+    const forum = rowToForum(c, activeMap);
+    if(forum) parsed.push(forum);
   }
 
   if(!parsed.length) {
-    showErr('parse-err','❌ 解析失敗：找不到符合公版結構的資料列，請確認複製的是「ST26_官網連結」資料表。');
+    showErr('parse-err','❌ 解析失敗：找不到符合公版結構的資料列。請確認貼上的資料包含標題列，例如 Registration、Time、Forum、論壇名稱、Venue、中文地點。');
     return;
   }
 

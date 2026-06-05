@@ -1,5 +1,17 @@
 ST26 論壇 HTML 產生器更新日誌
 
+[v9.13] 2026-06-05 - Excel 標題列彈性解析
+
+【Excel 壽命】Excel 解析由固定欄位位置改為優先讀取標題列，支援 Registration、Time、Forum、論壇名稱、Venue、中文地點、Theme、中文連結、英文連結等欄位名稱。
+
+【欄位變動容錯】未來 Program-at-a-glance 若新增欄位或移動連結欄，只要標題列仍清楚，產生器會依欄名抓資料，不再完全依賴第幾欄。
+
+【票價起點】票價欄位會依第一個 SEMI Member / Non-member / Student 標題定位，避免 Theme 後新增非票價欄時造成票價整排錯位。
+
+【區段 Header】針對 Excel 中重複區段 header 可能省略 Venue / Theme 等欄名的情況，新增 header 繼承機制，缺的欄位會沿用上一個完整標題列。
+
+【交接規格】README 新增 Excel input resilience 說明，明確要求未來表單要保留可辨識欄名，而不是讓產生器無限制猜測所有格式。
+
 [v9.12] 2026-06-05 - 量子論壇上站穩定修正
 
 【Style 防護】輸出 CSS 仍保留於 `<style>`，但內容改以 HTML comment 包覆；若 CMS / Drupal filter 移除 `<style>` 標籤，CSS 文字會變成註解，不再直接顯示成滿版原始碼。
