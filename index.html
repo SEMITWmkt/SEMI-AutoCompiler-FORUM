@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ST26 論壇 HTML 產生器 v9.11</title>
+<title>ST26 論壇 HTML 產生器 v9.12</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -190,7 +190,7 @@ textarea.inp{resize:vertical}
   <div>
     <div class="hdr-eye">SEMI Taiwan · ST26</div>
     <div class="hdr-name">論壇 HTML 產生器</div>
-    <div class="hdr-ver">v9.11 · 三步驟流程 · AI 輔助 · CMS 版面修正</div>
+    <div class="hdr-ver">v9.12 · 三步驟流程 · AI 輔助 · 上站穩定修正</div>
   </div>
   <div class="hdr-badge">✦ AI 輔助版</div>
 </div>
@@ -1576,7 +1576,7 @@ function showLoading(txt, sub) {
 function hideLoading() { document.getElementById('loading-ov').classList.remove('show'); }
 
 // ─────────────────────────── Build HTML Functions ───────────────────────────
-const OUT_CSS = `<style>
+const OUT_CSS = `<style><!--
 .st26,.st26 *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased}
 .st26{font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Noto Sans TC",Arial,sans-serif;color:#1d1d1f;padding:0 0 32px;line-height:1.6}
 .st26-anchor-nav{display:flex;gap:12px;margin:16px 0 24px;flex-wrap:wrap}
@@ -1599,10 +1599,10 @@ details[open] .st26-theme-line::after{transform:rotate(180deg)}
 .st26-outline p:last-child{margin-bottom:0}
 .st26-outline a,.st26-pricing-remark a,.st26-partner-orgs a{color:#673BB8;text-decoration:none;font-weight:700}
 .st26-outline a:hover,.st26-pricing-remark a:hover,.st26-partner-orgs a:hover{text-decoration:underline}
-.st26-org{display:grid;grid-template-columns:repeat(3,1fr);align-items:start;gap:20px 24px;padding:16px 0;border-top:1px solid #e5e5ea;border-bottom:1px solid #e5e5ea;margin:20px 0}
-.st26-org-item{display:flex;flex-direction:column;gap:4px;min-width:200px;flex:1}
-.st26-org-role{font-size:13px;font-weight:700;color:#86868b;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
-.st26-org-name{font-size:15px;font-weight:600;color:#333;line-height:1.5}
+.st26-org{display:grid;grid-template-columns:1fr;gap:8px;padding:16px 0;border-top:1px solid #e5e5ea;border-bottom:1px solid #e5e5ea;margin:20px 0}
+.st26-org-item{display:grid;grid-template-columns:max-content minmax(0,1fr);gap:12px;align-items:start;min-width:0}
+.st26-org-role{font-size:13px;font-weight:700;color:#86868b;text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.st26-org-name{font-size:15px;font-weight:600;color:#333;line-height:1.55;min-width:0}
 .st26-org-name a{color:#673BB8;text-decoration:none;font-weight:600}
 .st26-org-name a:hover{text-decoration:underline}
 .st26-logo-row{display:grid;grid-template-columns:max-content minmax(0,1fr);align-items:start;column-gap:12px;padding:8px 0;border-bottom:1px solid #f5f5f7}
@@ -1652,8 +1652,8 @@ details[open] .st26-theme-line::after{transform:rotate(180deg)}
 .st26-discount{margin-top:16px;padding:14px 18px;background:#edf7e3;border-left:4px solid #55A51C;border-radius:0 6px 6px 0;font-size:14px;font-weight:600;color:#2d5a0e;line-height:1.6}
 .st26-note{margin-top:10px;font-size:13px;color:#888;line-height:1.5}
 @media(max-width:768px){
-  .st26-org{grid-template-columns:1fr;gap:16px}
-  .st26-org-item{min-width:100%}
+  .st26-org{grid-template-columns:1fr;gap:12px}
+  .st26-org-item{grid-template-columns:1fr;gap:4px;min-width:100%}
   .st26-dp{flex-direction:column;align-items:flex-start}
   .st26-dp-grid{width:100%;display:grid;grid-template-columns:1fr;gap:12px}
   .st26-dp-item{align-items:center;flex-direction:row;justify-content:space-between;width:100%;border-bottom:1px solid #eee;padding-bottom:8px}
@@ -1671,7 +1671,7 @@ details[open] .st26-theme-line::after{transform:rotate(180deg)}
   .st26-pr-col3{border-bottom:none;padding-bottom:0}
   .st26-pr-label{display:block;font-size:13px;color:#86868b;font-weight:700}
 }
-</style>`;
+--></style>`;
 
 function isPartnerMode() {
   return document.getElementById('opt-partner')?.checked || false;
